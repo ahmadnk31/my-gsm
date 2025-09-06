@@ -234,8 +234,10 @@ const translations = {
     
     // Trade-In
     tradeIn: {
-      title: 'Trade-In Your Device',
-      subtitle: 'Get instant value for your old device',
+      title: 'Trade In Your',
+      subtitle: 'Old iPhone',
+      program: 'iPhone Trade-In Program',
+      description: 'Get real-time market-based trade-in values for your iPhone. Our dynamic pricing algorithm considers market demand, supply levels, seasonal factors, and competitive pricing for the best value.',
       selectDevice: 'Select Your Device',
       selectStorage: 'Select Storage',
       selectCondition: 'Select Condition',
@@ -297,6 +299,14 @@ const translations = {
       upcomingAppointments: 'Upcoming Appointments',
       repairHistory: 'Repair History',
       viewAll: 'View All',
+      overview: 'Overview',
+      allBookings: 'All Bookings',
+      quotes: 'Quotes',
+      analytics: 'Analytics',
+      myBookings: 'My Bookings',
+      totalBookings: 'Total Bookings',
+      totalRevenue: 'Total Revenue',
+      completionRate: 'Completion Rate',
     },
     
     // Admin
@@ -339,6 +349,7 @@ const translations = {
       unauthorized: 'You are not authorized to perform this action',
       notFound: 'The requested resource was not found',
       validationError: 'Please check your input and try again',
+      pageNotFound: 'Oops! Page not found',
     },
   },
   
@@ -509,8 +520,10 @@ const translations = {
     
     // Trade-In
     tradeIn: {
-      title: 'Ruil Uw Apparaat In',
-      subtitle: 'Krijg directe waarde voor uw oude apparaat',
+      title: 'Ruil Uw',
+      subtitle: 'Oude iPhone In',
+      program: 'iPhone Inruilprogramma',
+      description: 'Krijg real-time marktgebaseerde inruilwaarden voor uw iPhone. Ons dynamische prijsalgoritme houdt rekening met marktvraag, aanbodniveaus, seizoensfactoren en concurrerende prijzen voor de beste waarde.',
       selectDevice: 'Selecteer Uw Apparaat',
       selectStorage: 'Selecteer Opslag',
       selectCondition: 'Selecteer Conditie',
@@ -572,6 +585,14 @@ const translations = {
       upcomingAppointments: 'Aankomende Afspraken',
       repairHistory: 'Reparatiegeschiedenis',
       viewAll: 'Alles Bekijken',
+      overview: 'Overzicht',
+      allBookings: 'Alle Boekingen',
+      quotes: 'Offertes',
+      analytics: 'Analytics',
+      myBookings: 'Mijn Boekingen',
+      totalBookings: 'Totaal Boekingen',
+      totalRevenue: 'Totale Omzet',
+      completionRate: 'Voltooiingspercentage',
     },
     
     // Admin
@@ -614,6 +635,7 @@ const translations = {
       unauthorized: 'U bent niet geautoriseerd om deze actie uit te voeren',
       notFound: 'De gevraagde bron is niet gevonden',
       validationError: 'Controleer uw invoer en probeer opnieuw',
+      pageNotFound: 'Oeps! Pagina niet gevonden',
     },
   },
 };

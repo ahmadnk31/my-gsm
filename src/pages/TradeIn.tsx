@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowRight, Smartphone, DollarSign, Clock, Shield, CheckCircle, Star, Calculator, TrendingUp, Mail, Phone, User, AlertCircle, HardDrive, Calendar, TrendingDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ interface DeviceSpec {
 }
 
 const TradeIn = () => {
+  const { t } = useLanguage();
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedStorage, setSelectedStorage] = useState("");
@@ -357,19 +359,18 @@ const TradeIn = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-success to-success/80 text-success-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
               <Calculator className="h-4 w-4" />
-              <span>iPhone Trade-In Program</span>
+              <span>{t('tradeIn.program')}</span>
             </div>
             
             <h1 className="text-display text-foreground mb-6">
-              Trade In Your
+              {t('tradeIn.title')}
               <span className="block text-gradient-primary"> 
-                Old iPhone
+                {t('tradeIn.subtitle')}
               </span>
             </h1>
             
             <p className="text-body text-muted-foreground max-w-3xl mx-auto">
-              Get real-time market-based trade-in values for your iPhone. Our dynamic pricing algorithm considers 
-              market demand, supply levels, seasonal factors, and competitive pricing for the best value.
+              {t('tradeIn.description')}
             </p>
           </div>
 

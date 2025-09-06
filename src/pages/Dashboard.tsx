@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useRealtimeBookings } from '@/hooks/useRealtimeBookings';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -77,6 +78,7 @@ interface DashboardStats {
 
 const Dashboard = () => {
   const { user, signOut, userRole, loading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { 
@@ -398,11 +400,11 @@ const Dashboard = () => {
         {userRole === 'admin' ? (
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="all-bookings">All Bookings</TabsTrigger>
-              <TabsTrigger value="quotes">Quotes</TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="my-bookings">My Bookings</TabsTrigger>
+              <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
+              <TabsTrigger value="all-bookings">{t('dashboard.allBookings')}</TabsTrigger>
+              <TabsTrigger value="quotes">{t('dashboard.quotes')}</TabsTrigger>
+              <TabsTrigger value="analytics">{t('dashboard.analytics')}</TabsTrigger>
+              <TabsTrigger value="my-bookings">{t('dashboard.myBookings')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -410,7 +412,7 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('dashboard.totalBookings')}</CardTitle>
                     <Package className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -423,7 +425,7 @@ const Dashboard = () => {
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('dashboard.totalRevenue')}</CardTitle>
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -436,7 +438,7 @@ const Dashboard = () => {
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                    <CardTitle className="text-sm font-medium">{t('dashboard.completionRate')}</CardTitle>
                     <Target className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
@@ -664,7 +666,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">My Bookings</CardTitle>
+                  <CardTitle className="text-sm font-medium">{t('dashboard.myBookings')}</CardTitle>
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
