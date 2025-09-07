@@ -315,4 +315,13 @@ All colors MUST be HSL.
   .glass-dark {
     @apply bg-black/10 backdrop-blur-md border border-white/10;
   }
+  
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+  }
 }

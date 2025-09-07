@@ -59,7 +59,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className={`hover:bg-accent/50 ${className}`}>
-          <Globe className="h-5 w-5" />
+          <span className="text-lg">{currentLanguage?.flag}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">

@@ -66,6 +66,12 @@ export const DevicePartsManager: React.FC = () => {
   const [selectedPartForPricing, setSelectedPartForPricing] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [selectedModelFilter, setSelectedModelFilter] = useState<string>('all');
+
+  // Filter parts based on selected model
+  const filteredParts = selectedModelFilter === 'all' 
+    ? parts 
+    : parts.filter(part => part.model_id === selectedModelFilter);
 
   const partForm = useForm<PartFormData>({
     resolver: zodResolver(partSchema),
@@ -387,7 +393,7 @@ export const DevicePartsManager: React.FC = () => {
                       )}
                     />
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                       <FormField
                         control={partForm.control}
                         name="difficulty_level"
@@ -424,6 +430,26 @@ export const DevicePartsManager: React.FC = () => {
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={partForm.control}
+                        name="display_order"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Display Order</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                {...field} 
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                placeholder="0"
+                                min="0"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <FormField
@@ -434,6 +460,20 @@ export const DevicePartsManager: React.FC = () => {
                           <FormLabel>Description</FormLabel>
                           <FormControl>
                             <Textarea {...field} placeholder="Detailed description of the part" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={partForm.control}
+                      name="warranty_period"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Warranty Period</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="e.g., 1 year, 6 months" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -465,6 +505,34 @@ export const DevicePartsManager: React.FC = () => {
           </div>
 
           <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Device Parts</CardTitle>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="model-filter" className="text-sm font-medium">
+                      Filter by Model:
+                    </label>
+                    <Select value={selectedModelFilter} onValueChange={setSelectedModelFilter}>
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Models</SelectItem>
+                        {models.map((model) => (
+                          <SelectItem key={model.id} value={model.id}>
+                            {model.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Badge variant="outline" className="text-sm">
+                    {filteredParts.length} part{filteredParts.length !== 1 ? 's' : ''}
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
@@ -475,12 +543,13 @@ export const DevicePartsManager: React.FC = () => {
                     <TableHead>Category</TableHead>
                     <TableHead>Difficulty</TableHead>
                     <TableHead>Duration</TableHead>
+                    <TableHead>Order</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {parts.map((part) => (
+                  {filteredParts.map((part) => (
                     <TableRow key={part.id}>
                       <TableCell>
                         {part.image_url ? (
@@ -513,6 +582,11 @@ export const DevicePartsManager: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>{part.estimated_duration}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono">
+                          {part.display_order}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         <Badge variant={part.is_active ? 'default' : 'secondary'}>
                           {part.is_active ? 'Active' : 'Inactive'}

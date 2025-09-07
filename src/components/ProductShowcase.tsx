@@ -4,10 +4,12 @@ import { ArrowRight, Sparkles, TrendingUp, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 import phoneCollectionImage from "@/assets/phone-collection.jpg";
 import accessoriesImage from "@/assets/accessories.jpg";
 
 const ProductShowcase = () => {
+  const { t } = useLanguage();
   // Fetch real featured accessories
   const { data: accessories, isLoading: accessoriesLoading } = useQuery({
     queryKey: ['homepage-featured-accessories'],
@@ -172,20 +174,24 @@ const ProductShowcase = () => {
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
             <Sparkles className="h-4 w-4" />
-            <span>{hasRealData ? "Live Inventory" : "Featured Products"}</span>
+            <span>{hasRealData ? t('homepage.liveInventory') : t('homepage.featuredProducts')}</span>
           </div>
           
           <h2 className="text-heading text-foreground mb-6">
-            {hasRealData ? "Real Products" : "Best Selling"}
+            {hasRealData ? t('homepage.realProducts') : t('homepage.bestSelling')}
             <span className="block text-gradient-primary"> 
-              & Services
+              {t('homepage.andServices')}
             </span>
           </h2>
           
           <p className="text-body text-muted-foreground max-w-3xl mx-auto">
             {hasRealData 
-              ? `Live data from our inventory: ${accessories?.length || 0} featured accessories, ${brands?.length || 0} device brands, and ${bookingStats?.length || 0} completed repairs.`
-              : "Discover our handpicked selection of premium smartphones and accessories, featuring the latest technology and unbeatable prices."
+              ? t('homepage.liveDataDescription', { 
+                  accessories: accessories?.length || 0, 
+                  brands: brands?.length || 0, 
+                  repairs: bookingStats?.length || 0 
+                })
+              : t('homepage.fallbackDescription')
             }
           </p>
         </div>
@@ -235,27 +241,27 @@ const ProductShowcase = () => {
             <div className="relative">
               <div className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-white mb-6">
                 <TrendingUp className="h-4 w-4" />
-                <span className="text-sm font-medium">Ready to Get Started?</span>
+                <span className="text-sm font-medium">{t('homepage.readyToGetStarted')}</span>
               </div>
               
               <h3 className="text-subheading text-white mb-4">
-                Explore Our Complete Collection
+                {t('homepage.exploreCollection')}
               </h3>
               
               <p className="text-body text-white/80 mb-8 max-w-2xl mx-auto">
-                From premium accessories to expert repair services, we have everything you need to enhance your mobile experience.
+                {t('homepage.exploreDescription')}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/accessories">
                   <Button size="lg" className="btn-primary group">
-                    Browse Accessories
+                    {t('homepage.browseAccessories')}
                     <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
                 <Link to="/repairs">
                   <Button variant="outline" size="lg" className="btn-ghost group border-2 border-white/30 hover:text-white hover:bg-white/10 backdrop-blur-md px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300">
-                    Book Repair
+                    {t('homepage.bookRepair')}
                     <Star className="h-5 w-5 ml-2 group-hover:scale-110 transition-transform" />
                   </Button>
                 </Link>

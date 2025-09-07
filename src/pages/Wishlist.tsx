@@ -21,6 +21,7 @@ import {
 } from '@/hooks/useAccessories';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { generateSlug } from '@/lib/utils';
 
 export default function Wishlist() {
   const { user } = useAuth();
@@ -244,7 +245,7 @@ export default function Wishlist() {
                 {/* Product Info */}
                 <CardContent className="p-4">
                   <div className="space-y-2">
-                    <Link to={`/accessories/${item.accessories.accessory_categories?.slug || 'uncategorized'}/${item.accessories.slug || item.accessories.id}`}>
+                    <Link to={`/accessories/${item.accessories.accessory_categories?.slug || generateSlug(item.accessories.accessory_categories?.name || 'uncategorized')}/${item.accessories.slug || generateSlug(item.accessories.name)}`}>
                       <h3 className="font-semibold text-sm line-clamp-2 hover:text-primary">
                         {item.accessories.name}
                       </h3>

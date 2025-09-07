@@ -5,6 +5,7 @@ import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Dialog,
   DialogContent,
@@ -57,6 +58,7 @@ export function QuoteRequestModal({
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const form = useForm<QuoteRequestForm>({
     resolver: zodResolver(quoteRequestSchema),
@@ -72,8 +74,8 @@ export function QuoteRequestModal({
   const onSubmit = async (data: QuoteRequestForm) => {
     if (!user) {
       toast({
-        title: "Authentication Required",
-        description: "Please sign in to request a quote.",
+        title: t('quote.authenticationRequired'),
+        description: t('quote.signInToRequest'),
         variant: "destructive",
       });
       return;
@@ -102,8 +104,8 @@ export function QuoteRequestModal({
       if (error) throw error;
 
       toast({
-        title: "Quote Request Submitted!",
-        description: "We'll review your request and send you a quote within 24 hours.",
+        title: t('quote.quoteSubmitted'),
+        description: t('quote.quoteSubmittedDescription'),
       });
 
       setOpen(false);
@@ -111,8 +113,8 @@ export function QuoteRequestModal({
     } catch (error: any) {
       console.error('Error submitting quote request:', error);
       toast({
-        title: "Error",
-        description: "Failed to submit quote request. Please try again.",
+        title: t('quote.error'),
+        description: t('quote.errorDescription'),
         variant: "destructive",
       });
     } finally {
@@ -129,10 +131,10 @@ export function QuoteRequestModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Request Quote
+            {t('quote.title')}
           </DialogTitle>
           <DialogDescription>
-            Tell us about your device and the issue you're experiencing. We'll provide you with a detailed quote within 24 hours.
+            {t('quote.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -144,7 +146,7 @@ export function QuoteRequestModal({
                 name="customerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>{t('quote.fullName')}</FormLabel>
                     <FormControl>
                       <Input placeholder="John Doe" {...field} />
                     </FormControl>
@@ -158,7 +160,7 @@ export function QuoteRequestModal({
                 name="customerEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('quote.email')}</FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="john@example.com" {...field} />
                     </FormControl>
@@ -173,11 +175,11 @@ export function QuoteRequestModal({
               name="customerPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number (Optional)</FormLabel>
+                  <FormLabel>{t('quote.phoneNumber')}</FormLabel>
                   <FormControl>
                     <Input 
                       type="tel" 
-                      placeholder="+1 (555) 123-4567" 
+                      placeholder={t('quote.phonePlaceholder')} 
                       {...field} 
                     />
                   </FormControl>
@@ -191,10 +193,10 @@ export function QuoteRequestModal({
               name="deviceInfo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Device Information</FormLabel>
+                  <FormLabel>{t('quote.deviceInfo')}</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="e.g., iPhone 14 Pro Max, Samsung Galaxy S23 Ultra" 
+                      placeholder={t('quote.deviceInfoPlaceholder')} 
                       {...field} 
                     />
                   </FormControl>
@@ -208,10 +210,10 @@ export function QuoteRequestModal({
               name="issueDescription"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Issue Description</FormLabel>
+                  <FormLabel>{t('quote.issueDescription')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Please describe the problem in detail. Include any relevant information about when it started, what happened, etc."
+                      placeholder={t('quote.issuePlaceholder')}
                       className="min-h-[100px]"
                       {...field}
                     />
@@ -228,7 +230,7 @@ export function QuoteRequestModal({
                 onClick={() => setOpen(false)}
                 className="flex-1"
               >
-                Cancel
+                {t('quote.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -238,12 +240,12 @@ export function QuoteRequestModal({
                 {submitting ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Submitting...
+                    {t('quote.submitting')}
                   </div>
                 ) : (
                   <>
                     <Phone className="h-4 w-4 mr-2" />
-                    Request Quote
+                    {t('quote.requestQuote')}
                   </>
                 )}
               </Button>

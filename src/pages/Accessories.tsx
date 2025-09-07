@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { generateSlug } from "@/lib/utils";
 import { 
   Select,
   SelectContent,
@@ -75,6 +76,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function Accessories() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -284,11 +286,17 @@ export default function Accessories() {
 
   const { data: accessories = [], isLoading: accessoriesLoading } = useAccessories(filters);
 
+
   const wishlistAccessoryIds = wishlistItems.map(item => item.accessory_id);
 
   const toggleFavorite = (accessoryId: string) => {
-    if (!user) {
+    if (!user || !user.id) {
       toast.error('Please log in to add items to wishlist');
+      return;
+    }
+
+    if (!accessoryId) {
+      toast.error('Invalid accessory');
       return;
     }
 
@@ -396,15 +404,18 @@ export default function Accessories() {
         <Button
           variant="ghost"
           size="sm"
+          disabled={!user || !accessory.id || accessoriesLoading}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleFavorite(accessory.id);
+            if (user && accessory.id) {
+              toggleFavorite(accessory.id);
+            }
           }}
-          className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white"
+          className="absolute top-3 right-3 z-10 bg-white/90 hover:bg-white shadow-sm"
         >
           <Heart 
-            className={`h-4 w-4 ${isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
+            className={`h-4 w-4 ${isInWishlist ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-500'}`} 
           />
         </Button>
 
@@ -414,7 +425,7 @@ export default function Accessories() {
             <img 
               src={accessory.image_url}
               alt={accessory.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-contain aspect-square group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -774,9 +785,9 @@ export default function Accessories() {
       {/* Products Grid */}
           <div className="flex-1">
                         {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
               <div className="flex-1">
-                <h2 className="text-xl sm:text-2xl font-bold">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">
                   {debouncedSearchQuery ? t('accessories.searchResults', { query: debouncedSearchQuery }) : t('accessories.allProducts')}
             </h2>
                 <p className="text-muted-foreground text-sm sm:text-base">
@@ -880,9 +891,29 @@ export default function Accessories() {
               </div>
             )}
 
+            {/* Mobile Sort Section */}
+            <div className="lg:hidden mb-6">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium">{t('accessories.sortBy')}</Label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="popular">{t('accessories.mostPopular')}</SelectItem>
+                    <SelectItem value="price-low">{t('accessories.priceLowToHigh')}</SelectItem>
+                    <SelectItem value="price-high">{t('accessories.priceHighToLow')}</SelectItem>
+                    <SelectItem value="rating">{t('accessories.highestRated')}</SelectItem>
+                    <SelectItem value="newest">{t('accessories.newestFirst')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+
             {/* Products */}
           {accessoriesLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <Card key={i} className="animate-pulse">
                   <div className="aspect-square bg-gray-200 mb-4" />
@@ -906,9 +937,9 @@ export default function Accessories() {
                 )}
             </div>
           ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
               {accessories.map((accessory) => (
-                  <Link key={accessory.id} to={`/accessories/${accessory.accessory_categories?.slug || 'uncategorized'}/${accessory.slug || accessory.id}`}>
+                  <Link key={accessory.id} to={`/accessories/${accessory.accessory_categories?.slug || generateSlug(accessory.accessory_categories?.name || 'uncategorized')}/${accessory.slug || generateSlug(accessory.name)}`}>
                 <AccessoryCard 
                   accessory={accessory} 
                   isHighlighted={highlightedAccessory === accessory.id}

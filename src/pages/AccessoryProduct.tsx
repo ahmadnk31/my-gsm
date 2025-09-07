@@ -49,6 +49,7 @@ export default function AccessoryProduct() {
   const accessory = accessoryBySlug || accessoryById;
   const isLoading = isLoadingBySlug || isLoadingById;
   const error = errorBySlug || errorById;
+
   const { data: relatedAccessories = [] } = useRelatedAccessories(accessory?.id, accessory?.category_id, accessory?.brand_id);
   const { data: wishlistItems = [] } = useWishlist(user?.id);
   const addToWishlistMutation = useAddToWishlist();
@@ -62,7 +63,7 @@ export default function AccessoryProduct() {
     : 0;
 
   const images = accessory?.images && Array.isArray(accessory.images) && accessory.images.length > 0
-    ? accessory.images
+    ? accessory.images.filter((img): img is string => typeof img === 'string')
     : accessory?.image_url 
       ? [accessory.image_url]
       : [];
@@ -72,12 +73,15 @@ export default function AccessoryProduct() {
       toast.error('Please log in to add items to cart');
       return;
     }
-    if (!accessory) return;
+    if (!accessory) {
+      toast.error('Product not found');
+      return;
+    }
 
     addToCartMutation.mutate({
-      accessory_id: accessory.id,
-      quantity: quantity,
-      user_id: user.id
+      userId: user.id,
+      accessoryId: accessory.id,
+      quantity: quantity
     });
   };
 
@@ -86,17 +90,20 @@ export default function AccessoryProduct() {
       toast.error('Please log in to manage wishlist');
       return;
     }
-    if (!accessory) return;
+    if (!accessory) {
+      toast.error('Product not found');
+      return;
+    }
 
     if (isInWishlist) {
       removeFromWishlistMutation.mutate({
-        accessory_id: accessory.id,
-        user_id: user.id
+        userId: user.id,
+        accessoryId: accessory.id
       });
     } else {
       addToWishlistMutation.mutate({
-        accessory_id: accessory.id,
-        user_id: user.id
+        userId: user.id,
+        accessoryId: accessory.id
       });
     }
   };
@@ -159,23 +166,29 @@ export default function AccessoryProduct() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="mb-8">
-          <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <li>
-              <Link to="/" className="hover:text-foreground">Home</Link>
-            </li>
-            <li>/</li>
-            <li>
-              <Link to="/accessories" className="hover:text-foreground">Accessories</Link>
-            </li>
-            <li>/</li>
-            <li>
-              <Link to={`/accessories?category=${accessory.accessory_categories?.slug || 'all'}`} className="hover:text-foreground">
-                {accessory.accessory_categories?.name}
+        <nav className="mb-6 sm:mb-8">
+          <ol className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground overflow-x-auto scrollbar-hide">
+            <li className="flex-shrink-0">
+              <Link to="/" className="hover:text-foreground transition-colors">
+                <span className="truncate max-w-[60px] sm:max-w-none">Home</span>
               </Link>
             </li>
-            <li>/</li>
-            <li className="text-foreground font-medium">{accessory.name}</li>
+            <li className="flex-shrink-0 text-muted-foreground">/</li>
+            <li className="flex-shrink-0">
+              <Link to="/accessories" className="hover:text-foreground transition-colors">
+                <span className="truncate max-w-[80px] sm:max-w-none">Accessories</span>
+              </Link>
+            </li>
+            <li className="flex-shrink-0 text-muted-foreground">/</li>
+            <li className="flex-shrink-0">
+              <Link to={`/accessories?category=${accessory.accessory_categories?.slug || 'all'}`} className="hover:text-foreground transition-colors">
+                <span className="truncate max-w-[100px] sm:max-w-none">{accessory.accessory_categories?.name}</span>
+              </Link>
+            </li>
+            <li className="flex-shrink-0 text-muted-foreground">/</li>
+            <li className="text-foreground font-medium flex-shrink-0">
+              <span className="truncate max-w-[120px] sm:max-w-none">{accessory.name}</span>
+            </li>
           </ol>
         </nav>
 
@@ -189,7 +202,7 @@ export default function AccessoryProduct() {
                   <img
                     src={images[selectedImageIndex]}
                     alt={accessory.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain aspect-square"
                   />
                   {images.length > 1 && (
                     <>
@@ -297,7 +310,9 @@ export default function AccessoryProduct() {
               <div>
                 <h3 className="font-semibold mb-3">Key Features</h3>
                 <ul className="space-y-2">
-                  {accessory.features.map((feature, index) => (
+                  {accessory.features
+                    .filter((feature): feature is string => typeof feature === 'string')
+                    .map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                       <span className="text-sm">{feature}</span>
@@ -312,7 +327,9 @@ export default function AccessoryProduct() {
               <div>
                 <h3 className="font-semibold mb-3">Compatibility</h3>
                 <div className="flex flex-wrap gap-2">
-                  {accessory.compatibility.map((device, index) => (
+                  {accessory.compatibility
+                    .filter((device): device is string => typeof device === 'string')
+                    .map((device, index) => (
                     <Badge key={index} variant="outline" className="text-xs">
                       {device}
                     </Badge>

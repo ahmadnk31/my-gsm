@@ -18,44 +18,44 @@ const RepairServices = () => {
 
   const services = [{
     icon: Smartphone,
-    title: "Screen Replacement",
-    description: "Cracked or damaged screen? We replace with genuine OEM parts.",
-    price: "From $79",
+    title: t('repairs.screenReplacement'),
+    description: t('repairs.screenReplacementDesc'),
+    price: `${t('repairs.from')} $79`,
     time: "30-45 min",
     popular: true
   }, {
     icon: Battery,
-    title: "Battery Replacement",
-    description: "Restore your phone's battery life with genuine battery replacements.",
-    price: "From $49",
+    title: t('repairs.batteryReplacement'),
+    description: t('repairs.batteryReplacementDesc'),
+    price: `${t('repairs.from')} $49`,
     time: "20-30 min",
     popular: true
   }, {
     icon: Camera,
-    title: "Camera Repair",
-    description: "Fix blurry photos, broken lenses, and camera malfunctions.",
-    price: "From $89",
+    title: t('repairs.cameraRepair'),
+    description: t('repairs.cameraRepairDesc'),
+    price: `${t('repairs.from')} $89`,
     time: "45-60 min",
     popular: false
   }, {
     icon: Volume2,
-    title: "Speaker & Audio",
-    description: "Repair speakers, microphones, and audio-related issues.",
-    price: "From $59",
+    title: t('repairs.speakerAudio'),
+    description: t('repairs.speakerAudioDesc'),
+    price: `${t('repairs.from')} $59`,
     time: "30-45 min",
     popular: false
   }, {
     icon: Wifi,
-    title: "Connectivity Issues",
-    description: "Fix WiFi, Bluetooth, and cellular connectivity problems.",
-    price: "From $69",
+    title: t('repairs.connectivityIssues'),
+    description: t('repairs.connectivityIssuesDesc'),
+    price: `${t('repairs.from')} $69`,
     time: "45-60 min",
     popular: false
   }, {
     icon: Droplets,
-    title: "Water Damage",
-    description: "Professional water damage assessment and restoration services.",
-    price: "From $99",
+    title: t('repairs.waterDamage'),
+    description: t('repairs.waterDamageDesc'),
+    price: `${t('repairs.from')} $99`,
     time: "2-24 hours",
     popular: false
   }];
@@ -63,11 +63,11 @@ const RepairServices = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-heading text-foreground mb-6">
-            Our Repair
-            <span className="block text-gradient-primary"> Services</span>
+            {t('repairs.ourRepairServices')}
+            <span className="block text-gradient-primary"> {t('repairs.services')}</span>
           </h2>
           <p className="text-body text-muted-foreground max-w-2xl mx-auto">
-            Professional repair services for all major smartphone brands with genuine parts and expert technicians.
+            {t('repairs.servicesDescription')}
           </p>
         </div>
 
@@ -76,36 +76,37 @@ const RepairServices = () => {
     </section>;
 };
 const RepairProcess = () => {
+  const { t } = useLanguage();
   const steps = [{
     step: "01",
-    title: "Diagnosis",
-    description: "Free diagnostic to identify the exact issue with your device."
+    title: t('repairs.diagnosis'),
+    description: t('repairs.diagnosisDesc')
   }, {
     step: "02",
-    title: "Quote",
-    description: "Transparent pricing with no hidden fees. Approve before we proceed."
+    title: t('repairs.quote'),
+    description: t('repairs.quoteDesc')
   }, {
     step: "03",
-    title: "Repair",
-    description: "Expert repair using genuine parts and professional tools."
+    title: t('repairs.repair'),
+    description: t('repairs.repairDesc')
   }, {
     step: "04",
-    title: "Testing",
-    description: "Thorough quality testing to ensure everything works perfectly."
+    title: t('repairs.testing'),
+    description: t('repairs.testingDesc')
   }, {
     step: "05",
-    title: "Warranty",
-    description: "1-year warranty on parts and labor for your peace of mind."
+    title: t('repairs.warranty'),
+    description: t('repairs.warrantyDesc')
   }];
   return <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-heading text-foreground mb-6">
-            Our Repair
-            <span className="block text-gradient-primary"> Process</span>
+            {t('repairs.ourRepairProcess')}
+            <span className="block text-gradient-primary"> {t('repairs.process')}</span>
           </h2>
           <p className="text-body text-muted-foreground max-w-2xl mx-auto">
-            Simple, transparent, and professional repair process designed to get your device back to perfect condition.
+            {t('repairs.processDescription')}
           </p>
         </div>
 
@@ -134,29 +135,30 @@ const RepairProcess = () => {
     </section>;
 };
 const RepairGuarantees = () => {
+  const { t } = useLanguage();
   const guarantees = [{
     icon: Shield,
-    title: "1-Year Warranty",
-    description: "All repairs come with comprehensive 1-year warranty coverage."
+    title: t('repairs.oneYearWarranty'),
+    description: t('repairs.oneYearWarrantyDesc')
   }, {
     icon: CheckCircle,
-    title: "Genuine Parts",
-    description: "We only use authentic OEM parts for lasting quality and performance."
+    title: t('repairs.genuineParts'),
+    description: t('repairs.genuinePartsDesc')
   }, {
     icon: Clock,
-    title: "Fast Service",
-    description: "Most repairs completed within 30-60 minutes while you wait."
+    title: t('repairs.fastService'),
+    description: t('repairs.fastServiceDesc')
   }, {
     icon: Star,
-    title: "Expert Technicians",
-    description: "Certified professionals with years of experience in mobile repairs."
+    title: t('repairs.expertTechnicians'),
+    description: t('repairs.expertTechniciansDesc')
   }];
   return <section className="py-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-heading text-foreground mb-6">
-            Why Choose Our
-            <span className="block text-gradient-primary"> Repair Service</span>?
+            {t('repairs.whyChooseOur')}
+            <span className="block text-gradient-primary"> {t('repairs.repairService')}</span>?
           </h2>
         </div>
 
@@ -207,19 +209,19 @@ const ContactRepair = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
             <div>
-              <h3 className="text-subheading mb-2">Store Hours</h3>
-              <p className="text-body text-white/80">Mon-Fri: 9AM-7PM</p>
-              <p className="text-body text-white/80">Sat-Sun: 10AM-6PM</p>
+              <h3 className="text-subheading mb-2">{t('repairs.storeHours')}</h3>
+              <p className="text-body text-white/80">{t('repairs.monFri')}</p>
+              <p className="text-body text-white/80">{t('repairs.satSun')}</p>
             </div>
             <div>
-              <h3 className="text-subheading mb-2">Contact</h3>
-              <p className="text-body text-white/80">+1 (555) 123-4567</p>
-              <p className="text-body text-white/80">repairs@phonehub.com</p>
+              <h3 className="text-subheading mb-2">{t('repairs.contact')}</h3>
+              <p className="text-body text-white/80">{t('repairs.phone')}</p>
+              <p className="text-body text-white/80">{t('repairs.email')}</p>
             </div>
             <div>
-              <h3 className="text-subheading mb-2">Location</h3>
-              <p className="text-body text-white/80">123 Tech Street</p>
-              <p className="text-body text-white/80">Mobile City, MC 12345</p>
+              <h3 className="text-subheading mb-2">{t('repairs.location')}</h3>
+              <p className="text-body text-white/80">{t('repairs.address1')}</p>
+              <p className="text-body text-white/80">{t('repairs.address2')}</p>
             </div>
           </div>
         </div>

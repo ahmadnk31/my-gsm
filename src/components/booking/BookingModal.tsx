@@ -20,6 +20,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Tables } from "@/integrations/supabase/types";
 import { useDeviceCategories, useDeviceBrands, useDeviceModels, useDeviceParts } from "@/hooks/useRepairQueries";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 type DeviceCategory = Tables<'device_categories'>;
 type DeviceBrand = Tables<'device_brands'>;
@@ -74,6 +76,8 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ children, selectedPart }: BookingModalProps) {
+  const { t } = useLanguage();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(selectedPart ? 2 : 1);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -87,6 +91,20 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
   const modelsQuery = useDeviceModels(selectedBrand);
   const partsQuery = useDeviceParts(selectedModel);
 
+  // Helper function to get user's full name
+  const getUserFullName = () => {
+    if (!user) return { firstName: "", lastName: "" };
+    
+    const fullName = user.user_metadata?.full_name || user.email?.split('@')[0] || "";
+    const nameParts = fullName.split(' ');
+    return {
+      firstName: nameParts[0] || "",
+      lastName: nameParts.slice(1).join(' ') || ""
+    };
+  };
+
+  const { firstName: userFirstName, lastName: userLastName } = getUserFullName();
+
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -95,10 +113,10 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
       model: selectedPart?.model || "",
       service: selectedPart?.id || "",
       quality: selectedPart?.quality_type || "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
+      firstName: userFirstName,
+      lastName: userLastName,
+      email: user?.email || "",
+      phone: user?.user_metadata?.phone || "",
       issue: selectedPart ? `${selectedPart.name} repair (${selectedPart.quality_type} quality)` : "",
     },
   });
@@ -123,6 +141,27 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
     }
   }, [open, selectedPart, form]);
 
+  // Autofill user information when modal opens or user changes
+  useEffect(() => {
+    if (open && user) {
+      const { firstName, lastName } = getUserFullName();
+      
+      // Only autofill if fields are empty to avoid overwriting user input
+      if (!form.getValues("firstName")) {
+        form.setValue("firstName", firstName);
+      }
+      if (!form.getValues("lastName")) {
+        form.setValue("lastName", lastName);
+      }
+      if (!form.getValues("email")) {
+        form.setValue("email", user.email || "");
+      }
+      if (!form.getValues("phone")) {
+        form.setValue("phone", user.user_metadata?.phone || "");
+      }
+    }
+  }, [open, user, form]);
+
   const onSubmit = async (data: BookingFormData) => {
     console.log('Form submission started with data:', data);
     
@@ -131,8 +170,8 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
       
       if (!user) {
         console.log('No user found, redirecting to auth');
-        toast.error("Authentication Required", {
-          description: "Please sign in to book a repair",
+        toast.error(t('booking.authenticationRequired'), {
+          description: t('booking.signInToBook'),
         });
         navigate('/auth');
         return;
@@ -174,8 +213,8 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
 
       console.log('Booking submitted successfully');
 
-      toast.success("Booking Confirmed!", {
-        description: `Your repair appointment has been scheduled for ${format(data.date, "PPP")} at ${data.time}.`,
+      toast.success(t('booking.bookingConfirmed'), {
+        description: t('booking.appointmentScheduled', { date: format(data.date, "PPP"), time: data.time }),
       });
       
       setOpen(false);
@@ -186,8 +225,8 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
       setSelectedModel("");
     } catch (error: any) {
       console.error('Submission error:', error);
-      toast.error("Booking Failed", {
-        description: error.message || "There was an error submitting your booking. Please try again.",
+      toast.error(t('booking.bookingFailed'), {
+        description: error.message || t('booking.bookingErrorDescription'),
       });
     }
   };
@@ -260,7 +299,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
             {selectedPart && step === 2 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Selected Repair Service</CardTitle>
+                  <CardTitle>{t('booking.selectedService')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="bg-muted/50 p-4 rounded-lg space-y-3">
@@ -271,7 +310,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                           {selectedPart.brand} {selectedPart.model} - {selectedPart.category} repair
                         </p>
                         <Badge className="mt-2">
-                          {selectedPart.quality_type.charAt(0).toUpperCase() + selectedPart.quality_type.slice(1)} Quality
+{selectedPart.quality_type.charAt(0).toUpperCase() + selectedPart.quality_type.slice(1)} {t('booking.quality')}
                         </Badge>
                       </div>
                       <div className="text-right">
@@ -287,7 +326,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
             {!selectedPart && step === 1 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Device & Service Selection</CardTitle>
+                  <CardTitle>{t('booking.deviceServiceSelection')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -295,7 +334,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     name="device"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Device Category</FormLabel>
+                        <FormLabel>{t('booking.deviceCategory')}</FormLabel>
                         <Select onValueChange={(value) => {
                           field.onChange(value);
                           setSelectedCategory(value);
@@ -305,7 +344,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                         }}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select your device category" />
+                              <SelectValue placeholder={t('booking.selectDeviceCategory')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -327,7 +366,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                       name="brand"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Device Brand</FormLabel>
+                          <FormLabel>{t('booking.deviceBrand')}</FormLabel>
                           <Select onValueChange={(value) => {
                             field.onChange(value);
                             setSelectedBrand(value);
@@ -336,7 +375,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                           }}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select your device brand" />
+                                <SelectValue placeholder={t('booking.selectDeviceBrand')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -359,14 +398,14 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                       name="model"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Device Model</FormLabel>
+                          <FormLabel>{t('booking.deviceModel')}</FormLabel>
                           <Select onValueChange={(value) => {
                             field.onChange(value);
                             setSelectedModel(value);
                           }}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select your device model" />
+                                <SelectValue placeholder={t('booking.selectDeviceModel')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -389,19 +428,19 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                       name="service"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Repair Service</FormLabel>
+                          <FormLabel>{t('booking.repairService')}</FormLabel>
                           <Select onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select the service you need" />
+                                <SelectValue placeholder={t('booking.selectService')} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
                               {partsQuery.isLoading ? (
-                                <SelectItem value="loading" disabled>Loading services...</SelectItem>
+                                <SelectItem value="loading" disabled>{t('common.loading')} {t('booking.services')}...</SelectItem>
                               ) : partsQuery.data?.length === 0 ? (
                                 <SelectItem value="no-services" disabled>
-                                  No services available for selected device
+{t('booking.noServicesAvailable')}
                                 </SelectItem>
                               ) : (
                                 partsQuery.data?.map((part) => (
@@ -409,7 +448,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                                     <div className="flex justify-between items-center w-full">
                                       <span>{part.name}</span>
                                       <span className="text-sm text-muted-foreground ml-4">
-                                        From ${part.pricing?.[0]?.price || 50}
+{t('booking.from')} ${part.pricing?.[0]?.price || 50}
                                       </span>
                                     </div>
                                   </SelectItem>
@@ -431,7 +470,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                           <p className="text-sm text-muted-foreground mt-1">{selectedService.description}</p>
                         </div>
                                                  <div className="text-right">
-                           <div className="text-sm font-medium">From ${'estimated_price' in selectedService ? selectedService.estimated_price : (selectedService.pricing?.[0]?.price || 50)}</div>
+                           <div className="text-sm font-medium">{t('booking.from')} ${'estimated_price' in selectedService ? selectedService.estimated_price : (selectedService.pricing?.[0]?.price || 50)}</div>
                            <div className="text-xs text-muted-foreground">{'estimated_duration' in selectedService ? selectedService.estimated_duration : '30-60 min'}</div>
                          </div>
                       </div>
@@ -440,7 +479,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Package className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium">Available Quality Options:</span>
+                            <span className="text-sm font-medium">{t('booking.availableQualityOptions')}:</span>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {selectedService.pricing.map((price) => (
@@ -449,7 +488,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                                   variant={price.quality_type === 'original' ? 'default' : 'secondary'}
                                   className="text-xs"
                                 >
-                                  {price.quality_type === 'original' ? 'Original' : 'Copy'}
+{price.quality_type === 'original' ? t('booking.original') : t('booking.copy')}
                                 </Badge>
                                 <span className="font-medium">${price.price}</span>
                               </div>
@@ -461,11 +500,11 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                             name="quality"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Select Quality</FormLabel>
+                                <FormLabel>{t('booking.selectQuality')}</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger>
-                                      <SelectValue placeholder="Choose quality option" />
+                                      <SelectValue placeholder={t('booking.chooseQualityOption')} />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
@@ -495,10 +534,10 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     name="issue"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Describe the Issue</FormLabel>
+                        <FormLabel>{t('booking.describeIssue')}</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Please describe the problem with your device in detail..."
+placeholder={t('booking.describeProblemPlaceholder')}
                             className="min-h-[100px]"
                             {...field}
                           />
@@ -516,7 +555,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CalendarIcon className="h-5 w-5" />
-                    Select Date & Time
+{t('booking.selectDateTime')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -525,7 +564,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     name="date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Appointment Date</FormLabel>
+                        <FormLabel>{t('booking.appointmentDate')}</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -567,11 +606,11 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     name="time"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Appointment Time</FormLabel>
+                        <FormLabel>{t('booking.appointmentTime')}</FormLabel>
                         <Select onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a time slot" />
+                                <SelectValue placeholder={t('booking.selectTimeSlot')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -593,10 +632,28 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
             {step === 3 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Smartphone className="h-5 w-5" />
-                    Contact Information
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Smartphone className="h-5 w-5" />
+                      Contact Information
+                    </CardTitle>
+                    {user && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          form.setValue("firstName", "");
+                          form.setValue("lastName", "");
+                          form.setValue("email", "");
+                          form.setValue("phone", "");
+                        }}
+                        className="text-xs"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -605,9 +662,9 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>First Name</FormLabel>
+                          <FormLabel>{t('booking.firstName')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="John" {...field} />
+                            <Input placeholder={t('booking.firstNamePlaceholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -619,9 +676,9 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Last Name</FormLabel>
+                          <FormLabel>{t('booking.lastName')}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Doe" {...field} />
+                            <Input placeholder={t('booking.lastNamePlaceholder')} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -634,9 +691,9 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('booking.email')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="john.doe@example.com" type="email" {...field} />
+                          <Input placeholder={t('booking.emailPlaceholder')} type="email" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -648,9 +705,9 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>{t('booking.phoneNumber')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="+1 (555) 123-4567" {...field} />
+                          <Input placeholder={t('booking.phonePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -677,25 +734,25 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Service:</span>
+                        <span>{t('booking.service')}:</span>
                         <span>{selectedPart ? selectedPart.name : selectedService?.name}</span>
                       </div>
                       {selectedPart && (
                         <div className="flex justify-between">
-                          <span>Quality:</span>
+                          <span>{t('booking.quality')}:</span>
                           <span>{selectedPart.quality_type.charAt(0).toUpperCase() + selectedPart.quality_type.slice(1)}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span>Date:</span>
+                        <span>{t('booking.date')}:</span>
                         <span>{form.watch("date") ? format(form.watch("date"), "PPP") : "-"}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Time:</span>
+                        <span>{t('booking.time')}:</span>
                         <span>{form.watch("time") || "-"}</span>
                       </div>
                       <div className="flex justify-between font-medium">
-                        <span>Price:</span>
+                        <span>{t('booking.price')}:</span>
                         <span>
                           {selectedPart ? `$${selectedPart.price}` : 
                            form.watch("quality") && selectedService && 'pricing' in selectedService ? 
@@ -720,7 +777,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                 onClick={() => setStep(Math.max(selectedPart ? 2 : 1, step - 1))}
                 disabled={step === (selectedPart ? 2 : 1)}
               >
-                Previous
+{t('common.previous')}
               </Button>
               
               {step < 3 ? (
@@ -733,12 +790,12 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                     (!selectedPart && step === 1 && selectedService && 'pricing' in selectedService && selectedService.pricing.length > 0 && !form.watch("quality"))
                   }
                 >
-                  Next
+{t('common.next')}
                 </Button>
               ) : (
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <Button type="submit" onClick={() => console.log('Confirm Booking button clicked')}>
-                    Confirm Booking
+{t('booking.confirmBooking')}
                   </Button>
                 </form>
               )}

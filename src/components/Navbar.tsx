@@ -331,8 +331,8 @@ const Navbar = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px]">
-                <SheetHeader className="pb-4">
+              <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col">
+                <SheetHeader className="pb-4 flex-shrink-0">
                   <SheetTitle className="flex items-center gap-2 text-lg">
                     <Phone className="h-6 w-6 text-primary" />
                     PhoneHub
@@ -341,7 +341,7 @@ const Navbar = () => {
                     Navigate through our services
                   </SheetDescription>
                 </SheetHeader>
-                <div className="space-y-6">
+                <div className="flex-1 overflow-y-auto scrollbar-hide space-y-6 pr-2">
                   <div>
                     <h3 className="font-semibold text-sm text-muted-foreground mb-3">Navigation</h3>
                     <NavLinks mobile onLinkClick={closeMenu} />

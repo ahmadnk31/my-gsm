@@ -174,7 +174,7 @@ export const useWishlist = (userId?: string) => {
           *,
           accessories (
             *,
-            accessory_categories (name),
+            accessory_categories (name, slug),
             accessory_brands (name)
           )
         `)
@@ -187,7 +187,7 @@ export const useWishlist = (userId?: string) => {
 
       return data as (WishlistItem & {
         accessories: Accessory & {
-          accessory_categories: { name: string } | null;
+          accessory_categories: { name: string; slug: string } | null;
           accessory_brands: { name: string } | null;
         };
       })[];
@@ -259,7 +259,7 @@ export const useCart = (userId?: string) => {
           *,
           accessories (
             *,
-            accessory_categories (name),
+            accessory_categories (name, slug),
             accessory_brands (name)
           )
         `)
@@ -272,7 +272,7 @@ export const useCart = (userId?: string) => {
 
       return data as (CartItem & {
         accessories: Accessory & {
-          accessory_categories: { name: string } | null;
+          accessory_categories: { name: string; slug: string } | null;
           accessory_brands: { name: string } | null;
         };
       })[];

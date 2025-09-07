@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
 import { useSearch } from '@/hooks/useSearch';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SearchResult {
   id: string;
@@ -47,6 +48,7 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const navigate = useNavigate();
   const { recentSearches, addRecentSearch } = useSearch();
+  const { t } = useLanguage();
 
   // Use external state if provided, otherwise use internal state
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -483,7 +485,7 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
               <div className="flex-1">
                 <form onSubmit={handleSearchSubmit}>
                   <Input
-                    placeholder="Search devices, parts, accessories..."
+                    placeholder={t('search.placeholder')}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     className="border-0 focus-visible:ring-0 text-lg"
@@ -500,7 +502,7 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
                     onClick={clearSearch}
                     className="h-8 px-3 text-sm"
                   >
-                    Clear
+                    {t('search.clear')}
                   </Button>
                   <Button
                     type="button"
