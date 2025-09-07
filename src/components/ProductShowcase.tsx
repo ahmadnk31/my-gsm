@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { generateSlug } from "@/lib/utils";
 import phoneCollectionImage from "@/assets/phone-collection.jpg";
 import accessoriesImage from "@/assets/accessories.jpg";
 
@@ -16,7 +17,20 @@ const ProductShowcase = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('accessories')
-        .select('id, name, price, original_price, image_url, features, is_active, is_featured, rating, review_count')
+        .select(`
+          id, 
+          name, 
+          price, 
+          original_price, 
+          image_url, 
+          features, 
+          is_active, 
+          is_featured, 
+          rating, 
+          review_count,
+          slug,
+          accessory_categories (name, slug)
+        `)
         .eq('is_active', true)
         .eq('is_featured', true)
         .limit(4);
@@ -82,7 +96,7 @@ const ProductShowcase = () => {
           features: Array.isArray(accessory.features) 
             ? accessory.features.slice(0, 3) 
             : ["High Quality", "Fast Shipping", "Warranty"],
-          link: `/accessories?highlight=${accessory.id}`, // Direct link to specific accessory
+          link: `/accessories/${accessory.accessory_categories?.slug || generateSlug(accessory.accessory_categories?.name || 'uncategorized')}/${accessory.slug || generateSlug(accessory.name)}`, // Slug-based link to specific accessory
           isRealProduct: true
         });
       });
@@ -98,7 +112,7 @@ const ProductShowcase = () => {
           rating: 5,
           reviews: Math.floor(Math.random() * 800) + 500,
           features: ["Latest Models", "Certified Quality", "Best Prices"],
-          link: `/repairs?brand=${brand.id}`, // Direct link to brand-specific repairs
+          link: `/repairs?brand=${generateSlug(brand.name)}`, // Slug-based link to brand-specific repairs
           isRealProduct: true
         });
       });

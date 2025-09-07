@@ -33,13 +33,17 @@ import {
 } from '@/hooks/useAccessories';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { formatPriceToEuro } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AccessoryProduct() {
   const { categorySlug, productSlug, id } = useParams<{ categorySlug?: string; productSlug?: string; id?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   // Handle both slug-based and ID-based routing
   const { data: accessoryBySlug, isLoading: isLoadingBySlug, error: errorBySlug } = useAccessoryBySlug(categorySlug, productSlug);
@@ -70,11 +74,11 @@ export default function AccessoryProduct() {
 
   const handleAddToCart = () => {
     if (!user) {
-      toast.error('Please log in to add items to cart');
+      toast.error(t('accessories.loginRequired'));
       return;
     }
     if (!accessory) {
-      toast.error('Product not found');
+      toast.error(t('accessories.productNotFound'));
       return;
     }
 
@@ -87,11 +91,11 @@ export default function AccessoryProduct() {
 
   const toggleWishlist = () => {
     if (!user) {
-      toast.error('Please log in to manage wishlist');
+      toast.error(t('accessories.loginRequiredWishlist'));
       return;
     }
     if (!accessory) {
-      toast.error('Product not found');
+      toast.error(t('accessories.productNotFound'));
       return;
     }
 
@@ -181,7 +185,7 @@ export default function AccessoryProduct() {
             </li>
             <li className="flex-shrink-0 text-muted-foreground">/</li>
             <li className="flex-shrink-0">
-              <Link to={`/accessories?category=${accessory.accessory_categories?.slug || 'all'}`} className="hover:text-foreground transition-colors">
+              <Link to={`/accessories?categories=${accessory.accessory_categories?.slug || 'all'}`} className="hover:text-foreground transition-colors">
                 <span className="truncate max-w-[100px] sm:max-w-none">{accessory.accessory_categories?.name}</span>
               </Link>
             </li>
@@ -269,7 +273,7 @@ export default function AccessoryProduct() {
                   </Badge>
                 )}
                 {accessory.stock_quantity <= 0 && (
-                  <Badge variant="destructive">Out of Stock</Badge>
+                  <Badge variant="destructive">{t('accessories.outOfStock')}</Badge>
                 )}
               </div>
               
@@ -288,10 +292,10 @@ export default function AccessoryProduct() {
               </div>
 
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-3xl font-bold text-gray-900">${accessory.price}</span>
+                <span className="text-3xl font-bold text-gray-900">{formatPriceToEuro(accessory.price)}</span>
                 {hasDiscount && (
                   <span className="text-xl text-muted-foreground line-through">
-                    ${accessory.original_price}
+                    {formatPriceToEuro(accessory.original_price)}
                   </span>
                 )}
               </div>
@@ -300,15 +304,29 @@ export default function AccessoryProduct() {
             {/* Description */}
             {accessory.description && (
               <div>
-                <h3 className="font-semibold mb-2">Description</h3>
-                <p className="text-muted-foreground leading-relaxed">{accessory.description}</p>
+                <h3 className="font-semibold mb-2">{t('accessories.description')}</h3>
+                <div className="text-muted-foreground leading-relaxed">
+                  {isDescriptionExpanded ? (
+                    <p>{accessory.description}</p>
+                  ) : (
+                    <p className="line-clamp-1">{accessory.description}</p>
+                  )}
+                  {accessory.description.length > 100 && (
+                    <button
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="text-primary hover:text-primary/80 text-sm font-medium mt-2 transition-colors"
+                    >
+                      {isDescriptionExpanded ? t('accessories.readLess') : t('accessories.readMore')}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Features */}
             {accessory.features && Array.isArray(accessory.features) && accessory.features.length > 0 && (
               <div>
-                <h3 className="font-semibold mb-3">Key Features</h3>
+                <h3 className="font-semibold mb-3">{t('accessories.keyFeatures')}</h3>
                 <ul className="space-y-2">
                   {accessory.features
                     .filter((feature): feature is string => typeof feature === 'string')
@@ -325,7 +343,7 @@ export default function AccessoryProduct() {
             {/* Compatibility */}
             {accessory.compatibility && Array.isArray(accessory.compatibility) && accessory.compatibility.length > 0 && (
               <div>
-                <h3 className="font-semibold mb-3">Compatibility</h3>
+                <h3 className="font-semibold mb-3">{t('accessories.compatibility')}</h3>
                 <div className="flex flex-wrap gap-2">
                   {accessory.compatibility
                     .filter((device): device is string => typeof device === 'string')
@@ -343,12 +361,12 @@ export default function AccessoryProduct() {
               {accessory.stock_quantity > 0 ? (
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="h-4 w-4" />
-                  <span>In Stock ({accessory.stock_quantity} available)</span>
+                  <span>{t('accessories.inStock')} ({accessory.stock_quantity} available)</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-red-600">
                   <Package className="h-4 w-4" />
-                  <span>Out of Stock</span>
+                  <span>{t('accessories.outOfStock')}</span>
                 </div>
               )}
             </div>
@@ -357,7 +375,7 @@ export default function AccessoryProduct() {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">Quantity:</label>
+                  <label className="text-sm font-medium">{t('accessories.quantity')}:</label>
                   <div className="flex items-center border rounded-md">
                     <Button
                       variant="ghost"
@@ -388,7 +406,7 @@ export default function AccessoryProduct() {
                   onClick={handleAddToCart}
                 >
                   <ShoppingCart className="h-5 w-5 mr-2" />
-                  {accessory.stock_quantity <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                  {accessory.stock_quantity <= 0 ? t('accessories.outOfStock') : t('accessories.addToCart')}
                 </Button>
                 
                 <Button
@@ -524,7 +542,7 @@ export default function AccessoryProduct() {
         {relatedAccessories.length > 0 && (
           <section className="mb-16">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold">Related Products</h2>
+              <h2 className="text-2xl font-bold">{t('accessories.relatedProducts')}</h2>
               <Link to="/accessories" className="text-primary hover:underline">
                 View All
               </Link>
@@ -564,10 +582,10 @@ export default function AccessoryProduct() {
                           <span className="text-xs text-muted-foreground">({relatedAccessory.review_count})</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold">${relatedAccessory.price}</span>
+                          <span className="font-bold">{formatPriceToEuro(relatedAccessory.price)}</span>
                           {relatedAccessory.original_price && relatedAccessory.original_price > relatedAccessory.price && (
                             <span className="text-sm text-muted-foreground line-through">
-                              ${relatedAccessory.original_price}
+                              {formatPriceToEuro(relatedAccessory.original_price)}
                             </span>
                           )}
                         </div>

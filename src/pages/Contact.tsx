@@ -383,7 +383,7 @@ const Contact = () => {
                   </Button>
                 </Link>
                 <Link to="/faq">
-                  <Button variant="outline" size="lg" className="btn-ghost border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-md">
+                  <Button variant="outline" size="lg" className="btn-ghost border-2 border-white/30 hover:text-white hover:scale-105 hover:bg-white/10 backdrop-blur-md">
                     <MessageSquare className="h-5 w-5 mr-2" />
                     View FAQ
                     <ArrowRight className="h-5 w-5 ml-2" />

@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { generateSlug } from "@/lib/utils";
+import { generateSlug, formatPriceToEuro } from "@/lib/utils";
 import { 
   Select,
   SelectContent,
@@ -454,10 +454,10 @@ export default function Accessories() {
 
             {/* Price */}
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg">${accessory.price}</span>
+              <span className="font-bold text-lg">{formatPriceToEuro(accessory.price)}</span>
               {hasDiscount && (
                 <span className="text-sm text-muted-foreground line-through">
-                  ${accessory.original_price}
+                  {formatPriceToEuro(accessory.original_price)}
                 </span>
               )}
             </div>
@@ -621,7 +621,7 @@ export default function Accessories() {
         </FilterSection>
 
         {/* Price Range */}
-        <FilterSection title="Price Range">
+        <FilterSection title={t('accessories.priceRange')}>
           <div className="space-y-4">
             <Slider
               value={priceRange}
@@ -854,7 +854,7 @@ export default function Accessories() {
                 )}
                 {priceRange[0] > 0 || priceRange[1] < 1000 ? (
                   <Badge variant="secondary" className="gap-1">
-                    ${priceRange[0]} - ${priceRange[1]}
+                    {formatPriceToEuro(priceRange[0])} - {formatPriceToEuro(priceRange[1])}
                     <X 
                       className="h-3 w-3 cursor-pointer" 
                       onClick={() => setPriceRange([0, 1000])}
