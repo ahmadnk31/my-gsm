@@ -95,9 +95,17 @@ const CheckoutForm: React.FC<StripePaymentProps> = ({ cartItems, onSuccess, onCa
       // Create order first
       const orderId = await createOrderMutation.mutateAsync({
         userId: user.id,
-        shippingAddress,
-        billingAddress: useSameAddress ? shippingAddress : billingAddress,
-        notes,
+        items: cartItems.map(item => ({
+          accessoryId: item.accessories.id,
+          quantity: item.quantity,
+          price: item.accessories.price,
+        })),
+        shippingInfo: {
+          ...shippingAddress,
+          billingAddress: useSameAddress ? shippingAddress : billingAddress,
+          notes,
+        },
+        totalAmount,
       });
 
       // Create Stripe payment intent
@@ -149,9 +157,9 @@ const CheckoutForm: React.FC<StripePaymentProps> = ({ cartItems, onSuccess, onCa
         toast.error(`Payment failed: ${error.message}`);
       } else if (paymentIntent.status === 'succeeded') {
         toast.success('Payment successful!');
-        onSuccess(orderId);
+        onSuccess(orderId.id);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Payment error:', error);
       toast.error('Payment failed. Please try again.');
     } finally {
