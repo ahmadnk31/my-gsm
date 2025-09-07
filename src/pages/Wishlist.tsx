@@ -245,7 +245,7 @@ export default function Wishlist() {
                 {/* Product Info */}
                 <CardContent className="p-4">
                   <div className="space-y-2">
-                    <Link to={`/accessories/${item.accessories.accessory_categories?.slug || generateSlug(item.accessories.accessory_categories?.name || 'uncategorized')}/${item.accessories.slug || generateSlug(item.accessories.name)}`}>
+                    <Link to={`/accessories/product?category=${item.accessories.accessory_categories?.slug || generateSlug(item.accessories.accessory_categories?.name || 'uncategorized')}&product=${item.accessories.slug || generateSlug(item.accessories.name)}`}>
                       <h3 className="font-semibold text-sm line-clamp-2 hover:text-primary">
                         {item.accessories.name}
                       </h3>

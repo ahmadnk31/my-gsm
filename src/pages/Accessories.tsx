@@ -939,7 +939,7 @@ export default function Accessories() {
           ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6">
               {accessories.map((accessory) => (
-                  <Link key={accessory.id} to={`/accessories/${accessory.accessory_categories?.slug || generateSlug(accessory.accessory_categories?.name || 'uncategorized')}/${accessory.slug || generateSlug(accessory.name)}`}>
+                  <Link key={accessory.id} to={`/accessories/product?category=${accessory.accessory_categories?.slug || generateSlug(accessory.accessory_categories?.name || 'uncategorized')}&product=${accessory.slug || generateSlug(accessory.name)}`}>
                 <AccessoryCard 
                   accessory={accessory} 
                   isHighlighted={highlightedAccessory === accessory.id}

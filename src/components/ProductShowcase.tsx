@@ -96,7 +96,7 @@ const ProductShowcase = () => {
           features: Array.isArray(accessory.features) 
             ? accessory.features.slice(0, 3) 
             : ["High Quality", "Fast Shipping", "Warranty"],
-          link: `/accessories/${accessory.accessory_categories?.slug || generateSlug(accessory.accessory_categories?.name || 'uncategorized')}/${accessory.slug || generateSlug(accessory.name)}`, // Slug-based link to specific accessory
+          link: `/accessories/product?category=${accessory.accessory_categories?.slug || generateSlug(accessory.accessory_categories?.name || 'uncategorized')}&product=${accessory.slug || generateSlug(accessory.name)}`, // Query parameter-based link to specific accessory
           isRealProduct: true
         });
       });

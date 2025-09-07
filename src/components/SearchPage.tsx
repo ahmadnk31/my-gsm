@@ -223,7 +223,7 @@ export function SearchPage() {
           image: accessory.image_url,
           rating: accessory.rating,
           reviewCount: accessory.review_count,
-          url: `/accessories/${accessory.accessory_categories.slug || 'uncategorized'}/${accessory.slug || accessory.id}`,
+          url: `/accessories/product?category=${accessory.accessory_categories.slug || 'uncategorized'}&product=${accessory.slug || accessory.id}`,
           category: accessory.accessory_categories.name,
           brand: accessory.accessory_brands.name
         });
@@ -261,7 +261,7 @@ export function SearchPage() {
             image: accessory.image_url,
             rating: accessory.rating,
             reviewCount: accessory.review_count,
-            url: `/accessories/${accessory.accessory_categories.slug || 'uncategorized'}/${accessory.slug || accessory.id}`,
+            url: `/accessories/product?category=${accessory.accessory_categories.slug || 'uncategorized'}&product=${accessory.slug || accessory.id}`,
             category: accessory.accessory_categories.name,
             brand: accessory.accessory_brands.name
           });

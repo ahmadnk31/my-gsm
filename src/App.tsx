@@ -18,6 +18,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminRepairs from "./pages/AdminRepairs";
 import AdminAccessories from "./pages/AdminAccessories";
 import AdminTradeIn from "./pages/AdminTradeIn";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import { SearchPage } from "@/components/SearchPage";
 
@@ -49,12 +50,12 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/repairs" element={<Repairs />} />
               <Route path="/accessories" element={<Accessories />} />
-              <Route path="/accessories/:categorySlug/:productSlug" element={<AccessoryProduct />} />
-              <Route path="/accessories/:id" element={<AccessoryProduct />} />
+              <Route path="/accessories/product" element={<AccessoryProduct />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/about" element={<About />} />
                                    <Route path="/admin/repairs" element={<AdminRepairs />} />
                      <Route path="/admin/accessories" element={<AdminAccessories />} />
                      <Route path="/admin/trade-in" element={<AdminTradeIn />} />

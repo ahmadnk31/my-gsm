@@ -137,9 +137,10 @@ const Navbar = () => {
       >
         {t('nav.repairs')}
       </Link>
+     
 
       <a 
-        href="#" 
+        href="/about" 
         className={`${mobile ? 'flex items-center px-3 py-2 rounded-lg hover:bg-accent transition-colors' : 'text-foreground hover:text-primary transition-colors'} font-medium`}
         onClick={onLinkClick}
       >

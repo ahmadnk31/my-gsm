@@ -165,7 +165,7 @@ export default function Cart() {
 
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <Link to={`/accessories/${item.accessories.accessory_categories?.slug || 'uncategorized'}/${item.accessories.slug || item.accessories.id}`}>
+                        <Link to={`/accessories/product?category=${item.accessories.accessory_categories?.slug || 'uncategorized'}&product=${item.accessories.slug || item.accessories.id}`}>
                           <h3 className="font-semibold text-sm hover:text-primary line-clamp-2">
                             {item.accessories.name}
                           </h3>

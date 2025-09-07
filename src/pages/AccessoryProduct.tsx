@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +37,10 @@ import { formatPriceToEuro } from '@/lib/utils';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AccessoryProduct() {
-  const { categorySlug, productSlug, id } = useParams<{ categorySlug?: string; productSlug?: string; id?: string }>();
+  const [searchParams] = useSearchParams();
+  const categorySlug = searchParams.get('category');
+  const productSlug = searchParams.get('product');
+  const id = searchParams.get('id');
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -185,7 +188,7 @@ export default function AccessoryProduct() {
             </li>
             <li className="flex-shrink-0 text-muted-foreground">/</li>
             <li className="flex-shrink-0">
-              <Link to={`/accessories?categories=${accessory.accessory_categories?.slug || 'all'}`} className="hover:text-foreground transition-colors">
+              <Link to={`/accessories?category=${accessory.accessory_categories?.slug || 'all'}`} className="hover:text-foreground transition-colors">
                 <span className="truncate max-w-[100px] sm:max-w-none">{accessory.accessory_categories?.name}</span>
               </Link>
             </li>
@@ -550,7 +553,7 @@ export default function AccessoryProduct() {
             
                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                {relatedAccessories.slice(0, 4).map((relatedAccessory) => (
-                 <Link key={relatedAccessory.id} to={`/accessories/${relatedAccessory.accessory_categories?.slug || 'uncategorized'}/${relatedAccessory.slug || relatedAccessory.id}`}>
+                 <Link key={relatedAccessory.id} to={`/accessories/product?category=${relatedAccessory.accessory_categories?.slug || 'uncategorized'}&product=${relatedAccessory.slug || relatedAccessory.id}`}>
                   <Card className="group hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
                       <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
