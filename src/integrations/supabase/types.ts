@@ -793,6 +793,131 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          id: string
+          user_id: string
+          order_number: string
+          status: string
+          payment_status: string
+          payment_method: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          subtotal: number
+          tax_amount: number
+          shipping_amount: number
+          total_amount: number
+          currency: string
+          shipping_address: Json | null
+          billing_address: Json | null
+          notes: string | null
+          tracking_number: string | null
+          shipped_at: string | null
+          delivered_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          order_number?: string
+          status?: string
+          payment_status?: string
+          payment_method?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subtotal: number
+          tax_amount?: number
+          shipping_amount?: number
+          total_amount: number
+          currency?: string
+          shipping_address?: Json | null
+          billing_address?: Json | null
+          notes?: string | null
+          tracking_number?: string | null
+          shipped_at?: string | null
+          delivered_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          order_number?: string
+          status?: string
+          payment_status?: string
+          payment_method?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subtotal?: number
+          tax_amount?: number
+          shipping_amount?: number
+          total_amount?: number
+          currency?: string
+          shipping_address?: Json | null
+          billing_address?: Json | null
+          notes?: string | null
+          tracking_number?: string | null
+          shipped_at?: string | null
+          delivered_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          accessory_id: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          accessory_id: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          accessory_id?: string
+          quantity?: number
+          unit_price?: number
+          total_price?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_accessory_id_fkey"
+            columns: ["accessory_id"]
+            isOneToOne: false
+            referencedRelation: "accessories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -804,6 +929,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      create_order_from_cart: {
+        Args: {
+          p_user_id: string
+          p_shipping_address: Json
+          p_billing_address?: Json | null
+          p_notes?: string | null
+        }
+        Returns: string
       }
     }
     Enums: {

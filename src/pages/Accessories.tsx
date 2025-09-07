@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,6 +89,8 @@ export default function Accessories() {
   const [highlightedAccessory, setHighlightedAccessory] = useState<string | null>(null);
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const isTypingRef = useRef(false);
 
   const { data: categories = [], isLoading: categoriesLoading } = useAccessoryCategories();
   const { data: brands = [], isLoading: brandsLoading } = useAccessoryBrands();
@@ -207,14 +209,19 @@ export default function Accessories() {
 
   // Debounced search effect
   useEffect(() => {
+    isTypingRef.current = true;
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
+      isTypingRef.current = false;
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      isTypingRef.current = false;
+    };
   }, [searchQuery]);
 
-  // Update URL when filters change
+  // Update URL when filters change (excluding search query)
   useEffect(() => {
     const newSearchParams = new URLSearchParams();
     
@@ -236,11 +243,6 @@ export default function Accessories() {
       if (brandNames.length > 0) {
         newSearchParams.set('brands', brandNames.join(','));
       }
-    }
-    
-    // Search query
-    if (debouncedSearchQuery) {
-      newSearchParams.set('search', debouncedSearchQuery);
     }
     
     // Price range
@@ -270,7 +272,24 @@ export default function Accessories() {
     }
     
     setSearchParams(newSearchParams);
-  }, [selectedCategories, selectedBrands, debouncedSearchQuery, priceRange, ratingFilter, stockFilter, featuredFilter, sortBy, categories, brands, setSearchParams]);
+  }, [selectedCategories, selectedBrands, priceRange, ratingFilter, stockFilter, featuredFilter, sortBy, categories, brands, setSearchParams]);
+
+  // Separate effect for search query URL updates - only when not typing
+  useEffect(() => {
+    if (isTypingRef.current) {
+      return;
+    }
+    
+    const newSearchParams = new URLSearchParams(searchParams);
+    
+    if (debouncedSearchQuery) {
+      newSearchParams.set('search', debouncedSearchQuery);
+    } else {
+      newSearchParams.delete('search');
+    }
+    
+    setSearchParams(newSearchParams);
+  }, [debouncedSearchQuery, setSearchParams]);
 
   const filters = {
     categories: selectedCategories.length > 0 ? selectedCategories : undefined,
@@ -536,19 +555,7 @@ export default function Accessories() {
       </CardHeader>
       <CardContent className="space-y-4">
             {/* Search */}
-        <div className="space-y-2">
-          <Label htmlFor="search">Search</Label>
-          <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-              id="search"
-                placeholder="Search accessories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-        </div>
+        
 
         <Separator />
 

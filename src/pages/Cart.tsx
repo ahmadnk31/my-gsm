@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 export default function Cart() {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const { data: cartItems = [], isLoading } = useCart(user?.id);
   const updateQuantityMutation = useUpdateCartQuantity();
   const removeFromCartMutation = useRemoveFromCart();
@@ -73,12 +74,7 @@ export default function Cart() {
       return;
     }
 
-    setIsCheckingOut(true);
-    // Simulate checkout process
-    setTimeout(() => {
-      toast.success('Order placed successfully!');
-      setIsCheckingOut(false);
-    }, 2000);
+    navigate('/checkout');
   };
 
   if (!user) {

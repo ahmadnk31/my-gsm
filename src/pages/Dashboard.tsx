@@ -33,7 +33,8 @@ import {
   Star,
   Target,
   MessageSquare,
-  Bell
+  Bell,
+  ShoppingBag
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -710,9 +711,10 @@ const Dashboard = () => {
 
             {/* User Tabs */}
             <Tabs defaultValue="bookings" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="bookings">My Bookings</TabsTrigger>
                 <TabsTrigger value="quotes">My Quotes</TabsTrigger>
+                <TabsTrigger value="orders">My Orders</TabsTrigger>
               </TabsList>
 
               <TabsContent value="bookings" className="space-y-6">
@@ -744,6 +746,32 @@ const Dashboard = () => {
 
               <TabsContent value="quotes" className="space-y-6">
                 <QuoteRequestsManager />
+              </TabsContent>
+
+              <TabsContent value="orders" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ShoppingBag className="h-5 w-5" />
+                      My Orders
+                    </CardTitle>
+                    <CardDescription>
+                      View and track your accessory orders
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">View Your Orders</h3>
+                      <p className="text-gray-600 mb-4">
+                        Track your accessory orders and view order history
+                      </p>
+                      <Button onClick={() => navigate('/orders')}>
+                        View All Orders
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>

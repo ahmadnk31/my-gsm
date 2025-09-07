@@ -13,11 +13,16 @@ import Accessories from "./pages/Accessories";
 import AccessoryProduct from "./pages/AccessoryProduct";
 import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import Orders from "./pages/Orders";
+import OrderDetail from "./pages/OrderDetail";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AdminRepairs from "./pages/AdminRepairs";
 import AdminAccessories from "./pages/AdminAccessories";
 import AdminTradeIn from "./pages/AdminTradeIn";
+import AdminOrders from "./pages/AdminOrders";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import { SearchPage } from "@/components/SearchPage";
@@ -53,12 +58,17 @@ const App = () => (
               <Route path="/accessories/product" element={<AccessoryProduct />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:orderId" element={<OrderDetail />} />
+              <Route path="/order-confirmation" element={<OrderConfirmation />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/about" element={<About />} />
                                    <Route path="/admin/repairs" element={<AdminRepairs />} />
                      <Route path="/admin/accessories" element={<AdminAccessories />} />
                      <Route path="/admin/trade-in" element={<AdminTradeIn />} />
+                     <Route path="/admin/orders" element={<AdminOrders />} />
               <Route path="/search" element={<SearchPage />} />
               
               {/* Footer Links - New Pages */}

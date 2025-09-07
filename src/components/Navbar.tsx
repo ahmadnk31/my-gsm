@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ShoppingCart, Menu, Search, Phone, User, Settings, LogOut, Shield, Wrench, Heart, TrendingUp } from "lucide-react";
+import { ShoppingCart, Menu, Search, Phone, User, Settings, LogOut, Shield, Wrench, Heart, TrendingUp, Package, ShoppingBag } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart, useWishlist } from "@/hooks/useAccessories";
@@ -62,12 +62,18 @@ const Navbar = () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/dashboard" className="w-full cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            <span>{t('nav.dashboard')}</span>
-          </Link>
-        </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard" className="w-full cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                <span>{t('nav.dashboard')}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/orders" className="w-full cursor-pointer">
+                <ShoppingBag className="mr-2 h-4 w-4" />
+                <span>My Orders</span>
+              </Link>
+            </DropdownMenuItem>
         {userRole === 'admin' && (
           <>
             <DropdownMenuSeparator />
@@ -90,6 +96,12 @@ const Navbar = () => {
               <Link to="/admin/trade-in" className="w-full cursor-pointer">
                 <TrendingUp className="mr-2 h-4 w-4" />
                 <span>{t('nav.tradeInManagement')}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/admin/orders" className="w-full cursor-pointer">
+                <Package className="mr-2 h-4 w-4" />
+                <span>Order Management</span>
               </Link>
             </DropdownMenuItem>
           </>
@@ -138,7 +150,6 @@ const Navbar = () => {
         {t('nav.repairs')}
       </Link>
      
-
       <a 
         href="/about" 
         className={`${mobile ? 'flex items-center px-3 py-2 rounded-lg hover:bg-accent transition-colors' : 'text-foreground hover:text-primary transition-colors'} font-medium`}
@@ -214,12 +225,18 @@ const Navbar = () => {
                   </span>
                 )}
               </div>
-              <Link to="/dashboard" onClick={onActionClick}>
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  <User className="h-4 w-4 mr-2" />
-                  {t('nav.dashboard')}
-                </Button>
-              </Link>
+                  <Link to="/dashboard" onClick={onActionClick}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <User className="h-4 w-4 mr-2" />
+                      {t('nav.dashboard')}
+                    </Button>
+                  </Link>
+                  <Link to="/orders" onClick={onActionClick}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <ShoppingBag className="h-4 w-4 mr-2" />
+                      My Orders
+                    </Button>
+                  </Link>
               {userRole === 'admin' && (
                 <>
                   <Link to="/admin/repairs" onClick={onActionClick}>
@@ -238,6 +255,12 @@ const Navbar = () => {
                     <Button variant="ghost" size="sm" className="w-full justify-start">
                       <TrendingUp className="h-4 w-4 mr-2" />
                       {t('nav.tradeInManagement')}
+                    </Button>
+                  </Link>
+                  <Link to="/admin/orders" onClick={onActionClick}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <Package className="h-4 w-4 mr-2" />
+                      Order Management
                     </Button>
                   </Link>
                 </>
