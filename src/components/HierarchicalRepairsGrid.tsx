@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { SEO } from '@/components/SEO';
 import { ServiceStructuredData, BreadcrumbStructuredData } from '@/components/StructuredData';
 import { 
@@ -422,7 +423,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     const brands = brandsQuery.data || [];
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
         {brands.map((brand, index) => (
           <Card 
             key={brand.id}
@@ -432,11 +433,11 @@ export const HierarchicalRepairsGrid: React.FC = () => {
           >
             <CardHeader className="text-center pb-4">
               {brand.logo_url && (
-                <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-white p-2">
+                <div className=" mx-auto mb-4 overflow-hidden p-2">
                   <img 
                     src={brand.logo_url} 
                     alt={brand.name}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain aspect-square"
                   />
                 </div>
               )}
@@ -451,11 +452,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                 {brand.name}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-sm text-center">
-                {brand.description}
-              </p>
-            </CardContent>
+            
           </Card>
         ))}
       </div>
@@ -490,7 +487,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     const models = modelsQuery.data || [];
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
         {models.map((model, index) => (
           <Card 
             key={model.id}
@@ -500,11 +497,11 @@ export const HierarchicalRepairsGrid: React.FC = () => {
           >
             <CardHeader className="text-center pb-4">
               {model.image_url && (
-                <div className="w-24 h-32 mx-auto mb-4 rounded-lg overflow-hidden bg-muted">
+                <div className="mx-auto">
                   <img 
                     src={model.image_url} 
                     alt={model.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain aspect-square"
                   />
                 </div>
               )}
@@ -524,11 +521,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                 </Badge>
               )}
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-sm text-center">
-                {model.description}
-              </p>
-            </CardContent>
+           
           </Card>
         ))}
       </div>
@@ -538,16 +531,16 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderParts = () => {
     if (partsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
+          {[...Array(6)].map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-12 w-12 bg-muted rounded-lg mb-4"></div>
-                <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-32 sm:h-40 md:h-12 bg-muted mb-2 md:mb-4"></div>
+              <CardHeader className="pt-0">
+                <div className="h-3 md:h-4 bg-muted rounded w-3/4"></div>
               </CardHeader>
               <CardContent>
-                <div className="h-3 bg-muted rounded w-full mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3"></div>
+                <div className="h-2 md:h-3 bg-muted rounded w-full mb-1 md:mb-2"></div>
+                <div className="h-2 md:h-3 bg-muted rounded w-2/3"></div>
               </CardContent>
             </Card>
           ))}
@@ -563,139 +556,267 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     const parts = partsQuery.data || [];
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {parts.map((part, index) => (
-          <Card 
-            key={part.id}
-            className="group bg-gradient-card shadow-card hover:shadow-elegant transition-all duration-300 animate-fade-in overflow-hidden"
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-start gap-4">
-                {part.image_url ? (
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                    <img 
-                      src={part.image_url} 
-                      alt={part.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Package className="h-6 w-6 text-white" />
-                  </div>
-                )}
-                
-                <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
-                    {part.name}
-                  </CardTitle>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-xs">{part.category}</Badge>
-                    {part.difficulty_level && (
-                      <Badge 
-                        variant={
-                          part.difficulty_level === 'easy' ? 'default' : 
-                          part.difficulty_level === 'medium' ? 'secondary' : 'destructive'
-                        }
-                        className="text-xs"
-                      >
-                        {part.difficulty_level}
-                      </Badge>
+      <>
+        {/* Mobile Two-Column Accordion Layout */}
+        <div className="block md:hidden">
+          <div className="grid grid-cols-2 gap-2">
+            {parts.map((part, index) => (
+              <Accordion key={part.id} type="single" collapsible>
+                <AccordionItem 
+                  value={`part-${part.id}`}
+                  className="animate-fade-in border-0"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <Card className="overflow-hidden bg-gradient-card shadow-card">
+                    {/* Full-width Image Header */}
+                    {part.image_url ? (
+                      <div className="mx-auto overflow-hidden">
+                        <img 
+                          src={part.image_url} 
+                          alt={part.name}
+                          className="w-full h-full object-contain aspect-square"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mx-auto min-h-[240px] bg-gradient-primary flex items-center justify-center">
+                        <Package className="h-8 w-8 sm:h-12 sm:w-12 text-white aspect-square" />
+                      </div>
                     )}
+                    
+                    {/* Accordion Trigger */}
+                    <AccordionTrigger className="px-2 py-2 hover:no-underline">
+                      <div className="text-left w-full">
+                        <div className="flex flex-col gap-1">
+                          <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-2">
+                            {part.name}
+                          </h3>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant="outline" className="text-xs">{part.category}</Badge>
+                            {part.difficulty_level && (
+                              <Badge 
+                                variant={
+                                  part.difficulty_level === 'easy' ? 'default' : 
+                                  part.difficulty_level === 'medium' ? 'secondary' : 'destructive'
+                                }
+                                className="text-xs"
+                              >
+                                {part.difficulty_level}
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          {/* Price Preview */}
+                          {part.pricing && part.pricing.length > 0 && (
+                            <div className="text-left">
+                              <div className="text-xs font-bold text-primary">
+                                From ${Math.min(...part.pricing.map(p => p.total_cost || (p.price + (p.labor_cost || 0))))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    
+                    {/* Accordion Content */}
+                    <AccordionContent className="px-2 pb-2">
+                      {part.pricing && part.pricing.length > 0 && (
+                        <div className="space-y-2">
+                          {part.pricing.map((pricing, pricingIndex) => (
+                            <div key={pricingIndex} className="border border-border/40 rounded-lg p-2 hover:border-primary/40 transition-colors">
+                              <div className="flex justify-between items-center mb-2">
+                                <Badge 
+                                  variant={
+                                    pricing.quality_type === 'original' ? 'default' : 
+                                    pricing.quality_type === 'oem' ? 'secondary' : 'outline'
+                                  }
+                                  className="text-xs font-medium"
+                                >
+                                  {pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
+                                </Badge>
+                                <div className="text-sm font-bold text-primary">
+                                  ${pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                                </div>
+                              </div>
+                              
+                              <BookingModal
+                                selectedPart={{
+                                  id: part.id,
+                                  name: part.name,
+                                  category: part.category,
+                                  model: modelQuery.data?.name || '',
+                                  brand: brandQuery.data?.name || '',
+                                  device_type: categoryQuery.data?.name || '',
+                                  quality_type: pricing.quality_type,
+                                  price: pricing.total_cost || (pricing.price + (pricing.labor_cost || 0)),
+                                  estimated_duration: part.estimated_duration || ''
+                                }}
+                              >
+                                <Button size="sm" className="text-xs px-3 py-1 h-6 w-full">
+                                  Select
+                                </Button>
+                              </BookingModal>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {(!part.pricing || part.pricing.length === 0) && (
+                        <div className="text-center py-2">
+                          <QuoteRequestModal
+                            deviceCategoryId={navigation.categoryId}
+                            deviceBrandId={navigation.brandId}
+                            deviceModelId={navigation.modelId}
+                            devicePartId={part.id}
+                          >
+                            <Button size="sm" variant="outline" className="text-xs px-3 py-1 h-6 w-full">
+                              Get Quote
+                            </Button>
+                          </QuoteRequestModal>
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </Card>
+                </AccordionItem>
+              </Accordion>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Grid Layout */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {parts.map((part, index) => (
+            <Card 
+              key={part.id}
+              className="group bg-gradient-card shadow-card hover:shadow-elegant transition-all duration-300 animate-fade-in overflow-hidden"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start gap-4">
+                  {part.image_url ? (
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                      <img 
+                        src={part.image_url} 
+                        alt={part.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Package className="h-6 w-6 text-white" />
+                    </div>
+                  )}
+                  
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
+                      {part.name}
+                    </CardTitle>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="outline" className="text-xs">{part.category}</Badge>
+                      {part.difficulty_level && (
+                        <Badge 
+                          variant={
+                            part.difficulty_level === 'easy' ? 'default' : 
+                            part.difficulty_level === 'medium' ? 'secondary' : 'destructive'
+                          }
+                          className="text-xs"
+                        >
+                          {part.difficulty_level}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="pt-0">
-              {part.description && (
-                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                  {part.description}
-                </p>
-              )}
+              </CardHeader>
+              
+              <CardContent className="pt-0">
+                {part.description && (
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                    {part.description}
+                  </p>
+                )}
 
-              {part.pricing && part.pricing.length > 0 && (
-                <div className="space-y-3">
-                  {part.pricing.map((pricing, pricingIndex) => (
-                    <div key={pricingIndex} className="border border-border/40 rounded-lg p-3 hover:border-primary/40 transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge 
-                            variant={
-                              pricing.quality_type === 'original' ? 'default' : 
-                              pricing.quality_type === 'oem' ? 'secondary' : 'outline'
-                            }
-                            className="text-xs font-medium"
-                          >
-                            {pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
-                          </Badge>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xl font-bold text-primary">
-                            ${pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                {part.pricing && part.pricing.length > 0 && (
+                  <div className="space-y-3">
+                    {part.pricing.map((pricing, pricingIndex) => (
+                      <div key={pricingIndex} className="border border-border/40 rounded-lg p-3 hover:border-primary/40 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant={
+                                pricing.quality_type === 'original' ? 'default' : 
+                                pricing.quality_type === 'oem' ? 'secondary' : 'outline'
+                              }
+                              className="text-xs font-medium"
+                            >
+                              {pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
+                            </Badge>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xl font-bold text-primary">
+                              ${pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          {part.estimated_duration && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              <span>{part.estimated_duration}</span>
-                            </div>
-                          )}
-                          {part.warranty_period && (
-                            <div className="flex items-center gap-1">
-                              <Shield className="h-3 w-3" />
-                              <span>{part.warranty_period}</span>
-                            </div>
-                          )}
-                        </div>
                         
-                        <BookingModal
-                          selectedPart={{
-                            id: part.id,
-                            name: part.name,
-                            category: part.category,
-                            model: modelQuery.data?.name || '',
-                            brand: brandQuery.data?.name || '',
-                            device_type: categoryQuery.data?.name || '',
-                            quality_type: pricing.quality_type,
-                            price: pricing.total_cost || (pricing.price + (pricing.labor_cost || 0)),
-                            estimated_duration: part.estimated_duration || ''
-                          }}
-                        >
-                          <Button size="sm" className="text-xs px-3 py-1 h-7">
-                            Select
-                          </Button>
-                        </BookingModal>
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            {part.estimated_duration && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                <span>{part.estimated_duration}</span>
+                              </div>
+                            )}
+                            {part.warranty_period && (
+                              <div className="flex items-center gap-1">
+                                <Shield className="h-3 w-3" />
+                                <span>{part.warranty_period}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <BookingModal
+                            selectedPart={{
+                              id: part.id,
+                              name: part.name,
+                              category: part.category,
+                              model: modelQuery.data?.name || '',
+                              brand: brandQuery.data?.name || '',
+                              device_type: categoryQuery.data?.name || '',
+                              quality_type: pricing.quality_type,
+                              price: pricing.total_cost || (pricing.price + (pricing.labor_cost || 0)),
+                              estimated_duration: part.estimated_duration || ''
+                            }}
+                          >
+                            <Button size="sm" className="text-xs px-3 py-1 h-7">
+                              Select
+                            </Button>
+                          </BookingModal>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {(!part.pricing || part.pricing.length === 0) && (
-                <div className="text-center py-4">
-                  <p className="text-sm text-muted-foreground mb-3">Contact for pricing</p>
-                  <QuoteRequestModal
-                    deviceCategoryId={navigation.categoryId}
-                    deviceBrandId={navigation.brandId}
-                    deviceModelId={navigation.modelId}
-                    devicePartId={part.id}
-                  >
-                    <Button size="sm" variant="outline">
-                      Get Quote
-                    </Button>
-                  </QuoteRequestModal>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                {(!part.pricing || part.pricing.length === 0) && (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-muted-foreground mb-3">Contact for pricing</p>
+                    <QuoteRequestModal
+                      deviceCategoryId={navigation.categoryId}
+                      deviceBrandId={navigation.brandId}
+                      deviceModelId={navigation.modelId}
+                      devicePartId={part.id}
+                    >
+                      <Button size="sm" variant="outline">
+                        Get Quote
+                      </Button>
+                    </QuoteRequestModal>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </>
     );
   };
 

@@ -71,9 +71,14 @@ export default function StripeExpressCheckout({ cartItems, onPaymentSuccess }: S
 
     try {
       // Create Stripe Checkout Session (order will be created in webhook when payment succeeds)
-      const authKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      console.log('Auth key exists:', !!authKey);
-      console.log('Auth key value:', authKey?.substring(0, 20) + '...');
+      const authKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      console.log('Creating checkout session with:', {
+        userId: user.id,
+        itemCount: cartItems.length,
+        totalAmount: Math.round(totalAmount * 100),
+        authKeyExists: !!authKey,
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL
+      });
       
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
         method: 'POST',
@@ -98,8 +103,14 @@ export default function StripeExpressCheckout({ cartItems, onPaymentSuccess }: S
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create checkout session');
+        const errorText = await response.text();
+        console.error('Checkout session creation failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+          url: response.url
+        });
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
       const { sessionId } = await response.json();
@@ -120,7 +131,14 @@ export default function StripeExpressCheckout({ cartItems, onPaymentSuccess }: S
       }
 
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Detailed checkout error:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : 'Unknown',
+        userId: user.id,
+        cartItemsCount: cartItems.length,
+        totalAmount: Math.round(totalAmount * 100)
+      });
       toast.error(error instanceof Error ? error.message : 'Payment failed. Please try again.');
     } finally {
       setIsProcessing(false);
