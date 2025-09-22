@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Clock, Smartphone, CheckCircle, Package } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPriceToEuro } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -267,7 +267,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Smartphone className="h-5 w-5 text-primary" />
-            Book Your Repair
+            {t('booking.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -314,7 +314,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-primary">${selectedPart.price}</div>
+                        <div className="text-lg font-bold text-primary">{formatPriceToEuro(selectedPart.price)}</div>
                         <div className="text-xs text-muted-foreground">{selectedPart.estimated_duration}</div>
                       </div>
                     </div>
@@ -448,7 +448,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                                     <div className="flex justify-between items-center w-full">
                                       <span>{part.name}</span>
                                       <span className="text-sm text-muted-foreground ml-4">
-{t('booking.from')} ${part.pricing?.[0]?.price || 50}
+{t('booking.from')} {formatPriceToEuro(part.pricing?.[0]?.price || 50)}
                                       </span>
                                     </div>
                                   </SelectItem>
@@ -470,7 +470,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                           <p className="text-sm text-muted-foreground mt-1">{selectedService.description}</p>
                         </div>
                                                  <div className="text-right">
-                           <div className="text-sm font-medium">{t('booking.from')} ${'estimated_price' in selectedService ? selectedService.estimated_price : (selectedService.pricing?.[0]?.price || 50)}</div>
+                           <div className="text-sm font-medium">{t('booking.from')} {formatPriceToEuro('estimated_price' in selectedService ? selectedService.estimated_price : (selectedService.pricing?.[0]?.price || 50))}</div>
                            <div className="text-xs text-muted-foreground">{'estimated_duration' in selectedService ? selectedService.estimated_duration : '30-60 min'}</div>
                          </div>
                       </div>
@@ -490,7 +490,7 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                                 >
 {price.quality_type === 'original' ? t('booking.original') : t('booking.copy')}
                                 </Badge>
-                                <span className="font-medium">${price.price}</span>
+                                <span className="font-medium">{formatPriceToEuro(price.price)}</span>
                               </div>
                             ))}
                           </div>
@@ -511,9 +511,9 @@ export function BookingModal({ children, selectedPart }: BookingModalProps) {
                                     {selectedService.pricing.map((price) => (
                                       <SelectItem key={price.id} value={price.quality_type}>
                                         <div className="flex justify-between items-center w-full">
-                                          <span>{price.quality_type === 'original' ? 'Original' : 'Copy'} Quality</span>
+                                          <span>{price.quality_type === 'original' ? t('booking.original') : t('booking.copy')} {t('booking.quality')}</span>
                                           <span className="text-sm text-muted-foreground ml-4">
-                                            ${price.price}
+                                            {formatPriceToEuro(price.price)}
                                           </span>
                                         </div>
                                       </SelectItem>
@@ -578,7 +578,7 @@ placeholder={t('booking.describeProblemPlaceholder')}
                                 {field.value ? (
                                   format(field.value, "PPP")
                                 ) : (
-                                  <span>Pick a date</span>
+                                  <span>{t('booking.selectDate')}</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -635,7 +635,7 @@ placeholder={t('booking.describeProblemPlaceholder')}
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
                       <Smartphone className="h-5 w-5" />
-                      Contact Information
+                      {t('booking.contactInformation')}
                     </CardTitle>
                     {user && (
                       <Button
@@ -650,7 +650,7 @@ placeholder={t('booking.describeProblemPlaceholder')}
                         }}
                         className="text-xs"
                       >
-                        Clear
+                        {t('common.clear')}
                       </Button>
                     )}
                   </div>
@@ -716,10 +716,10 @@ placeholder={t('booking.describeProblemPlaceholder')}
 
                   {/* Booking Summary */}
                   <div className="bg-muted/50 p-4 rounded-lg mt-6">
-                    <h4 className="font-medium mb-3">Booking Summary</h4>
+                    <h4 className="font-medium mb-3">{t('booking.bookingSummary')}</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Device:</span>
+                        <span>{t('common.device')}:</span>
                         <span>
                           {selectedPart ? 
                             `${selectedPart.brand} ${selectedPart.model}` : 
@@ -754,14 +754,19 @@ placeholder={t('booking.describeProblemPlaceholder')}
                       <div className="flex justify-between font-medium">
                         <span>{t('booking.price')}:</span>
                         <span>
-                          {selectedPart ? `$${selectedPart.price}` : 
+                          {selectedPart ? `${formatPriceToEuro(selectedPart.price)}` : 
                            form.watch("quality") && selectedService && 'pricing' in selectedService ? 
                            (() => {
                              const quality = form.watch("quality");
                              const price = selectedService.pricing.find(p => p.quality_type === quality);
-                                                           return `$${price?.price || ('estimated_price' in selectedService ? selectedService.estimated_price : 50)}`;
+                                                           const priceValue = typeof price?.price === 'number'
+                                                             ? price.price
+                                                             : ('estimated_price' in selectedService && typeof selectedService.estimated_price === 'number'
+                                                                ? selectedService.estimated_price
+                                                                : 50);
+                                                           return `${formatPriceToEuro(priceValue)}`;
                            })() : 
-                                                       `From ${'estimated_price' in selectedService ? selectedService.estimated_price : (selectedService?.pricing?.[0]?.price || 50)}`}
+                                                       `{t('booking.from')} ${formatPriceToEuro('estimated_price' in selectedService ? selectedService.estimated_price : (selectedService?.pricing?.[0]?.price || 50))}`}
                         </span>
                       </div>
                     </div>

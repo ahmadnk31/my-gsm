@@ -126,6 +126,8 @@ const translations = {
       city: 'City',
       zipCode: 'Zip Code',
       country: 'Country',
+      device: 'Device',
+      clear: 'Clear',
     },
     
     // Homepage
@@ -242,10 +244,31 @@ const translations = {
       
       // Pricing
       from: 'From',
+      
+      // Quality types
+      easy: 'Easy',
+      medium: 'Medium',
+      hard: 'Hard',
+      
+      // Common repair parts
+      parts: {
+        screen: 'Screen',
+        display: 'Display',
+        battery: 'Battery',
+        camera: 'Camera',
+        speaker: 'Speaker',
+        microphone: 'Microphone',
+        charging: 'Charging Port',
+        backCover: 'Back Cover',
+        homeButton: 'Home Button',
+        powerButton: 'Power Button',
+        volumeButton: 'Volume Button',
+      },
     },
     
     // Booking
     booking: {
+      title: 'Book Your Repair',
       selectedService: 'Selected Repair Service',
       deviceServiceSelection: 'Device & Service Selection',
       deviceCategory: 'Device Category',
@@ -261,6 +284,7 @@ const translations = {
       email: 'Email',
       phoneNumber: 'Phone Number',
       confirmBooking: 'Confirm Booking',
+      aftermarket: 'Aftermarket',
       service: 'Service',
       date: 'Date',
       time: 'Time',
@@ -282,6 +306,7 @@ const translations = {
       availableQualityOptions: 'Available Quality Options',
       original: 'Original',
       copy: 'Copy',
+      oem: 'OEM',
       selectTimeSlot: 'Select a time slot',
       firstNamePlaceholder: 'John',
       lastNamePlaceholder: 'Doe',
@@ -294,6 +319,9 @@ const translations = {
       appointmentScheduled: 'Your repair appointment has been scheduled for {{date}} at {{time}}.',
       bookingFailed: 'Booking Failed',
       bookingErrorDescription: 'There was an error submitting your booking. Please try again.',
+      contactInformation: 'Contact Information',
+      bookingSummary: 'Booking Summary',
+      device: 'Device',
     },
     
     // Homepage/ProductShowcase
@@ -749,6 +777,8 @@ const translations = {
       city: 'Stad',
       zipCode: 'Postcode',
       country: 'Land',
+      device: 'Apparaat',
+      clear: 'Wissen',
     },
     
     // Homepage
@@ -865,10 +895,31 @@ const translations = {
       
       // Pricing
       from: 'Vanaf',
+      
+      // Quality types
+      easy: 'Makkelijk',
+      medium: 'Gemiddeld',
+      hard: 'Moeilijk',
+      
+      // Common repair parts
+      parts: {
+        screen: 'Scherm',
+        display: 'Display',
+        battery: 'Batterij',
+        camera: 'Camera',
+        speaker: 'Luidspreker',
+        microphone: 'Microfoon',
+        charging: 'Oplaadpoort',
+        backCover: 'Achterkant',
+        homeButton: 'Home Knop',
+        powerButton: 'Aan/Uit Knop',
+        volumeButton: 'Volume Knop',
+      },
     },
     
     // Booking
     booking: {
+      title: 'Boek Uw Reparatie',
       selectedService: 'Geselecteerde Reparatieservice',
       deviceServiceSelection: 'Apparaat & Service Selectie',
       deviceCategory: 'Apparaatcategorie',
@@ -903,6 +954,7 @@ const translations = {
       availableQualityOptions: 'Beschikbare Kwaliteitsopties',
       original: 'Origineel',
       copy: 'Kopie',
+      oem: 'OEM',
       chooseQualityOption: 'Kies kwaliteitsoptie',
       selectTimeSlot: 'Selecteer een tijdslot',
       firstNamePlaceholder: 'Jan',
@@ -912,10 +964,14 @@ const translations = {
       quality: 'Kwaliteit',
       authenticationRequired: 'Authenticatie Vereist',
       signInToBook: 'Log in om een reparatie te boeken',
+      aftermarket: 'Aftermarket',
       bookingConfirmed: 'Boeking Bevestigd!',
       appointmentScheduled: 'Uw reparatieafspraak is ingepland voor {{date}} om {{time}}.',
       bookingFailed: 'Boeking Mislukt',
       bookingErrorDescription: 'Er was een fout bij het indienen van uw boeking. Probeer het opnieuw.',
+      contactInformation: 'Contactinformatie',
+      bookingSummary: 'Boekingsoverzicht',
+      device: 'Apparaat',
     },
     
     // Homepage/ProductShowcase

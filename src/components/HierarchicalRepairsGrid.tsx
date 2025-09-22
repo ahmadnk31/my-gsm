@@ -38,7 +38,7 @@ import {
   useDeviceModelBySlug,
 } from '@/hooks/useRepairQueries';
 import { useLanguage } from "@/contexts/LanguageContext";
-import { generateSlug } from '@/lib/utils';
+import { formatPriceToEuro, generateSlug } from '@/lib/utils';
 
 type DeviceCategory = Tables<'device_categories'>;
 type DeviceBrand = Tables<'device_brands'>;
@@ -364,7 +364,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     const categories = categoriesQuery.data || [];
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4 xl:gap-6">
         {categories.map((category, index) => {
           const IconComponent = iconMap[category.icon_name as keyof typeof iconMap] || Smartphone;
           
@@ -383,11 +383,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                   {category.name}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm text-center">
-                  {category.description}
-                </p>
-              </CardContent>
+             
             </Card>
           );
         })}
@@ -559,32 +555,31 @@ export const HierarchicalRepairsGrid: React.FC = () => {
       <>
         {/* Mobile Two-Column Accordion Layout */}
         <div className="block md:hidden">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 items-start">
             {parts.map((part, index) => (
               <Accordion key={part.id} type="single" collapsible>
                 <AccordionItem 
                   value={`part-${part.id}`}
-                  className="animate-fade-in border-0"
+                  className="animate-fade-in border-0 h-full"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <Card className="overflow-hidden bg-gradient-card shadow-card">
-                    {/* Full-width Image Header */}
+                  <Card className="overflow-hidden bg-gradient-card shadow-card h-full flex flex-col">{/* Fixed image header */}
                     {part.image_url ? (
-                      <div className="mx-auto overflow-hidden">
+                      <div className="mx-auto overflow-hidden flex-shrink-0">
                         <img 
                           src={part.image_url} 
                           alt={part.name}
-                          className="w-full h-full object-contain aspect-square"
+                          className="w-full h-32 object-contain"
                         />
                       </div>
                     ) : (
-                      <div className="mx-auto min-h-[240px] bg-gradient-primary flex items-center justify-center">
-                        <Package className="h-8 w-8 sm:h-12 sm:w-12 text-white aspect-square" />
+                      <div className="mx-auto h-32 w-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                        <Package className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
                       </div>
                     )}
                     
                     {/* Accordion Trigger */}
-                    <AccordionTrigger className="px-2 py-2 hover:no-underline">
+                    <AccordionTrigger className="px-2 py-2 hover:no-underline flex-grow">
                       <div className="text-left w-full">
                         <div className="flex flex-col gap-1">
                           <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-2">
@@ -600,7 +595,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                                 }
                                 className="text-xs"
                               >
-                                {part.difficulty_level}
+                                {t(`repairs.${part.difficulty_level}`) || part.difficulty_level}
                               </Badge>
                             )}
                           </div>
@@ -609,7 +604,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                           {part.pricing && part.pricing.length > 0 && (
                             <div className="text-left">
                               <div className="text-xs font-bold text-primary">
-                                From ${Math.min(...part.pricing.map(p => p.total_cost || (p.price + (p.labor_cost || 0))))}
+                                {t('repairs.from')} €{Math.min(...part.pricing.map(p => p.total_cost || (p.price + (p.labor_cost || 0))))}
                               </div>
                             </div>
                           )}
@@ -631,10 +626,10 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                                   }
                                   className="text-xs font-medium"
                                 >
-                                  {pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
+                                  {t(`booking.${pricing.quality_type}`) || pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
                                 </Badge>
                                 <div className="text-sm font-bold text-primary">
-                                  ${pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                                  {formatPriceToEuro(pricing.total_cost || (pricing.price + (pricing.labor_cost || 0)))}
                                 </div>
                               </div>
                               
@@ -720,7 +715,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                           }
                           className="text-xs"
                         >
-                          {part.difficulty_level}
+                          {t(`repairs.${part.difficulty_level}`) || part.difficulty_level}
                         </Badge>
                       )}
                     </div>
@@ -748,12 +743,12 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                               }
                               className="text-xs font-medium"
                             >
-                              {pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
+                              {t(`booking.${pricing.quality_type}`) || pricing.quality_type.charAt(0).toUpperCase() + pricing.quality_type.slice(1)}
                             </Badge>
                           </div>
                           <div className="text-right">
                             <div className="text-xl font-bold text-primary">
-                              ${pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                              €{pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
                             </div>
                           </div>
                         </div>
