@@ -3,13 +3,17 @@ import { useAuth } from '@/hooks/useAuth';
 import { RepairItemForm } from '@/components/admin/RepairItemForm';
 import { RepairItemsList } from '@/components/admin/RepairItemsList';
 import { HierarchicalAdmin } from '@/components/admin/HierarchicalAdmin';
+import { SEO, getPageSEOConfig } from '@/components/SEO';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Settings, Package, Layers } from 'lucide-react';
 
 export default function AdminRepairs() {
   const { user, userRole } = useAuth();
+  const { t } = useLanguage();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const seoConfig = getPageSEOConfig('adminRepairs', t);
 
   if (!user) {
     return (
@@ -41,6 +45,7 @@ export default function AdminRepairs() {
 
   return (
     <div className="container mx-auto py-8">
+      <SEO {...seoConfig} />
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Repair Services Management</h1>
         <p className="text-muted-foreground mt-2">

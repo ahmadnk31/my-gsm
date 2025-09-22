@@ -1,3 +1,23 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and user-specific pages
+Disallow: /dashboard
+Disallow: /admin-repairs
+Disallow: /auth
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+Disallow: /*.json$
+Disallow: /*?*
+
+# Allow important pages
+Allow: /
+Allow: /repairs
+Allow: /accessories
+Allow: /search
+
+# Allow social media crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +30,8 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Sitemap location
+Sitemap: https://phoneHub.com/sitemap.xml
+
+# Crawl-delay for bots
+Crawl-delay: 1

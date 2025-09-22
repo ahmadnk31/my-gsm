@@ -918,6 +918,63 @@ export type Database = {
           },
         ]
       }
+      banners: {
+        Row: {
+          background_color: string
+          button_link: string | null
+          button_text: string | null
+          created_at: string
+          description: string
+          end_date: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          priority: number
+          start_date: string | null
+          subtitle: string | null
+          text_color: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          background_color?: string
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          description: string
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          priority?: number
+          start_date?: string | null
+          subtitle?: string | null
+          text_color?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          background_color?: string
+          button_link?: string | null
+          button_text?: string | null
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          priority?: number
+          start_date?: string | null
+          subtitle?: string | null
+          text_color?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

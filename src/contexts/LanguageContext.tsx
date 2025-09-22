@@ -1,3 +1,4 @@
+import { off } from 'process';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Language = 'en' | 'nl';
@@ -81,6 +82,7 @@ const translations = {
       repairManagement: 'Repair Management',
       accessoriesManagement: 'Accessories Management',
       tradeInManagement: 'Trade-In Management',
+      bannerManagement: 'Banner Management',
       search: 'Search',
       cart: 'Cart',
       wishlist: 'Wishlist',
@@ -426,6 +428,29 @@ const translations = {
       loginRequiredWishlist: 'Please log in to manage wishlist',
       productNotFound: 'Product not found',
       invalidProduct: 'Invalid product',
+      inCart: 'In Cart',
+      quantityInCart: 'Quantity in cart:',
+      adding: 'Adding...',
+      goToCartCheckout: 'Go to Cart & Checkout',
+      inCartLabel: 'in cart',
+      viewCart: 'View Cart',
+      buyNow: 'Buy Now',
+      off: 'off',
+      available: 'available',
+      sameDayShipping: 'Get it by tomorrow with same-day shipping',
+      monthWarranty: 'Month Warranty',
+      fullManufacturerWarranty: 'Full manufacturer warranty included',
+      shippingReturns: 'Shipping & Returns',
+      noReviews: 'No reviews yet',
+      beFirstToReview: 'Be the first to review this product',
+      shippingInformation: 'Shipping Information',
+      expressShipping: 'Express shipping available (next business day)',
+      trackingInformation: 'Tracking information provided',
+      freeReturns: 'Free returns on all orders',
+      returnShippingLabel: 'Prepaid return shipping label included',
+      refundProcessed: 'Refunds processed within 3-5 business days',
+      returnWindow: '30-day return window for unused items',
+      viewAll: 'View All',
     },
     
     // Cart
@@ -562,6 +587,108 @@ const translations = {
       validationError: 'Please check your input and try again',
       pageNotFound: 'Oops! Page not found',
     },
+
+    // SEO Content
+    seo: {
+      siteName: 'Blueprint Phone Zen',
+      tagline: 'Premium Phone Repair & Accessories Store',
+      
+      // Page titles
+      titles: {
+        home: 'Home',
+        repairs: 'Phone Repair Services',
+        accessories: 'Phone Accessories',
+        dashboard: 'Dashboard',
+        auth: 'Login & Registration',
+        search: 'Search Results',
+        categories: 'Device Repair Services',
+        brands: 'Brand Repair Services',
+        models: 'Device Model Repairs',
+        parts: 'Component Repair Services',
+      },
+      
+      // Meta descriptions
+      descriptions: {
+        home: 'Expert phone repair services and premium mobile accessories. Fast repairs, genuine parts, competitive prices with warranty coverage.',
+        repairs: 'Professional phone repair services for all major brands. Screen replacement, battery repair, water damage recovery, and more with warranty.',
+        accessories: 'Premium phone accessories including cases, chargers, screen protectors, headphones and more. Compatible with iPhone, Samsung, Google Pixel.',
+        dashboard: 'Manage your repair bookings, track order status, and access your account information.',
+        auth: 'Sign in to your account or create a new account to book repair services and track your orders.',
+        search: 'Find the perfect phone repair service or accessory. Search our comprehensive catalog of devices and services.',
+        categories: 'Choose your device type for professional repair services. Smartphones, tablets, laptops, and more with expert technicians.',
+        brands: 'Professional repair services for all major device brands. Genuine parts, expert technicians, warranty coverage.',
+        models: 'Specific repair services for your exact device model. Expert diagnosis, genuine parts, fast turnaround.',
+        parts: 'Professional component repair and replacement services. Screen, battery, camera, speaker repairs with warranty.',
+      },
+      
+      // Keywords
+      keywords: {
+        base: 'phone repair, mobile repair, device repair service',
+        home: 'phone repair, mobile repair, iPhone repair, Samsung repair, screen replacement, battery replacement',
+        repairs: 'phone repair, screen replacement, battery replacement, iPhone repair, Samsung repair, mobile repair service',
+        accessories: 'phone accessories, phone cases, screen protectors, chargers, headphones, mobile accessories',
+        categories: 'device repair, smartphone repair, tablet repair, laptop repair, mobile device service',
+        brands: 'brand repair service, authorized repair, genuine parts, warranty repair',
+        models: 'model repair, device specific repair, exact model service, professional diagnosis',
+        parts: 'component repair, part replacement, screen repair, battery replacement, camera fix',
+      },
+      
+      // Dynamic content templates
+      templates: {
+        categoryTitle: '{{category}} Repair Services | Phone Repair Services',
+        categoryDescription: 'Expert {{category}} repair services. Choose from top brands with genuine parts and warranty coverage.',
+        brandTitle: '{{brand}} {{category}} Repair | Professional Service',
+        brandDescription: 'Professional {{brand}} {{category}} repair services. All models supported with genuine parts and expert technicians.',
+        modelTitle: '{{brand}} {{model}} Parts & Repair Services',
+        modelDescription: '{{brand}} {{model}} repair services. Screen replacement, battery repair, camera fix, and more with genuine parts.',
+        serviceTitle: '{{brand}} {{model}} {{service}} Repair Service',
+        serviceDescription: 'Professional {{brand}} {{model}} {{service}} repair service. Expert technicians, genuine parts, fast turnaround, warranty included.',
+        accessoryTitle: '{{name}} | {{brand}} {{category}}',
+        accessoryDescription: '{{name}} - Premium mobile accessory from {{brand}}. High quality, competitive prices, fast shipping.',
+      },
+      
+      // Service types for SEO
+      serviceTypes: {
+        screen: 'Screen Replacement',
+        battery: 'Battery Replacement',
+        camera: 'Camera Repair',
+        speaker: 'Speaker Repair',
+        microphone: 'Microphone Repair',
+        charging: 'Charging Port Repair',
+        water: 'Water Damage Recovery',
+        software: 'Software Repair',
+        unlock: 'Device Unlocking',
+        diagnostic: 'Diagnostic Service',
+      },
+    },
+
+    // Banner Content
+    banner: {
+      promotion: {
+        title: '50% OFF Screen Repairs',
+        subtitle: 'Limited Time Offer',
+        description: 'Professional screen replacement for all major phone brands. Book now and save big!',
+        buttonText: 'Book Repair',
+      },
+      feature: {
+        title: 'New iPhone 15 Accessories',
+        subtitle: 'Just Arrived',
+        description: 'Premium cases, wireless chargers, and screen protectors for the latest iPhone.',
+        buttonText: 'Shop Now',
+      },
+      announcement: {
+        title: 'Extended Warranty Available',
+        subtitle: 'Peace of Mind',
+        description: '6-month warranty on all repair services. Professional quality guaranteed.',
+        buttonText: 'Learn More',
+      },
+      seasonal: {
+        title: 'Holiday Special Deals',
+        subtitle: 'Gift Your Loved Ones',
+        description: 'Premium phone accessories at unbeatable prices. Perfect gifts for tech lovers!',
+        buttonText: 'Explore Gifts',
+      },
+    },
   },
   
   nl: {
@@ -578,6 +705,7 @@ const translations = {
       repairManagement: 'Reparatiebeheer',
       accessoriesManagement: 'Accessoirebeheer',
       tradeInManagement: 'Inruilbeheer',
+      bannerManagement: 'Bannerbeheer',
       search: 'Zoeken',
       cart: 'Winkelwagen',
       wishlist: 'Verlanglijst',
@@ -869,13 +997,38 @@ const translations = {
       // AccessoryProduct page
       description: 'Beschrijving',
       keyFeatures: 'Belangrijkste Kenmerken',
+      off: ' korting',
+      sameDayShipping: 'Ontvang het morgen met same-day verzending',
+      monthWarranty: 'Maand Garantie',
+      fullManufacturerWarranty: 'Volledige fabrieksgarantie inbegrepen',
+      shippingReturns: 'Verzending & Retouren',
+      noReviews: 'Nog geen beoordelingen',
+      beFirstToReview: 'Wees de eerste die dit product beoordeelt',
+      shippingInformation: 'Verzendinformatie',
+      expressShipping: 'Express verzending beschikbaar (volgende werkdag)',
+      trackingInformation: 'Tracking informatie verstrekt',
+      freeReturns: 'Gratis retouren op alle bestellingen',
+      returnShippingLabel: 'Voorafbetaalde retour verzendlabel inbegrepen',
+      refundProcessed: 'Terugbetalingen verwerkt binnen 3-5 werkdagen',
+      returnWindow: '30 dagen retourtermijn voor ongebruikte items',
+      viewAll: 'Alles Bekijken',
+      keyFeaturesList: [
+        'Hoogwaardige materialen voor duurzaamheid',
+        'Compatibel met meerdere apparaten',
+        'Stijlvol en functioneel ontwerp',
+        'Garantie inbegrepen voor gemoedsrust',
+        'Eenvoudig te installeren en te gebruiken',
+      ],
+      available: 'beschikbaar',
+      productDetails: 'Productdetails',
+      descriptionFallback: 'Geen beschrijving beschikbaar voor dit product.',
       compatibility: 'Compatibiliteit',
       stockStatus: 'Voorraadstatus',
       inStock: 'Op Voorraad',
       outOfStock: 'Niet Op Voorraad',
       lowStock: 'Weinig Voorraad',
       quantity: 'Aantal',
-      addToCart: 'Toevoegen aan Winkelwagen',
+      addToCart: 'Toevoegen',
       addToWishlist: 'Toevoegen aan Verlanglijst',
       removeFromWishlist: 'Verwijderen van Verlanglijst',
       readMore: 'Lees meer',
@@ -922,6 +1075,10 @@ const translations = {
       loginRequiredWishlist: 'Log in om verlanglijst te beheren',
       productNotFound: 'Product niet gevonden',
       invalidProduct: 'Ongeldig product',
+      inCart: 'In Winkelwagen',
+      quantityInCart: 'Aantal in winkelwagen:',
+      adding: 'Toevoegen...',
+      
     },
     
     // Cart
@@ -1057,6 +1214,108 @@ const translations = {
       notFound: 'De gevraagde bron is niet gevonden',
       validationError: 'Controleer uw invoer en probeer opnieuw',
       pageNotFound: 'Oeps! Pagina niet gevonden',
+    },
+
+    // SEO Content
+    seo: {
+      siteName: 'Blueprint Phone Zen',
+      tagline: 'Premium Telefoon Reparatie & Accessoires Winkel',
+      
+      // Page titles
+      titles: {
+        home: 'Thuis',
+        repairs: 'Telefoon Reparatie Diensten',
+        accessories: 'Telefoon Accessoires',
+        dashboard: 'Dashboard',
+        auth: 'Inloggen & Registratie',
+        search: 'Zoekresultaten',
+        categories: 'Apparaat Reparatie Diensten',
+        brands: 'Merk Reparatie Diensten',
+        models: 'Apparaat Model Reparaties',
+        parts: 'Onderdeel Reparatie Diensten',
+      },
+      
+      // Meta descriptions
+      descriptions: {
+        home: 'Expert telefoon reparatie diensten en premium mobiele accessoires. Snelle reparaties, originele onderdelen, concurrerende prijzen met garantiedekking.',
+        repairs: 'Professionele telefoon reparatie diensten voor alle grote merken. Schermvervanging, batterij reparatie, waterschade herstel, en meer met garantie.',
+        accessories: 'Premium telefoon accessoires inclusief hoesjes, opladers, schermbeschermers, koptelefoons en meer. Compatibel met iPhone, Samsung, Google Pixel.',
+        dashboard: 'Beheer uw reparatie boekingen, volg bestelling status, en toegang tot uw account informatie.',
+        auth: 'Log in op uw account of maak een nieuw account aan om reparatie diensten te boeken en uw bestellingen te volgen.',
+        search: 'Vind de perfecte telefoon reparatie dienst of accessoire. Doorzoek ons uitgebreide catalogus van apparaten en diensten.',
+        categories: 'Kies uw apparaat type voor professionele reparatie diensten. Smartphones, tablets, laptops, en meer met expert technici.',
+        brands: 'Professionele reparatie diensten voor alle grote apparaat merken. Originele onderdelen, expert technici, garantiedekking.',
+        models: 'Specifieke reparatie diensten voor uw exacte apparaat model. Expert diagnose, originele onderdelen, snelle doorlooptijd.',
+        parts: 'Professionele component reparatie en vervangingsdiensten. Scherm, batterij, camera, luidspreker reparaties met garantie.',
+      },
+      
+      // Keywords
+      keywords: {
+        base: 'telefoon reparatie, mobiele reparatie, apparaat reparatie dienst',
+        home: 'telefoon reparatie, mobiele reparatie, iPhone reparatie, Samsung reparatie, schermvervanging, batterij vervanging',
+        repairs: 'telefoon reparatie, schermvervanging, batterij vervanging, iPhone reparatie, Samsung reparatie, mobiele reparatie dienst',
+        accessories: 'telefoon accessoires, telefoon hoesjes, schermbeschermers, opladers, koptelefoons, mobiele accessoires',
+        categories: 'apparaat reparatie, smartphone reparatie, tablet reparatie, laptop reparatie, mobiele apparaat service',
+        brands: 'merk reparatie service, geautoriseerde reparatie, originele onderdelen, garantie reparatie',
+        models: 'model reparatie, apparaat specifieke reparatie, exact model service, professionele diagnose',
+        parts: 'component reparatie, onderdeel vervanging, scherm reparatie, batterij vervanging, camera reparatie',
+      },
+      
+      // Dynamic content templates
+      templates: {
+        categoryTitle: '{{category}} Reparatie Diensten | Telefoon Reparatie Diensten',
+        categoryDescription: 'Expert {{category}} reparatie diensten. Kies uit topmerken met originele onderdelen en garantiedekking.',
+        brandTitle: '{{brand}} {{category}} Reparatie | Professionele Service',
+        brandDescription: 'Professionele {{brand}} {{category}} reparatie diensten. Alle modellen ondersteund met originele onderdelen en expert technici.',
+        modelTitle: '{{brand}} {{model}} Onderdelen & Reparatie Diensten',
+        modelDescription: '{{brand}} {{model}} reparatie diensten. Schermvervanging, batterij reparatie, camera reparatie, en meer met originele onderdelen.',
+        serviceTitle: '{{brand}} {{model}} {{service}} Reparatie Service',
+        serviceDescription: 'Professionele {{brand}} {{model}} {{service}} reparatie service. Expert technici, originele onderdelen, snelle doorlooptijd, garantie inbegrepen.',
+        accessoryTitle: '{{name}} | {{brand}} {{category}}',
+        accessoryDescription: '{{name}} - Premium mobiele accessoire van {{brand}}. Hoge kwaliteit, concurrerende prijzen, snelle verzending.',
+      },
+      
+      // Service types for SEO
+      serviceTypes: {
+        screen: 'Schermvervanging',
+        battery: 'Batterij Vervanging',
+        camera: 'Camera Reparatie',
+        speaker: 'Luidspreker Reparatie',
+        microphone: 'Microfoon Reparatie',
+        charging: 'Oplaadpoort Reparatie',
+        water: 'Waterschade Herstel',
+        software: 'Software Reparatie',
+        unlock: 'Apparaat Ontgrendelen',
+        diagnostic: 'Diagnose Service',
+      },
+    },
+
+    // Banner Content
+    banner: {
+      promotion: {
+        title: '50% KORTING Schermreparaties',
+        subtitle: 'Beperkte Tijd Aanbieding',
+        description: 'Professionele schermvervanging voor alle grote telefoonmerken. Boek nu en bespaar veel!',
+        buttonText: 'Boek Reparatie',
+      },
+      feature: {
+        title: 'Nieuwe iPhone 15 Accessoires',
+        subtitle: 'Net Binnen',
+        description: 'Premium hoesjes, draadloze opladers en schermbeschermers voor de nieuwste iPhone.',
+        buttonText: 'Shop Nu',
+      },
+      announcement: {
+        title: 'Uitgebreide Garantie Beschikbaar',
+        subtitle: 'Gemoedsrust',
+        description: '6 maanden garantie op alle reparatiediensten. Professionele kwaliteit gegarandeerd.',
+        buttonText: 'Meer Informatie',
+      },
+      seasonal: {
+        title: 'Feestdagen Speciale Aanbiedingen',
+        subtitle: 'Geef Je Dierbaren Een Cadeau',
+        description: 'Premium telefoon accessoires tegen onverslaanbare prijzen. Perfecte cadeaus voor techliefhebbers!',
+        buttonText: 'Ontdek Cadeaus',
+      },
     },
   },
 };

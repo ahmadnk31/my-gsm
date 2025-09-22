@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useRealtimeBookings } from '@/hooks/useRealtimeBookings';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { SEO, getPageSEOConfig } from '@/components/SEO';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ChatContent } from '@/components/chat/ChatContent';
 import { QuoteRequestsManager } from '@/components/admin/QuoteRequestsManager';
+import { BannerManagement } from '@/components/admin/BannerManagement';
 import { 
   Smartphone, 
   LogOut, 
@@ -81,6 +83,7 @@ const Dashboard = () => {
   const { user, signOut, userRole, loading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { 
     bookings, 
@@ -92,6 +95,9 @@ const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [chatBookingId, setChatBookingId] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
+
+  // Get the tab from URL parameters, default to 'overview'
+  const defaultTab = searchParams.get('tab') || 'overview';
 
   useEffect(() => {
     if (!loading && !user) {
@@ -392,18 +398,22 @@ const Dashboard = () => {
     );
   }
 
+  const seoConfig = getPageSEOConfig('dashboard', t);
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO {...seoConfig} />
       {/* Header */}
       
 
       <div className="container mx-auto px-4 py-8">
         {userRole === 'admin' ? (
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+          <Tabs defaultValue={defaultTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
               <TabsTrigger value="all-bookings">{t('dashboard.allBookings')}</TabsTrigger>
               <TabsTrigger value="quotes">{t('dashboard.quotes')}</TabsTrigger>
+              <TabsTrigger value="banners">Banners</TabsTrigger>
               <TabsTrigger value="analytics">{t('dashboard.analytics')}</TabsTrigger>
               <TabsTrigger value="my-bookings">{t('dashboard.myBookings')}</TabsTrigger>
             </TabsList>
@@ -615,6 +625,10 @@ const Dashboard = () => {
 
             <TabsContent value="quotes" className="space-y-6">
               <QuoteRequestsManager />
+            </TabsContent>
+
+            <TabsContent value="banners" className="space-y-6">
+              <BannerManagement />
             </TabsContent>
             
             <TabsContent value="all-bookings">

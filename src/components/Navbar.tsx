@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ShoppingCart, Menu, Search, Phone, User, Settings, LogOut, Shield, Wrench, Heart, TrendingUp, Package, ShoppingBag } from "lucide-react";
+import { ShoppingCart, Menu, Search, Phone, User, Settings, LogOut, Shield, Wrench, Heart, TrendingUp, Package, ShoppingBag, Palette } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart, useWishlist } from "@/hooks/useAccessories";
@@ -90,6 +90,12 @@ const Navbar = () => {
               <Link to="/admin/accessories" className="w-full cursor-pointer">
                 <Shield className="mr-2 h-4 w-4" />
                 <span>{t('nav.accessoriesManagement')}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard?tab=banners" className="w-full cursor-pointer">
+                <Palette className="mr-2 h-4 w-4" />
+                <span>{t('nav.bannerManagement')}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -249,6 +255,12 @@ const Navbar = () => {
                     <Button variant="ghost" size="sm" className="w-full justify-start">
                       <Shield className="h-4 w-4 mr-2" />
                       {t('nav.accessoriesManagement')}
+                    </Button>
+                  </Link>
+                  <Link to="/dashboard?tab=banners" onClick={onActionClick}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <Palette className="h-4 w-4 mr-2" />
+                      {t('nav.bannerManagement')}
                     </Button>
                   </Link>
                   <Link to="/admin/trade-in" onClick={onActionClick}>

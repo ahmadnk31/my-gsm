@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { SEO, getPageSEOConfig } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { generateSlug, formatPriceToEuro } from "@/lib/utils";
 import { 
@@ -55,7 +56,9 @@ import {
   useWishlist,
   useAddToWishlist,
   useRemoveFromWishlist,
-  useAddToCart
+  useAddToCart,
+  useCart,
+  useUpdateCartQuantity
 } from '@/hooks/useAccessories';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -95,9 +98,11 @@ export default function Accessories() {
   const { data: categories = [], isLoading: categoriesLoading } = useAccessoryCategories();
   const { data: brands = [], isLoading: brandsLoading } = useAccessoryBrands();
   const { data: wishlistItems = [] } = useWishlist(user?.id);
+  const { data: cartItems = [] } = useCart(user?.id);
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
   const addToCartMutation = useAddToCart();
+  const updateCartQuantityMutation = useUpdateCartQuantity();
 
   // Handle URL parameters
   useEffect(() => {
@@ -344,6 +349,24 @@ export default function Accessories() {
     });
   };
 
+  const getCartQuantity = (accessoryId: string): number => {
+    const cartItem = cartItems.find(item => item.accessory_id === accessoryId);
+    return cartItem ? cartItem.quantity : 0;
+  };
+
+  const handleQuantityChange = (accessoryId: string, newQuantity: number) => {
+    if (!user) {
+      toast.error('Please log in to update cart');
+      return;
+    }
+
+    updateCartQuantityMutation.mutate({
+      userId: user.id,
+      accessoryId,
+      quantity: newQuantity
+    });
+  };
+
   const handleCategoryToggle = (categoryId: string) => {
     setSelectedCategories(prev => 
       prev.includes(categoryId) 
@@ -492,19 +515,68 @@ export default function Accessories() {
 
             {/* Action Buttons */}
             <div className="flex gap-2 pt-2">
-              <Button 
-                size="sm"
-                className="flex-1"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddToCart(accessory.id);
-                }}
-                disabled={accessory.stock_quantity <= 0}
-              >
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                Add to Cart
-              </Button>
+              {(() => {
+                const cartQuantity = getCartQuantity(accessory.id);
+                
+                if (cartQuantity > 0) {
+                  // Show increment/decrement controls if item is in cart
+                  return (
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleQuantityChange(accessory.id, cartQuantity - 1);
+                          }}
+                          disabled={cartQuantity <= 1 || updateCartQuantityMutation.isPending}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-8 text-center text-sm font-medium">
+                          {cartQuantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleQuantityChange(accessory.id, cartQuantity + 1);
+                          }}
+                          disabled={updateCartQuantityMutation.isPending || accessory.stock_quantity <= cartQuantity}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      
+                    </div>
+                  );
+                } else {
+                  // Show Add to Cart button if item is not in cart
+                  return (
+                    <Button 
+                      size="sm"
+                      className="flex-1"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleAddToCart(accessory.id);
+                      }}
+                      disabled={accessory.stock_quantity <= 0 || addToCartMutation.isPending}
+                    >
+                      {addToCartMutation.isPending ? (
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      ) : (
+                        <ShoppingCart className="h-3 w-3 mr-1" />
+                      )}
+                      {t('accessories.addToCart')}
+                    </Button>
+                  );
+                }
+              })()}
             </div>
           </div>
         </CardContent>
@@ -747,8 +819,11 @@ export default function Accessories() {
     </Card>
   );
 
+  const seoConfig = getPageSEOConfig('accessories', t);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO {...seoConfig} />
       {/* Hero Section */}
     
 

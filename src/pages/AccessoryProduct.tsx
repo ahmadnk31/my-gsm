@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SEO } from "@/components/SEO";
+import { ProductStructuredData } from "@/components/StructuredData";
 import { 
   Star, 
   ShoppingCart, 
@@ -20,7 +22,10 @@ import {
   Zap,
   Clock,
   Users,
-  ThumbsUp
+  ThumbsUp,
+  Minus,
+  Plus,
+  Loader2
 } from "lucide-react";
 import { 
   useAccessoryBySlug,
@@ -29,7 +34,9 @@ import {
   useWishlist,
   useAddToWishlist,
   useRemoveFromWishlist,
-  useAddToCart
+  useAddToCart,
+  useCart,
+  useUpdateCartQuantity
 } from '@/hooks/useAccessories';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -59,9 +66,11 @@ export default function AccessoryProduct() {
 
   const { data: relatedAccessories = [] } = useRelatedAccessories(accessory?.id, accessory?.category_id, accessory?.brand_id);
   const { data: wishlistItems = [] } = useWishlist(user?.id);
+  const { data: cartItems = [] } = useCart(user?.id);
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
   const addToCartMutation = useAddToCart();
+  const updateCartQuantityMutation = useUpdateCartQuantity();
 
   const isInWishlist = wishlistItems.some(item => item.accessory_id === accessory?.id);
   const hasDiscount = accessory?.original_price && accessory.original_price > accessory.price;
@@ -113,6 +122,25 @@ export default function AccessoryProduct() {
         accessoryId: accessory.id
       });
     }
+  };
+
+  const getCartQuantity = (): number => {
+    if (!accessory) return 0;
+    const cartItem = cartItems.find(item => item.accessory_id === accessory.id);
+    return cartItem ? cartItem.quantity : 0;
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (!user || !accessory) {
+      toast.error('Please log in to update cart');
+      return;
+    }
+
+    updateCartQuantityMutation.mutate({
+      userId: user.id,
+      accessoryId: accessory.id,
+      quantity: newQuantity
+    });
   };
 
   const nextImage = () => {
@@ -171,6 +199,29 @@ export default function AccessoryProduct() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      <SEO 
+        title={accessory?.name}
+        description={accessory?.description || `${accessory?.name} - Premium mobile accessory from ${accessory?.accessory_brands?.name}`}
+        keywords={`${accessory?.name}, ${accessory?.accessory_brands?.name}, ${accessory?.accessory_categories?.name}, mobile accessories, phone accessories`}
+        image={accessory?.image_url}
+        type="product"
+        url={window.location.href}
+      />
+      {accessory && (
+        <ProductStructuredData 
+          name={accessory.name}
+          description={accessory.description || ''}
+          image={accessory.image_url || ''}
+          brand={accessory.accessory_brands?.name || ''}
+          price={accessory.price}
+          currency="EUR"
+          rating={accessory.rating || undefined}
+          reviewCount={accessory.review_count || undefined}
+          availability={accessory.stock_quantity > 0 ? 'InStock' : 'OutOfStock'}
+          sku={accessory.id}
+          category={accessory.accessory_categories?.name}
+        />
+      )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="mb-6 sm:mb-8">
@@ -272,7 +323,7 @@ export default function AccessoryProduct() {
                 )}
                 {hasDiscount && (
                   <Badge variant="destructive">
-                    {discountPercentage}% OFF
+                    {discountPercentage}% {t('accessories.off')}
                   </Badge>
                 )}
                 {accessory.stock_quantity <= 0 && (
@@ -286,7 +337,7 @@ export default function AccessoryProduct() {
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="font-medium">{accessory.rating}</span>
-                  <span className="text-muted-foreground">({accessory.review_count} reviews)</span>
+                  <span className="text-muted-foreground">({accessory.review_count} {t('accessories.reviews')})</span>
                 </div>
                 <span className="text-muted-foreground">•</span>
                 <span className="text-muted-foreground">
@@ -364,7 +415,7 @@ export default function AccessoryProduct() {
               {accessory.stock_quantity > 0 ? (
                 <div className="flex items-center gap-2 text-green-600">
                   <CheckCircle className="h-4 w-4" />
-                  <span>{t('accessories.inStock')} ({accessory.stock_quantity} available)</span>
+                  <span>{t('accessories.inStock')} ({accessory.stock_quantity} {t('accessories.available')})</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-red-600">
@@ -380,46 +431,120 @@ export default function AccessoryProduct() {
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium">{t('accessories.quantity')}:</label>
                   <div className="flex items-center border rounded-md">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      disabled={quantity <= 1}
-                    >
-                      -
-                    </Button>
-                    <span className="px-4 py-2 text-sm font-medium">{quantity}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setQuantity(quantity + 1)}
-                      disabled={quantity >= accessory.stock_quantity}
-                    >
-                      +
-                    </Button>
+                    {(() => {
+                      const cartQuantity = getCartQuantity();
+                      const displayQuantity = cartQuantity > 0 ? cartQuantity : quantity;
+                      const isInCart = cartQuantity > 0;
+                      
+                      return (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (isInCart) {
+                                handleQuantityChange(cartQuantity - 1);
+                              } else {
+                                setQuantity(Math.max(1, quantity - 1));
+                              }
+                            }}
+                            disabled={displayQuantity <= 1 || (isInCart && updateCartQuantityMutation.isPending)}
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="px-4 py-2 text-sm font-medium min-w-[50px] text-center">
+                            {displayQuantity}
+                            {isInCart && <span className="text-xs text-green-600 ml-1">{t('accessories.inCartLabel')}</span>}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (isInCart) {
+                                handleQuantityChange(cartQuantity + 1);
+                              } else {
+                                setQuantity(quantity + 1);
+                              }
+                            }}
+                            disabled={displayQuantity >= accessory.stock_quantity || (isInCart && updateCartQuantityMutation.isPending)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <Button 
-                  className="flex-1" 
-                  size="lg"
-                  disabled={accessory.stock_quantity <= 0 || !user}
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  {accessory.stock_quantity <= 0 ? t('accessories.outOfStock') : t('accessories.addToCart')}
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={toggleWishlist}
-                  disabled={!user}
-                >
-                  <Heart className={`h-5 w-5 ${isInWishlist ? 'fill-red-500 text-red-500' : ''}`} />
-                </Button>
+                {(() => {
+                  const cartQuantity = getCartQuantity();
+                  
+                  if (cartQuantity > 0) {
+                    // Show checkout options if item is in cart
+                    return (
+                      <>
+                        <Button 
+                          variant="outline"
+                          className="flex-1" 
+                          size="lg"
+                          onClick={() => navigate('/cart')}
+                        >
+                          <ShoppingCart className="h-5 w-5 mr-2" />
+                          {t('accessories.viewCart')} ({cartQuantity})
+                        </Button>
+                        <Button 
+                          className="flex-1" 
+                          size="lg"
+                          onClick={() => navigate('/checkout')}
+                        >
+                          {t('accessories.buyNow')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={toggleWishlist}
+                          disabled={!user}
+                        >
+                          <Heart className={`h-5 w-5 ${isInWishlist ? 'fill-red-500 text-red-500' : ''}`} />
+                        </Button>
+                      </>
+                    );
+                  } else {
+                    // Show Add to Cart button if item is not in cart
+                    return (
+                      <>
+                        <Button 
+                          className="flex-1" 
+                          size="lg"
+                          disabled={accessory.stock_quantity <= 0 || !user || addToCartMutation.isPending}
+                          onClick={handleAddToCart}
+                        >
+                          {addToCartMutation.isPending ? (
+                            <>
+                              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                              {t('accessories.adding')}
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart className="h-5 w-5 mr-2" />
+                              {accessory.stock_quantity <= 0 ? t('accessories.outOfStock') : t('accessories.addToCart')}
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={toggleWishlist}
+                          disabled={!user}
+                        >
+                          <Heart className={`h-5 w-5 ${isInWishlist ? 'fill-red-500 text-red-500' : ''}`} />
+                        </Button>
+                      </>
+                    );
+                  }
+                })()}
               </div>
             </div>
 
@@ -429,8 +554,10 @@ export default function AccessoryProduct() {
                 <div className="flex items-center gap-3">
                   <Truck className="h-5 w-5 text-blue-600" />
                   <div>
-                    <p className="font-medium text-blue-900">Free Shipping</p>
-                    <p className="text-sm text-blue-700">Get it by tomorrow with same-day shipping</p>
+                    <p className="font-medium text-blue-900">
+                      {t('accessories.freeShipping')}
+                    </p>
+                    <p className="text-sm text-blue-700">{t('accessories.sameDayShipping')}</p>
                   </div>
                 </div>
               </CardContent>
@@ -443,8 +570,8 @@ export default function AccessoryProduct() {
                   <div className="flex items-center gap-3">
                     <Shield className="h-5 w-5 text-green-600" />
                     <div>
-                      <p className="font-medium text-green-900">{accessory.warranty_months}-Month Warranty</p>
-                      <p className="text-sm text-green-700">Full manufacturer warranty included</p>
+                      <p className="font-medium text-green-900">{accessory.warranty_months}-{t('accessories.monthWarranty')}</p>
+                      <p className="text-sm text-green-700">{t('accessories.fullManufacturerWarranty')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -456,9 +583,9 @@ export default function AccessoryProduct() {
         {/* Product Details Tabs */}
         <Tabs defaultValue="specifications" className="mb-16">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
-            <TabsTrigger value="shipping">Shipping & Returns</TabsTrigger>
+            <TabsTrigger value="specifications">{t('accessories.specifications')}</TabsTrigger>
+            <TabsTrigger value="reviews">{t('accessories.reviews')}</TabsTrigger>
+            <TabsTrigger value="shipping">{t('accessories.shippingReturns')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="specifications" className="mt-6">
@@ -475,7 +602,9 @@ export default function AccessoryProduct() {
                   )}
                   {accessory.weight_grams && (
                     <div className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="font-medium">Weight</span>
+                      <span className="font-medium">
+{t('accessories.weight')}
+                      </span>
                       <span className="text-muted-foreground">{accessory.weight_grams}g</span>
                     </div>
                   )}
@@ -497,8 +626,8 @@ export default function AccessoryProduct() {
               <CardContent className="p-6">
                 <div className="text-center py-8">
                   <StarIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No reviews yet</h3>
-                  <p className="text-muted-foreground">Be the first to review this product!</p>
+                  <h3 className="text-lg font-semibold mb-2">{t('accessories.noReviews')}</h3>
+                  <p className="text-muted-foreground">{t('accessories.beFirstToReview')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -511,13 +640,13 @@ export default function AccessoryProduct() {
                   <div>
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Truck className="h-5 w-5" />
-                      Shipping Information
+                      {t('accessories.shippingInformation')}
                     </h3>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Free standard shipping on orders over $50</li>
-                      <li>• Same-day shipping for orders placed before 2 PM</li>
-                      <li>• Express shipping available for additional cost</li>
-                      <li>• Tracking information provided via email</li>
+                      <li>• {t('accessories.freeShipping')}</li>
+                      <li>• {t('accessories.sameDayShipping')}</li>
+                      <li>• {t('accessories.expressShipping')}</li>
+                      <li>• {t('accessories.trackingInformation')}</li>
                     </ul>
                   </div>
                   
@@ -526,13 +655,13 @@ export default function AccessoryProduct() {
                   <div>
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Shield className="h-5 w-5" />
-                      Return Policy
+                      {t('accessories.returnPolicy')}
                     </h3>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• 30-day return window for unused items</li>
-                      <li>• Free returns for defective products</li>
-                      <li>• Return shipping label provided for eligible returns</li>
-                      <li>• Refund processed within 3-5 business days</li>
+                      <li>• {t('accessories.returnWindow')}</li>
+                      <li>• {t('accessories.freeReturns')}</li>
+                      <li>• {t('accessories.returnShippingLabel')}</li>
+                      <li>• {t('accessories.refundProcessed')}</li>
                     </ul>
                   </div>
                 </div>
@@ -547,7 +676,7 @@ export default function AccessoryProduct() {
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold">{t('accessories.relatedProducts')}</h2>
               <Link to="/accessories" className="text-primary hover:underline">
-                View All
+                {t('accessories.viewAll')}
               </Link>
             </div>
             

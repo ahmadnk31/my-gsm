@@ -1,75 +1,20 @@
-import { useSearchParams } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { SEO, getPageSEOConfig } from "@/components/SEO";
+import { ServiceStructuredData } from "@/components/StructuredData";
 import { BookingModal } from "@/components/booking/BookingModal";
 import { HierarchicalRepairsGrid } from "@/components/HierarchicalRepairsGrid";
-import { QuoteRequestModal } from "@/components/quote/QuoteRequestModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Smartphone, Shield, Clock, CheckCircle, Wrench, Battery, Camera, Volume2, Wifi, Droplets, Star, Calendar, MapPin, Phone } from "lucide-react";
 
 
 const RepairServices = () => {
   const { t } = useLanguage();
-  const [searchParams] = useSearchParams();
-  const brandParam = searchParams.get('brand');
-  const categoryParam = searchParams.get('category');
-  const serviceParam = searchParams.get('service');
-
-  const services = [{
-    icon: Smartphone,
-    title: t('repairs.screenReplacement'),
-    description: t('repairs.screenReplacementDesc'),
-    price: `${t('repairs.from')} $79`,
-    time: "30-45 min",
-    popular: true
-  }, {
-    icon: Battery,
-    title: t('repairs.batteryReplacement'),
-    description: t('repairs.batteryReplacementDesc'),
-    price: `${t('repairs.from')} $49`,
-    time: "20-30 min",
-    popular: true
-  }, {
-    icon: Camera,
-    title: t('repairs.cameraRepair'),
-    description: t('repairs.cameraRepairDesc'),
-    price: `${t('repairs.from')} $89`,
-    time: "45-60 min",
-    popular: false
-  }, {
-    icon: Volume2,
-    title: t('repairs.speakerAudio'),
-    description: t('repairs.speakerAudioDesc'),
-    price: `${t('repairs.from')} $59`,
-    time: "30-45 min",
-    popular: false
-  }, {
-    icon: Wifi,
-    title: t('repairs.connectivityIssues'),
-    description: t('repairs.connectivityIssuesDesc'),
-    price: `${t('repairs.from')} $69`,
-    time: "45-60 min",
-    popular: false
-  }, {
-    icon: Droplets,
-    title: t('repairs.waterDamage'),
-    description: t('repairs.waterDamageDesc'),
-    price: `${t('repairs.from')} $99`,
-    time: "2-24 hours",
-    popular: false
-  }];
-  return <section id="repairs-section" className="py-20 bg-background">
+  
+  return <section id="repairs-section" className="bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-heading text-foreground mb-6">
-            {t('repairs.ourRepairServices')}
-            <span className="block text-gradient-primary"> {t('repairs.services')}</span>
-          </h2>
-          <p className="text-body text-muted-foreground max-w-2xl mx-auto">
-            {t('repairs.servicesDescription')}
-          </p>
-        </div>
+        
 
         <HierarchicalRepairsGrid />
       </div>
@@ -229,11 +174,34 @@ const ContactRepair = () => {
     </section>;
 };
 const Repairs = () => {
-  return <div className="min-h-screen bg-background">
+  const { t } = useLanguage();
+  const seoConfig = getPageSEOConfig('repairs', t);
+  
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Base SEO - will be overridden by dynamic SEO in HierarchicalRepairsGrid */}
+      <SEO 
+        {...seoConfig}
+        title={t('seo.titles.repairs')}
+        description={t('seo.descriptions.repairs')}
+      />
+      <ServiceStructuredData 
+        name={t('seo.serviceTypes.diagnostic') + ' ' + t('seo.titles.repairs')}
+        description={t('seo.descriptions.repairs')}
+        provider={t('seo.siteName')}
+        serviceType="Electronics Repair"
+        areaServed="Worldwide"
+        availableChannel={{
+          url: "https://phoneHub.com/repairs",
+          name: "Online Booking System"
+        }}
+      />
       <RepairServices />
       <RepairProcess />
       <RepairGuarantees />
       <ContactRepair />
-    </div>;
+    </div>
+  );
 };
+
 export default Repairs;

@@ -238,26 +238,33 @@ export const useDeviceCategoryByName = (categoryName: string | undefined) => {
   });
 };
 
-// Find category by slug (for URL parameter handling)
+// Find category by slug (generated from name)
 export const useDeviceCategoryBySlug = (categorySlug: string | undefined) => {
   return useQuery({
     queryKey: ['device-category-by-slug', categorySlug],
     queryFn: async (): Promise<DeviceCategory | null> => {
       if (!categorySlug) return null;
       
+      // Get all active categories and find the one with matching slug
       const { data, error } = await supabase
         .from('device_categories')
         .select('*')
-        .eq('slug', categorySlug)
-        .eq('is_active', true)
-        .limit(1)
-        .single();
+        .eq('is_active', true);
 
-      if (error) {
-        if (error.code === 'PGRST116') return null; // No rows found
-        throw error;
-      }
-      return data;
+      if (error) throw error;
+      
+      // Find category by matching generated slug (no separators)
+      const category = data?.find(cat => {
+        const generatedSlug = cat.name
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s]/g, '')
+          .replace(/\s+/g, '')
+          .replace(/[^a-z0-9]/g, '');
+        return generatedSlug === categorySlug;
+      });
+
+      return category || null;
     },
     enabled: !!categorySlug,
     staleTime: 10 * 60 * 1000,
@@ -265,26 +272,33 @@ export const useDeviceCategoryBySlug = (categorySlug: string | undefined) => {
   });
 };
 
-// Find brand by slug (for URL parameter handling)
+// Find brand by slug (generated from name)
 export const useDeviceBrandBySlug = (brandSlug: string | undefined) => {
   return useQuery({
     queryKey: ['device-brand-by-slug', brandSlug],
     queryFn: async (): Promise<DeviceBrand | null> => {
       if (!brandSlug) return null;
       
+      // Get all active brands and find the one with matching slug
       const { data, error } = await supabase
         .from('device_brands')
         .select('*')
-        .eq('slug', brandSlug)
-        .eq('is_active', true)
-        .limit(1)
-        .single();
+        .eq('is_active', true);
 
-      if (error) {
-        if (error.code === 'PGRST116') return null; // No rows found
-        throw error;
-      }
-      return data;
+      if (error) throw error;
+      
+      // Find brand by matching generated slug (no separators)
+      const brand = data?.find(br => {
+        const generatedSlug = br.name
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s]/g, '')
+          .replace(/\s+/g, '')
+          .replace(/[^a-z0-9]/g, '');
+        return generatedSlug === brandSlug;
+      });
+
+      return brand || null;
     },
     enabled: !!brandSlug,
     staleTime: 10 * 60 * 1000,
@@ -292,26 +306,33 @@ export const useDeviceBrandBySlug = (brandSlug: string | undefined) => {
   });
 };
 
-// Find model by slug (for URL parameter handling)
+// Find model by slug (generated from name)
 export const useDeviceModelBySlug = (modelSlug: string | undefined) => {
   return useQuery({
     queryKey: ['device-model-by-slug', modelSlug],
     queryFn: async (): Promise<DeviceModel | null> => {
       if (!modelSlug) return null;
       
+      // Get all active models and find the one with matching slug
       const { data, error } = await supabase
         .from('device_models')
         .select('*')
-        .eq('slug', modelSlug)
-        .eq('is_active', true)
-        .limit(1)
-        .single();
+        .eq('is_active', true);
 
-      if (error) {
-        if (error.code === 'PGRST116') return null; // No rows found
-        throw error;
-      }
-      return data;
+      if (error) throw error;
+      
+      // Find model by matching generated slug (no separators)
+      const model = data?.find(mod => {
+        const generatedSlug = mod.name
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s]/g, '')
+          .replace(/\s+/g, '')
+          .replace(/[^a-z0-9]/g, '');
+        return generatedSlug === modelSlug;
+      });
+
+      return model || null;
     },
     enabled: !!modelSlug,
     staleTime: 10 * 60 * 1000,

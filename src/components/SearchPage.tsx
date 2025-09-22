@@ -11,6 +11,26 @@ import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { Search } from './Search';
 
+// Helper function to get the full image URL
+const getImageUrl = (imageUrl: string | null, bucket = 'accessories') => {
+  if (!imageUrl) return null;
+  
+  // If it's already a full URL, return as is
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+  
+  // If it's a relative path, construct the full Supabase storage URL
+  if (imageUrl.startsWith('/')) {
+    // Remove leading slash if present
+    imageUrl = imageUrl.substring(1);
+  }
+  
+  // Get the Supabase storage URL
+  const { data } = supabase.storage.from(bucket).getPublicUrl(imageUrl);
+  return data.publicUrl;
+};
+
 interface SearchResult {
   id: string;
   type: 'device' | 'part' | 'accessory';
@@ -124,18 +144,21 @@ export function SearchPage() {
           id, 
           name, 
           description,
+          logo_url,
           device_categories!inner(name)
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
         .eq('is_active', true);
 
       brands?.forEach(brand => {
+        const imageUrl = getImageUrl(brand.logo_url, 'devices');
         results.push({
           id: brand.id,
           type: 'device',
           title: brand.name,
           subtitle: `${brand.device_categories.name} Brand`,
           description: brand.description,
+          image: imageUrl,
           url: `/repairs?category=${brand.device_categories.name.toLowerCase().replace(/\s+/g, '-')}&brand=${brand.name.toLowerCase().replace(/\s+/g, '-')}`,
           brand: brand.name,
           category: brand.device_categories.name
@@ -149,18 +172,21 @@ export function SearchPage() {
           id, 
           name, 
           description,
+          image_url,
           device_brands!inner(name, device_categories!inner(name))
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
         .eq('is_active', true);
 
       models?.forEach(model => {
+        const imageUrl = getImageUrl(model.image_url, 'devices');
         results.push({
           id: model.id,
           type: 'device',
           title: model.name,
           subtitle: `${model.device_brands.name} ${model.device_brands.device_categories.name}`,
           description: model.description,
+          image: imageUrl,
           url: `/repairs?category=${model.device_brands.device_categories.name.toLowerCase().replace(/\s+/g, '-')}&brand=${model.device_brands.name.toLowerCase().replace(/\s+/g, '-')}&model=${model.name.toLowerCase().replace(/\s+/g, '')}`,
           brand: model.device_brands.name,
           category: model.device_brands.device_categories.name
@@ -175,18 +201,21 @@ export function SearchPage() {
           name, 
           description,
           category,
+          image_url,
           device_models!inner(name, device_brands!inner(name, device_categories!inner(name)))
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
         .eq('is_active', true);
 
       parts?.forEach(part => {
+        const imageUrl = getImageUrl(part.image_url, 'devices');
         results.push({
           id: part.id,
           type: 'part',
           title: part.name,
           subtitle: `${part.device_models.device_brands.name} ${part.device_models.name} - ${part.category}`,
           description: part.description,
+          image: imageUrl,
           url: `/repairs?category=${part.device_models.device_brands.device_categories.name.toLowerCase().replace(/\s+/g, '-')}&brand=${part.device_models.device_brands.name.toLowerCase().replace(/\s+/g, '-')}&model=${part.device_models.name.toLowerCase().replace(/\s+/g, '')}`,
           category: part.category,
           brand: part.device_models.device_brands.name
@@ -213,6 +242,7 @@ export function SearchPage() {
         .eq('is_active', true);
 
       accessories?.forEach(accessory => {
+        const imageUrl = getImageUrl(accessory.image_url);
         results.push({
           id: accessory.id,
           type: 'accessory',
@@ -220,7 +250,7 @@ export function SearchPage() {
           subtitle: `${accessory.accessory_brands.name} ${accessory.accessory_categories.name}`,
           description: accessory.description,
           price: accessory.price,
-          image: accessory.image_url,
+          image: imageUrl,
           rating: accessory.rating,
           reviewCount: accessory.review_count,
           url: `/accessories/product?category=${accessory.accessory_categories.slug || 'uncategorized'}&product=${accessory.slug || accessory.id}`,
@@ -251,6 +281,7 @@ export function SearchPage() {
       categoryAccessories?.forEach(accessory => {
         // Only add if not already in results
         if (!results.find(r => r.id === accessory.id && r.type === 'accessory')) {
+          const imageUrl = getImageUrl(accessory.image_url);
           results.push({
             id: accessory.id,
             type: 'accessory',
@@ -258,7 +289,7 @@ export function SearchPage() {
             subtitle: `${accessory.accessory_brands.name} ${accessory.accessory_categories.name}`,
             description: accessory.description,
             price: accessory.price,
-            image: accessory.image_url,
+            image: imageUrl,
             rating: accessory.rating,
             reviewCount: accessory.review_count,
             url: `/accessories/product?category=${accessory.accessory_categories.slug || 'uncategorized'}&product=${accessory.slug || accessory.id}`,
@@ -348,18 +379,24 @@ export function SearchPage() {
       <CardHeader className="pb-3">
         <div className="flex items-start gap-3">
           {result.image ? (
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0 relative">
               <img 
                 src={result.image} 
                 alt={result.title}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
+                  const container = target.parentElement;
+                  if (container) {
+                    target.style.display = 'none';
+                    const fallback = container.querySelector('.fallback-icon') as HTMLElement;
+                    if (fallback) {
+                      fallback.style.display = 'flex';
+                    }
+                  }
                 }}
               />
-              <div className="hidden w-full h-full flex items-center justify-center bg-muted">
+              <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
                 <Package className="h-6 w-6 text-muted-foreground" />
               </div>
             </div>
@@ -418,18 +455,24 @@ export function SearchPage() {
       <CardContent className="p-4">
         <div className="flex items-center gap-4">
           {result.image ? (
-            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0 relative">
               <img 
                 src={result.image} 
                 alt={result.title}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
+                  const container = target.parentElement;
+                  if (container) {
+                    target.style.display = 'none';
+                    const fallback = container.querySelector('.fallback-icon') as HTMLElement;
+                    if (fallback) {
+                      fallback.style.display = 'flex';
+                    }
+                  }
                 }}
               />
-              <div className="hidden w-full h-full flex items-center justify-center bg-muted">
+              <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
                 <Package className="h-6 w-6 text-muted-foreground" />
               </div>
             </div>

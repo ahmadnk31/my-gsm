@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { SEO, getPageSEOConfig } from '@/components/SEO';
 import { Smartphone, ArrowLeft } from 'lucide-react';
 
 const Auth = () => {
@@ -16,6 +17,7 @@ const Auth = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const seoConfig = getPageSEOConfig('auth', t);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -99,6 +101,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+      <SEO {...seoConfig} />
       <div className="w-full max-w-md">
         <Button
           variant="ghost"

@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SEO } from '@/components/SEO';
+import { ServiceStructuredData, BreadcrumbStructuredData } from '@/components/StructuredData';
 import { 
   ArrowLeft, 
   Smartphone, 
@@ -34,6 +36,7 @@ import {
   useDeviceBrandBySlug,
   useDeviceModelBySlug,
 } from '@/hooks/useRepairQueries';
+import { useLanguage } from "@/contexts/LanguageContext";
 import { generateSlug } from '@/lib/utils';
 
 type DeviceCategory = Tables<'device_categories'>;
@@ -64,6 +67,7 @@ const iconMap = {
 
 export const HierarchicalRepairsGrid: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useLanguage();
   
   // Get URL parameters (now using slugs)
   const categorySlug = searchParams.get('category');
@@ -77,28 +81,30 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   
   // Initialize navigation state from URL parameters
   const getNavigationFromURL = (): NavigationState => {
-    // Check if we have URL parameters but queries are still loading
-    if (categorySlug && categoryBySlugQuery.isLoading) {
-      return { level: 'categories' }; // Wait for category to load
-    }
-    if (brandSlug && brandBySlugQuery.isLoading) {
-      return { level: 'brands', categoryId: categoryBySlugQuery.data?.id }; // Wait for brand to load
-    }
-    if (modelSlug && modelBySlugQuery.isLoading) {
-      return { level: 'models', categoryId: categoryBySlugQuery.data?.id, brandId: brandBySlugQuery.data?.id }; // Wait for model to load
-    }
-    
     // Use resolved entities from slug lookups
     const resolvedCategoryId = categoryBySlugQuery.data?.id;
     const resolvedBrandId = brandBySlugQuery.data?.id;
     const resolvedModelId = modelBySlugQuery.data?.id;
     
-    if (resolvedModelId) {
-      return { level: 'parts', categoryId: resolvedCategoryId, brandId: resolvedBrandId, modelId: resolvedModelId };
-    } else if (resolvedBrandId) {
-      return { level: 'models', categoryId: resolvedCategoryId, brandId: resolvedBrandId };
-    } else if (resolvedCategoryId) {
-      return { level: 'brands', categoryId: resolvedCategoryId };
+    // If we have URL parameters, use them even if queries are loading
+    if (modelSlug) {
+      return { 
+        level: 'parts', 
+        categoryId: resolvedCategoryId, 
+        brandId: resolvedBrandId, 
+        modelId: resolvedModelId 
+      };
+    } else if (brandSlug) {
+      return { 
+        level: 'models', 
+        categoryId: resolvedCategoryId, 
+        brandId: resolvedBrandId 
+      };
+    } else if (categorySlug) {
+      return { 
+        level: 'brands', 
+        categoryId: resolvedCategoryId 
+      };
     } else {
       return { level: 'categories' };
     }
@@ -121,121 +127,102 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   // Update navigation when URL changes or when slug lookups resolve
   useEffect(() => {
     const newNavigation = getNavigationFromURL();
-    setNavigation(newNavigation);
-  }, [searchParams, categoryBySlugQuery.data, brandBySlugQuery.data, modelBySlugQuery.data]);
+    // Only update if there's a meaningful change
+    if (JSON.stringify(newNavigation) !== JSON.stringify(navigation)) {
+      setNavigation(newNavigation);
+    }
+  }, [searchParams, categoryBySlugQuery.data, brandBySlugQuery.data, modelBySlugQuery.data, categoryBySlugQuery.isLoading, brandBySlugQuery.isLoading, modelBySlugQuery.isLoading]);
 
-  // Update URL when navigation state changes
-  const updateURL = (newNavigation: NavigationState) => {
+  // Update URL when navigation state changes (now using slugs)
+  const updateURL = (newNavigation: NavigationState, categoryName?: string, brandName?: string, modelName?: string) => {
     const params = new URLSearchParams();
     
-    // Get the current entities to generate slugs
-    const category = categoryQuery.data;
-    const brand = brandQuery.data;
-    const model = modelQuery.data;
-    
-    if (newNavigation.categoryId && category) {
-      params.set('category', generateSlug(category.name));
+    if (newNavigation.categoryId && categoryName) {
+      params.set('category', generateSlug(categoryName));
     }
-    if (newNavigation.brandId && brand) {
-      params.set('brand', generateSlug(brand.name));
+    if (newNavigation.brandId && brandName) {
+      params.set('brand', generateSlug(brandName));
     }
-    if (newNavigation.modelId && model) {
-      params.set('model', generateSlug(model.name));
+    if (newNavigation.modelId && modelName) {
+      params.set('model', generateSlug(modelName));
     }
     
     setSearchParams(params, { replace: true });
-    setNavigation(newNavigation);
   };
 
   const navigateToCategory = (category: DeviceCategory) => {
     setTransitioning(true);
-    const params = new URLSearchParams();
-    // Use slug if available, otherwise generate from name
-    const slug = (category as any).slug || generateSlug(category.name);
-    params.set('category', slug);
-    setSearchParams(params, { replace: true });
-    setNavigation({
-      level: 'brands',
+    
+    // Immediately update navigation state
+    const newNavigation = {
+      level: 'brands' as const,
       categoryId: category.id,
-    });
+    };
+    setNavigation(newNavigation);
+    
+    // Then update URL
+    updateURL(newNavigation, category.name);
     setTimeout(() => setTransitioning(false), 50);
   };
 
   const navigateToBrand = (brand: DeviceBrand) => {
     setTransitioning(true);
-    const params = new URLSearchParams();
-    if (navigation.categoryId && categoryQuery.data) {
-      const categorySlug = (categoryQuery.data as any).slug || generateSlug(categoryQuery.data.name);
-      params.set('category', categorySlug);
-    }
-    const brandSlug = (brand as any).slug || generateSlug(brand.name);
-    params.set('brand', brandSlug);
-    setSearchParams(params, { replace: true });
-    setNavigation({
+    
+    // Immediately update navigation state
+    const newNavigation = {
       ...navigation,
-      level: 'models',
+      level: 'models' as const,
       brandId: brand.id,
-    });
+    };
+    setNavigation(newNavigation);
+    
+    // Then update URL
+    updateURL(newNavigation, categoryQuery.data?.name, brand.name);
     setTimeout(() => setTransitioning(false), 50);
   };
 
   const navigateToModel = (model: DeviceModel) => {
     setTransitioning(true);
-    const params = new URLSearchParams();
-    if (navigation.categoryId && categoryQuery.data) {
-      const categorySlug = (categoryQuery.data as any).slug || generateSlug(categoryQuery.data.name);
-      params.set('category', categorySlug);
-    }
-    if (navigation.brandId && brandQuery.data) {
-      const brandSlug = (brandQuery.data as any).slug || generateSlug(brandQuery.data.name);
-      params.set('brand', brandSlug);
-    }
-    const modelSlug = (model as any).slug || generateSlug(model.name);
-    params.set('model', modelSlug);
-    setSearchParams(params, { replace: true });
-    setNavigation({
+    
+    // Immediately update navigation state
+    const newNavigation = {
       ...navigation,
-      level: 'parts',
+      level: 'parts' as const,
       modelId: model.id,
-    });
+    };
+    setNavigation(newNavigation);
+    
+    // Then update URL
+    updateURL(newNavigation, categoryQuery.data?.name, brandQuery.data?.name, model.name);
     setTimeout(() => setTransitioning(false), 50);
   };
 
   const navigateBack = () => {
     setTransitioning(true);
-    const params = new URLSearchParams();
+    let newNavigation: NavigationState;
     
     switch (navigation.level) {
       case 'brands':
-        setSearchParams(params, { replace: true });
-        setNavigation({ level: 'categories' });
+        newNavigation = { level: 'categories' };
+        setNavigation(newNavigation);
+        updateURL(newNavigation);
         break;
       case 'models':
-        if (navigation.categoryId && categoryQuery.data) {
-          const categorySlug = (categoryQuery.data as any).slug || generateSlug(categoryQuery.data.name);
-          params.set('category', categorySlug);
-        }
-        setSearchParams(params, { replace: true });
-        setNavigation({
+        newNavigation = {
           level: 'brands',
           categoryId: navigation.categoryId,
-        });
+        };
+        setNavigation(newNavigation);
+        updateURL(newNavigation, categoryQuery.data?.name);
         break;
       case 'parts':
-        if (navigation.categoryId && categoryQuery.data) {
-          const categorySlug = (categoryQuery.data as any).slug || generateSlug(categoryQuery.data.name);
-          params.set('category', categorySlug);
-        }
-        if (navigation.brandId && brandQuery.data) {
-          const brandSlug = (brandQuery.data as any).slug || generateSlug(brandQuery.data.name);
-          params.set('brand', brandSlug);
-        }
-        setSearchParams(params, { replace: true });
-        setNavigation({
+        newNavigation = {
           level: 'models',
           categoryId: navigation.categoryId,
           brandId: navigation.brandId,
-        });
+        };
+        setNavigation(newNavigation);
+        updateURL(newNavigation, categoryQuery.data?.name, brandQuery.data?.name);
         break;
     }
     setTimeout(() => setTransitioning(false), 50);
@@ -243,36 +230,31 @@ export const HierarchicalRepairsGrid: React.FC = () => {
 
   // Navigation functions for breadcrumb
   const navigateToCategories = () => {
-    setSearchParams(new URLSearchParams(), { replace: true });
-    setNavigation({ level: 'categories' });
+    const newNavigation = { level: 'categories' as const };
+    setNavigation(newNavigation);
+    updateURL(newNavigation);
   };
 
   const navigateToCategoryBrands = () => {
-    if (navigation.categoryId && categoryQuery.data) {
-      const params = new URLSearchParams();
-      const categorySlug = (categoryQuery.data as any).slug || generateSlug(categoryQuery.data.name);
-      params.set('category', categorySlug);
-      setSearchParams(params, { replace: true });
-      setNavigation({
-        level: 'brands',
+    if (navigation.categoryId) {
+      const newNavigation = {
+        level: 'brands' as const,
         categoryId: navigation.categoryId,
-      });
+      };
+      setNavigation(newNavigation);
+      updateURL(newNavigation, categoryQuery.data?.name);
     }
   };
 
   const navigateToBrandModels = () => {
-    if (navigation.categoryId && navigation.brandId && categoryQuery.data && brandQuery.data) {
-      const params = new URLSearchParams();
-      const categorySlug = (categoryQuery.data as any).slug || generateSlug(categoryQuery.data.name);
-      const brandSlug = (brandQuery.data as any).slug || generateSlug(brandQuery.data.name);
-      params.set('category', categorySlug);
-      params.set('brand', brandSlug);
-      setSearchParams(params, { replace: true });
-      setNavigation({
-        level: 'models',
+    if (navigation.categoryId && navigation.brandId) {
+      const newNavigation = {
+        level: 'models' as const,
         categoryId: navigation.categoryId,
         brandId: navigation.brandId,
-      });
+      };
+      setNavigation(newNavigation);
+      updateURL(newNavigation, categoryQuery.data?.name, brandQuery.data?.name);
     }
   };
 
@@ -311,36 +293,36 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     }
 
     return breadcrumbItems.length > 1 ? (
-      <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b border-border/40 py-2 sm:py-3 mb-4 sm:mb-6">
+      <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b border-border/40 py-3 mb-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Button
               variant="ghost"
               size="sm"
               onClick={navigateBack}
-              className="p-1 h-auto flex-shrink-0"
+              className="p-1 h-auto"
             >
-              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+              <ArrowLeft className="h-4 w-4" />
             </Button>
             
             {breadcrumbItems.map((item, index) => (
               <React.Fragment key={index}>
-                {index > 0 && <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 mx-1 sm:mx-2 text-muted-foreground flex-shrink-0" />}
+                {index > 0 && <ChevronRight className="h-4 w-4" />}
                 
                 {item.onClick ? (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={item.onClick}
-                    className={`p-1 h-auto hover:text-primary transition-colors flex-shrink-0 ${
+                    className={`p-1 h-auto hover:text-primary transition-colors ${
                       item.isActive ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    <span className="truncate max-w-[100px] sm:max-w-none">{item.label}</span>
+                    {item.label}
                   </Button>
                 ) : (
-                  <span className="text-foreground font-medium flex-shrink-0">
-                    <span className="truncate max-w-[120px] sm:max-w-none">{item.label}</span>
+                  <span className="text-foreground font-medium">
+                    {item.label}
                   </span>
                 )}
               </React.Fragment>
@@ -354,14 +336,14 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderCategories = () => {
     if (categoriesQuery.isLoading) {
       return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader className="text-center pb-2 sm:pb-4">
-                <div className="h-12 w-12 sm:h-16 sm:w-16 bg-muted rounded-full mx-auto mb-2 sm:mb-4"></div>
-                <div className="h-3 sm:h-4 bg-muted rounded w-3/4 mx-auto hidden sm:block"></div>
+              <CardHeader>
+                <div className="h-16 w-16 bg-muted rounded-full mx-auto mb-4"></div>
+                <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
               </CardHeader>
-              <CardContent className="hidden sm:block">
+              <CardContent>
                 <div className="h-3 bg-muted rounded w-full mb-2"></div>
                 <div className="h-3 bg-muted rounded w-2/3 mx-auto"></div>
               </CardContent>
@@ -373,13 +355,15 @@ export const HierarchicalRepairsGrid: React.FC = () => {
 
     if (categoriesQuery.isError) {
       toast.error('Failed to load device categories');
-      return <div className="text-center py-8 text-muted-foreground">Failed to load categories</div>;
+      return <div className="text-center py-8 text-muted-foreground">
+        Failed to load categories
+      </div>;
     }
 
     const categories = categoriesQuery.data || [];
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {categories.map((category, index) => {
           const IconComponent = iconMap[category.icon_name as keyof typeof iconMap] || Smartphone;
           
@@ -390,15 +374,19 @@ export const HierarchicalRepairsGrid: React.FC = () => {
               style={{ animationDelay: `${index * 0.1}s` }}
               onClick={() => navigateToCategory(category)}
             >
-              <CardHeader className="text-center pb-2 sm:pb-4">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-primary rounded-full flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
-                  <IconComponent className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white" />
+              <CardHeader className="text-center pb-4">
+                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
+                  <IconComponent className="h-10 w-10 text-white" />
                 </div>
-                <CardTitle className="text-sm sm:text-lg lg:text-xl group-hover:text-primary transition-colors hidden sm:block">
+                <CardTitle className="text-xl group-hover:text-primary transition-colors">
                   {category.name}
                 </CardTitle>
               </CardHeader>
-              
+              <CardContent>
+                <p className="text-muted-foreground text-sm text-center">
+                  {category.description}
+                </p>
+              </CardContent>
             </Card>
           );
         })}
@@ -409,14 +397,14 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderBrands = () => {
     if (brandsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {[...Array(6)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader className="text-center pb-2 sm:pb-4">
-                <div className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 bg-muted rounded-full mx-auto mb-2 sm:mb-4"></div>
-                <div className="h-3 sm:h-4 bg-muted rounded w-3/4 mx-auto hidden sm:block"></div>
+              <CardHeader>
+                <div className="h-16 w-16 bg-muted rounded-full mx-auto mb-4"></div>
+                <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
               </CardHeader>
-              <CardContent className="hidden sm:block">
+              <CardContent>
                 <div className="h-3 bg-muted rounded w-full mb-2"></div>
                 <div className="h-3 bg-muted rounded w-2/3 mx-auto"></div>
               </CardContent>
@@ -434,7 +422,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     const brands = brandsQuery.data || [];
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {brands.map((brand, index) => (
           <Card 
             key={brand.id}
@@ -442,26 +430,32 @@ export const HierarchicalRepairsGrid: React.FC = () => {
             style={{ animationDelay: `${index * 0.1}s` }}
             onClick={() => navigateToBrand(brand)}
           >
-            <CardHeader className="text-center pb-2 sm:pb-4">
+            <CardHeader className="text-center pb-4">
               {brand.logo_url && (
-                <div className=" mx-auto mb-2 sm:mb-3 lg:mb-4 overflow-hidden bg-white p-1 sm:p-2">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden bg-white p-2">
                   <img 
                     src={brand.logo_url} 
                     alt={brand.name}
-                    className="w-full h-full object-contain aspect-square"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               )}
               {!brand.logo_url && (
-                <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 mx-auto mb-2 sm:mb-3 lg:mb-4 bg-gradient-primary rounded-full flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
-                  <span className="text-white font-bold text-lg sm:text-xl">
+                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
+                  <span className="text-white font-bold text-xl">
                     {brand.name.charAt(0)}
                   </span>
                 </div>
               )}
-              
+              <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                {brand.name}
+              </CardTitle>
             </CardHeader>
-            
+            <CardContent>
+              <p className="text-muted-foreground text-sm text-center">
+                {brand.description}
+              </p>
+            </CardContent>
           </Card>
         ))}
       </div>
@@ -471,14 +465,14 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderModels = () => {
     if (modelsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {[...Array(6)].map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
             <Card key={i} className="animate-pulse">
-              <CardHeader className="text-center pb-2 sm:pb-4">
-                <div className="h-16 w-12 sm:h-20 sm:w-16 lg:h-24 lg:w-20 bg-muted rounded-lg mx-auto mb-2 sm:mb-4"></div>
-                <div className="h-3 sm:h-4 bg-muted rounded w-3/4 mx-auto hidden sm:block"></div>
+              <CardHeader>
+                <div className="h-32 w-24 bg-muted rounded-lg mx-auto mb-4"></div>
+                <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
               </CardHeader>
-              <CardContent className="hidden sm:block">
+              <CardContent>
                 <div className="h-3 bg-muted rounded w-full mb-2"></div>
                 <div className="h-3 bg-muted rounded w-2/3 mx-auto"></div>
               </CardContent>
@@ -496,7 +490,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     const models = modelsQuery.data || [];
 
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {models.map((model, index) => (
           <Card 
             key={model.id}
@@ -504,33 +498,37 @@ export const HierarchicalRepairsGrid: React.FC = () => {
             style={{ animationDelay: `${index * 0.1}s` }}
             onClick={() => navigateToModel(model)}
           >
-            <CardHeader className="text-center pb-2 sm:pb-4">
+            <CardHeader className="text-center pb-4">
               {model.image_url && (
-                <div className=" mx-auto mb-2 sm:mb-3 lg:mb-4 rounded-lg overflow-hidden">
+                <div className="w-24 h-32 mx-auto mb-4 rounded-lg overflow-hidden bg-muted">
                   <img 
                     src={model.image_url} 
                     alt={model.name}
-                    className="w-full h-full object-cover aspect-square"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
               {!model.image_url && (
-                <div className="w-16 h-20 sm:w-20 sm:h-28 lg:w-24 lg:h-32 mx-auto mb-2 sm:mb-3 lg:mb-4 rounded-lg bg-gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-sm sm:text-lg lg:text-xl">
+                <div className="w-24 h-32 mx-auto mb-4 rounded-lg bg-gradient-primary flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">
                     {model.name.split(' ').map(word => word.charAt(0)).join('').slice(0, 2)}
                   </span>
                 </div>
               )}
-              <CardTitle className="text-sm sm:text-lg lg:text-xl group-hover:text-primary transition-colors hidden sm:block">
+              <CardTitle className="text-xl group-hover:text-primary transition-colors">
                 {model.name}
               </CardTitle>
               {model.release_year && (
-                <Badge variant="secondary" className="mt-2 hidden sm:inline-flex">
+                <Badge variant="secondary" className="mt-2">
                   {model.release_year}
                 </Badge>
               )}
             </CardHeader>
-           
+            <CardContent>
+              <p className="text-muted-foreground text-sm text-center">
+                {model.description}
+              </p>
+            </CardContent>
           </Card>
         ))}
       </div>
@@ -540,17 +538,12 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderParts = () => {
     if (partsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader>
-                <div className="flex items-start gap-4 sm:gap-6">
-                  <div className="h-20 w-20 sm:h-24 sm:w-24 bg-muted rounded-lg flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                  </div>
-                </div>
+                <div className="h-12 w-12 bg-muted rounded-lg mb-4"></div>
+                <div className="h-4 bg-muted rounded w-3/4"></div>
               </CardHeader>
               <CardContent>
                 <div className="h-3 bg-muted rounded w-full mb-2"></div>
@@ -569,21 +562,18 @@ export const HierarchicalRepairsGrid: React.FC = () => {
 
     const parts = partsQuery.data || [];
 
-    // Ensure parts are sorted by display_order (should already be sorted by the query)
-    const sortedParts = [...parts].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {sortedParts.map((part, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {parts.map((part, index) => (
           <Card 
             key={part.id}
             className="group bg-gradient-card shadow-card hover:shadow-elegant transition-all duration-300 animate-fade-in overflow-hidden"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             <CardHeader className="pb-3">
-              <div className="flex items-start gap-4 sm:gap-6">
+              <div className="flex items-start gap-4">
                 {part.image_url ? (
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                     <img 
                       src={part.image_url} 
                       alt={part.name}
@@ -591,13 +581,13 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                     />
                   </div>
                 ) : (
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Package className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                  <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Package className="h-6 w-6 text-white" />
                   </div>
                 )}
                 
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-2">
+                  <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
                     {part.name}
                   </CardTitle>
                   <div className="flex items-center gap-2 mt-1">
@@ -713,24 +703,167 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const isLoading = categoriesQuery.isLoading || 
     (navigation.level === 'brands' && brandsQuery.isLoading) ||
     (navigation.level === 'models' && modelsQuery.isLoading) ||
-    (navigation.level === 'parts' && partsQuery.isLoading) ||
-    categoryBySlugQuery.isLoading ||
-    brandBySlugQuery.isLoading ||
-    modelBySlugQuery.isLoading;
+    (navigation.level === 'parts' && partsQuery.isLoading);
+
+  // Generate dynamic SEO content based on navigation state
+  const getDynamicSEO = () => {
+    const baseTitle = t('seo.titles.repairs');
+    const baseDescription = t('seo.descriptions.repairs');
+    const baseKeywords = t('seo.keywords.repairs');
+    
+    switch (navigation.level) {
+      case 'categories':
+        return {
+          title: t('seo.templates.categoryTitle', { category: t('seo.titles.categories') }),
+          description: t('seo.descriptions.categories'),
+          keywords: t('seo.keywords.categories')
+        };
+      
+      case 'brands':
+        const categoryName = categoryQuery.data?.name;
+        if (categoryName) {
+          return {
+            title: t('seo.templates.brandTitle', { 
+              brand: categoryName,
+              category: t('seo.titles.brands')
+            }),
+            description: t('seo.templates.brandDescription', {
+              brand: categoryName,
+              category: categoryName.toLowerCase()
+            }),
+            keywords: `${categoryName?.toLowerCase()} ${t('seo.keywords.brands')}`
+          };
+        }
+        return {
+          title: t('seo.titles.brands'),
+          description: t('seo.descriptions.brands'),
+          keywords: t('seo.keywords.brands')
+        };
+      
+      case 'models':
+        const brandName = brandQuery.data?.name;
+        const categoryNameForModels = categoryQuery.data?.name;
+        if (brandName && categoryNameForModels) {
+          return {
+            title: t('seo.templates.brandTitle', {
+              brand: brandName,
+              category: categoryNameForModels
+            }),
+            description: t('seo.templates.brandDescription', {
+              brand: brandName,
+              category: categoryNameForModels.toLowerCase()
+            }),
+            keywords: `${brandName} ${t('seo.keywords.models')}`
+          };
+        }
+        return {
+          title: t('seo.titles.models'),
+          description: t('seo.descriptions.models'),
+          keywords: t('seo.keywords.models')
+        };
+      
+      case 'parts':
+        const modelName = modelQuery.data?.name;
+        const brandNameForParts = brandQuery.data?.name;
+        if (brandNameForParts && modelName) {
+          return {
+            title: t('seo.templates.modelTitle', {
+              brand: brandNameForParts,
+              model: modelName
+            }),
+            description: t('seo.templates.modelDescription', {
+              brand: brandNameForParts,
+              model: modelName
+            }),
+            keywords: `${brandNameForParts} ${modelName} ${t('seo.keywords.parts')}`
+          };
+        }
+        return {
+          title: t('seo.titles.parts'),
+          description: t('seo.descriptions.parts'),
+          keywords: t('seo.keywords.parts')
+        };
+      
+      default:
+        return {
+          title: baseTitle,
+          description: baseDescription,
+          keywords: baseKeywords
+        };
+    }
+  };
+
+  const dynamicSEO = getDynamicSEO();
+
+  // Generate breadcrumb structured data
+  const getBreadcrumbItems = () => {
+    const items = [
+      { name: "Home", url: "https://phoneHub.com/" },
+      { name: "Repairs", url: "https://phoneHub.com/repairs" }
+    ];
+
+    if (categoryQuery.data) {
+      items.push({
+        name: categoryQuery.data.name,
+        url: `https://phoneHub.com/repairs?category=${generateSlug(categoryQuery.data.name)}`
+      });
+    }
+
+    if (brandQuery.data && categoryQuery.data) {
+      items.push({
+        name: brandQuery.data.name,
+        url: `https://phoneHub.com/repairs?category=${generateSlug(categoryQuery.data.name)}&brand=${generateSlug(brandQuery.data.name)}`
+      });
+    }
+
+    if (modelQuery.data && brandQuery.data && categoryQuery.data) {
+      items.push({
+        name: modelQuery.data.name,
+        url: `https://phoneHub.com/repairs?category=${generateSlug(categoryQuery.data.name)}&brand=${generateSlug(brandQuery.data.name)}&model=${generateSlug(modelQuery.data.name)}`
+      });
+    }
+
+    return items;
+  };
 
   return (
     <>
+      <SEO 
+        title={dynamicSEO.title}
+        description={dynamicSEO.description}
+        keywords={dynamicSEO.keywords}
+        canonical={window.location.href}
+      />
+      
+      {/* Add breadcrumb structured data */}
+      <BreadcrumbStructuredData items={getBreadcrumbItems()} />
+      
+      {/* Add service-specific structured data for parts level */}
+      {navigation.level === 'parts' && modelQuery.data && brandQuery.data && (
+        <ServiceStructuredData 
+          name={`${brandQuery.data.name} ${modelQuery.data.name} Repair Services`}
+          description={`Professional repair services for ${brandQuery.data.name} ${modelQuery.data.name}. Screen replacement, battery repair, and component fixes with warranty.`}
+          provider="Blueprint Phone Zen"
+          serviceType="Mobile Device Repair"
+          areaServed="Worldwide"
+          availableChannel={{
+            url: window.location.href,
+            name: "Online Repair Booking"
+          }}
+        />
+      )}
+      
       {renderBreadcrumb()}
       
       <div className="space-y-6">
-        <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-3 sm:mb-4">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
             {navigation.level === 'categories' && 'Select Device Type'}
             {navigation.level === 'brands' && `${categoryQuery.data?.name || 'Device'} Brands`}
             {navigation.level === 'models' && `${brandQuery.data?.name || 'Brand'} Models`}
             {navigation.level === 'parts' && `${modelQuery.data?.name || 'Model'} Parts`}
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground px-4">
+          <p className="text-muted-foreground">
             {navigation.level === 'categories' && 'Choose the type of device you need repaired'}
             {navigation.level === 'brands' && 'Select your device brand'}
             {navigation.level === 'models' && 'Choose your device model'}
@@ -739,21 +872,10 @@ export const HierarchicalRepairsGrid: React.FC = () => {
         </div>
 
         <div className={`transition-all duration-200 ${transitioning ? 'opacity-50' : 'opacity-100'}`}>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading...</p>
-              </div>
-            </div>
-          ) : (
-            <>
-              {navigation.level === 'categories' && renderCategories()}
-              {navigation.level === 'brands' && renderBrands()}
-              {navigation.level === 'models' && renderModels()}
-              {navigation.level === 'parts' && renderParts()}
-            </>
-          )}
+          {navigation.level === 'categories' && renderCategories()}
+          {navigation.level === 'brands' && renderBrands()}
+          {navigation.level === 'models' && renderModels()}
+          {navigation.level === 'parts' && renderParts()}
         </div>
       </div>
     </>
