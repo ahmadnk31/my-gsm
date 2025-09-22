@@ -264,7 +264,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     
     // Always show "Repairs" as the root
     breadcrumbItems.push({
-      label: 'Repairs',
+      label: t('nav.repairs'),
       onClick: navigateToCategories,
       isActive: navigation.level === 'categories'
     });
@@ -294,40 +294,46 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     }
 
     return breadcrumbItems.length > 1 ? (
-      <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b border-border/40 py-3 mb-6">
+      <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b border-border/40 py-2 sm:py-3 mb-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground overflow-x-auto scrollbar-hide">
             <Button
               variant="ghost"
               size="sm"
               onClick={navigateBack}
-              className="p-1 h-auto"
+              className="p-1 h-auto flex-shrink-0"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             
-            {breadcrumbItems.map((item, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && <ChevronRight className="h-4 w-4" />}
-                
-                {item.onClick ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={item.onClick}
-                    className={`p-1 h-auto hover:text-primary transition-colors ${
-                      item.isActive ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {item.label}
-                  </Button>
-                ) : (
-                  <span className="text-foreground font-medium">
-                    {item.label}
-                  </span>
-                )}
-              </React.Fragment>
-            ))}
+            <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-nowrap">
+              {breadcrumbItems.map((item, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />}
+                  
+                  {item.onClick ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={item.onClick}
+                      className={`p-1 h-auto hover:text-primary transition-colors truncate max-w-[100px] sm:max-w-[150px] md:max-w-none ${
+                        item.isActive ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                      title={item.label}
+                    >
+                      <span className="truncate">{item.label}</span>
+                    </Button>
+                  ) : (
+                    <span 
+                      className="text-foreground font-medium truncate max-w-[100px] sm:max-w-[150px] md:max-w-none" 
+                      title={item.label}
+                    >
+                      {item.label}
+                    </span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
       </div>
