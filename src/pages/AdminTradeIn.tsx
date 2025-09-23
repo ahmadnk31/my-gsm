@@ -264,45 +264,46 @@ const AdminTradeIn = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Trade-In Management</h1>
-        <p className="text-muted-foreground">Manage trade-in models, requests, and market conditions</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Trade-In Management</h1>
+          <p className="text-gray-600">Manage trade-in models, requests, and market conditions</p>
+        </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-2">
-              <Smartphone className="h-8 w-8 text-primary" />
+              <Smartphone className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Total Models</p>
-                <p className="text-2xl font-bold">{models?.length || 0}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Models</p>
+                <p className="text-xl sm:text-2xl font-bold">{models?.length || 0}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-2">
-              <Users className="h-8 w-8 text-success" />
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-success" />
               <div>
-                <p className="text-sm text-muted-foreground">Total Requests</p>
-                <p className="text-2xl font-bold">{requests?.length || 0}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Requests</p>
+                <p className="text-xl sm:text-2xl font-bold">{requests?.length || 0}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-2">
-              <Clock className="h-8 w-8 text-warning" />
+              <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-warning" />
               <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">
+                <p className="text-xs sm:text-sm text-muted-foreground">Pending</p>
+                <p className="text-xl sm:text-2xl font-bold">
                   {requests?.filter(r => r.status === 'pending').length || 0}
                 </p>
               </div>
@@ -311,12 +312,12 @@ const AdminTradeIn = () => {
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-8 w-8 text-info" />
+              <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-info" />
               <div>
-                <p className="text-sm text-muted-foreground">Market Conditions</p>
-                <p className="text-2xl font-bold">{conditions?.length || 0}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Market Conditions</p>
+                <p className="text-xl sm:text-2xl font-bold">{conditions?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -324,17 +325,23 @@ const AdminTradeIn = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="models">Trade-In Models</TabsTrigger>
-          <TabsTrigger value="requests">Trade-In Requests</TabsTrigger>
-          <TabsTrigger value="conditions">Market Conditions</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
+          <TabsTrigger value="models" className="py-2 sm:py-0">
+            <span className="text-xs sm:text-sm">Trade-In Models</span>
+          </TabsTrigger>
+          <TabsTrigger value="requests" className="py-2 sm:py-0">
+            <span className="text-xs sm:text-sm">Trade-In Requests</span>
+          </TabsTrigger>
+          <TabsTrigger value="conditions" className="py-2 sm:py-0">
+            <span className="text-xs sm:text-sm">Market Conditions</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* Trade-In Models Tab */}
         <TabsContent value="models" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Trade-In Models</h2>
-            <Button onClick={() => setIsModelDialogOpen(true)}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-xl sm:text-2xl font-semibold">Trade-In Models</h2>
+            <Button onClick={() => setIsModelDialogOpen(true)} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Model
             </Button>
@@ -342,142 +349,148 @@ const AdminTradeIn = () => {
 
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Brand</TableHead>
-                    <TableHead>Model</TableHead>
-                    <TableHead>Storage</TableHead>
-                    <TableHead>Base Value</TableHead>
-                    <TableHead>Market Demand</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {models?.map((model) => (
-                    <TableRow key={model.id}>
-                      <TableCell className="font-medium">{model.brand}</TableCell>
-                      <TableCell>{model.model}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {model.storage_options.map((storage, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {storage}
-                            </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>${model.base_trade_in_value}</TableCell>
-                      <TableCell>{Math.round(model.market_demand * 100)}%</TableCell>
-                      <TableCell>
-                        <Badge variant={model.is_active ? "default" : "secondary"}>
-                          {model.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => editModel(model)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteModel(model.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[100px]">Brand</TableHead>
+                      <TableHead className="min-w-[120px]">Model</TableHead>
+                      <TableHead className="min-w-[100px]">Storage</TableHead>
+                      <TableHead className="min-w-[100px]">Base Value</TableHead>
+                      <TableHead className="min-w-[120px]">Market Demand</TableHead>
+                      <TableHead className="min-w-[80px]">Status</TableHead>
+                      <TableHead className="min-w-[120px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {models?.map((model) => (
+                      <TableRow key={model.id}>
+                        <TableCell className="font-medium">{model.brand}</TableCell>
+                        <TableCell>{model.model}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {model.storage_options.map((storage, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {storage}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>${model.base_trade_in_value}</TableCell>
+                        <TableCell>{Math.round(model.market_demand * 100)}%</TableCell>
+                        <TableCell>
+                          <Badge variant={model.is_active ? "default" : "secondary"}>
+                            {model.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => editModel(model)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteModel(model.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Trade-In Requests Tab */}
         <TabsContent value="requests" className="space-y-6">
-          <h2 className="text-2xl font-semibold">Trade-In Requests</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold">Trade-In Requests</h2>
 
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Device</TableHead>
-                    <TableHead>Storage</TableHead>
-                    <TableHead>Condition</TableHead>
-                    <TableHead>Estimated Value</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {requests?.map((request) => (
-                    <TableRow key={request.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{request.first_name} {request.last_name}</p>
-                          <p className="text-sm text-muted-foreground">{request.email}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{request.trade_in_model.brand}</p>
-                          <p className="text-sm text-muted-foreground">{request.trade_in_model.model}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{request.storage_capacity}</TableCell>
-                      <TableCell className="capitalize">{request.device_condition}</TableCell>
-                      <TableCell>${request.estimated_value}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(request.status)}>
-                          <div className="flex items-center gap-1">
-                            {getStatusIcon(request.status)}
-                            {request.status}
-                          </div>
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleUpdateRequestStatus(request.id, 'approved')}
-                            disabled={request.status === 'approved'}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleUpdateRequestStatus(request.id, 'rejected')}
-                            disabled={request.status === 'rejected'}
-                          >
-                            Reject
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[150px]">Customer</TableHead>
+                      <TableHead className="min-w-[120px]">Device</TableHead>
+                      <TableHead className="min-w-[100px]">Storage</TableHead>
+                      <TableHead className="min-w-[100px]">Condition</TableHead>
+                      <TableHead className="min-w-[120px]">Estimated Value</TableHead>
+                      <TableHead className="min-w-[100px]">Status</TableHead>
+                      <TableHead className="min-w-[150px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {requests?.map((request) => (
+                      <TableRow key={request.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{request.first_name} {request.last_name}</p>
+                            <p className="text-sm text-muted-foreground truncate max-w-[150px]">{request.email}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{request.trade_in_model.brand}</p>
+                            <p className="text-sm text-muted-foreground">{request.trade_in_model.model}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{request.storage_capacity}</TableCell>
+                        <TableCell className="capitalize">{request.device_condition}</TableCell>
+                        <TableCell>${request.estimated_value}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(request.status)}>
+                            <div className="flex items-center gap-1">
+                              {getStatusIcon(request.status)}
+                              <span className="hidden sm:inline">{request.status}</span>
+                            </div>
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateRequestStatus(request.id, 'approved')}
+                              disabled={request.status === 'approved'}
+                              className="text-xs"
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateRequestStatus(request.id, 'rejected')}
+                              disabled={request.status === 'rejected'}
+                              className="text-xs"
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Market Conditions Tab */}
         <TabsContent value="conditions" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Market Conditions</h2>
-            <Button onClick={() => setIsConditionDialogOpen(true)}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-xl sm:text-2xl font-semibold">Market Conditions</h2>
+            <Button onClick={() => setIsConditionDialogOpen(true)} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Condition
             </Button>
@@ -485,48 +498,54 @@ const AdminTradeIn = () => {
 
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead>Start Date</TableHead>
-                    <TableHead>End Date</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {conditions?.map((condition) => (
-                    <TableRow key={condition.id}>
-                      <TableCell className="capitalize">{condition.condition_type}</TableCell>
-                      <TableCell>{condition.condition_value}x</TableCell>
-                      <TableCell>{new Date(condition.start_date).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        {condition.end_date ? new Date(condition.end_date).toLocaleDateString() : 'Ongoing'}
-                      </TableCell>
-                      <TableCell>{condition.description}</TableCell>
-                      <TableCell>
-                        <Badge variant={condition.is_active ? "default" : "secondary"}>
-                          {condition.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => editCondition(condition)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[100px]">Type</TableHead>
+                      <TableHead className="min-w-[80px]">Value</TableHead>
+                      <TableHead className="min-w-[120px]">Start Date</TableHead>
+                      <TableHead className="min-w-[120px]">End Date</TableHead>
+                      <TableHead className="min-w-[150px]">Description</TableHead>
+                      <TableHead className="min-w-[80px]">Status</TableHead>
+                      <TableHead className="min-w-[100px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {conditions?.map((condition) => (
+                      <TableRow key={condition.id}>
+                        <TableCell className="capitalize">{condition.condition_type}</TableCell>
+                        <TableCell>{condition.condition_value}x</TableCell>
+                        <TableCell>{new Date(condition.start_date).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {condition.end_date ? new Date(condition.end_date).toLocaleDateString() : 'Ongoing'}
+                        </TableCell>
+                        <TableCell>
+                          <span className="truncate max-w-[150px] block" title={condition.description}>
+                            {condition.description}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={condition.is_active ? "default" : "secondary"}>
+                            {condition.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => editCondition(condition)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -534,7 +553,7 @@ const AdminTradeIn = () => {
 
       {/* Add/Edit Model Dialog */}
       <Dialog open={isModelDialogOpen} onOpenChange={setIsModelDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle>
               {editingModel ? "Edit Trade-In Model" : "Add New Trade-In Model"}
@@ -542,7 +561,7 @@ const AdminTradeIn = () => {
           </DialogHeader>
           
           <form onSubmit={handleModelSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="brand">Brand</Label>
                 <Input
@@ -595,7 +614,7 @@ const AdminTradeIn = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="release_date">Release Date</Label>
                 <Input
@@ -619,7 +638,7 @@ const AdminTradeIn = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="base_trade_in_value">Base Trade-In Value</Label>
                 <Input
@@ -644,7 +663,7 @@ const AdminTradeIn = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="market_demand">Market Demand (0-1)</Label>
                 <Input
@@ -684,7 +703,7 @@ const AdminTradeIn = () => {
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button type="submit" className="flex-1" disabled={upsertModel.isPending}>
                 {upsertModel.isPending ? "Saving..." : (editingModel ? "Update Model" : "Create Model")}
               </Button>
@@ -707,7 +726,7 @@ const AdminTradeIn = () => {
 
       {/* Add/Edit Market Condition Dialog */}
       <Dialog open={isConditionDialogOpen} onOpenChange={setIsConditionDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle>
               {editingCondition ? "Edit Market Condition" : "Add New Market Condition"}
@@ -746,7 +765,7 @@ const AdminTradeIn = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="start_date">Start Date</Label>
                 <Input
@@ -778,7 +797,7 @@ const AdminTradeIn = () => {
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button type="submit" className="flex-1" disabled={upsertCondition.isPending}>
                 {upsertCondition.isPending ? "Saving..." : (editingCondition ? "Update Condition" : "Create Condition")}
               </Button>
@@ -798,6 +817,7 @@ const AdminTradeIn = () => {
           </form>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };

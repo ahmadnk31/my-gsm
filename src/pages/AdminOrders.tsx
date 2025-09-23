@@ -8,24 +8,28 @@ export default function AdminOrders() {
 
   if (!user) {
     return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center">Please sign in to access the admin panel.</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-center">Please sign in to access the admin panel.</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   if (userRole !== 'admin') {
     return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center">Access denied. Admin privileges required.</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-center">Access denied. Admin privileges required.</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
