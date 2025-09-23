@@ -8,7 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { Layout } from "@/components/Layout";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Suspense, lazy } from "react";
-
+import { Analytics } from "@vercel/analytics/react"
 // Immediate imports for critical pages
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -63,6 +63,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
+      <Analytics />
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
