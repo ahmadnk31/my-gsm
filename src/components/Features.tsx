@@ -90,37 +90,69 @@ const Features = () => {
           </p>
         </div>
 
-        {/* Enhanced Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <Card 
-              key={index} 
-              className="group relative bg-card border-0 shadow-elegant hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in overflow-hidden"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Background Gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <CardContent className="p-8 text-center relative">
-                {/* Icon */}
-                <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elegant`}>
-                  <feature.icon className="h-8 w-8 text-white" />
-                </div>
+        {/* Bento Grid Features Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 auto-rows-fr">
+          {features.map((feature, index) => {
+            // Define bento grid patterns for features
+            const getBentoClasses = (index: number) => {
+              const patterns = [
+                "md:col-span-2 lg:col-span-2 md:row-span-2", // Large feature card
+                "md:col-span-2 lg:col-span-2", // Standard card
+                "md:col-span-4 lg:col-span-2", // Wide card
+                "md:col-span-2 lg:col-span-3", // Wide card
+                "md:col-span-2 lg:col-span-3", // Wide card
+                "md:col-span-4 lg:col-span-6", // Full width card
+              ];
+              return patterns[index % patterns.length];
+            };
+
+            const isLarge = index === 0; // First card is large
+            const isFullWidth = index === 5; // Last card is full width
+
+            return (
+              <Card 
+                key={index} 
+                className={`group relative bg-card border-0 shadow-elegant hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in overflow-hidden ${getBentoClasses(index)} flex flex-col`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                {/* Background Gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                 
-                {/* Content */}
-                <h3 className="text-subheading text-foreground mb-4 group-hover:text-foreground transition-colors">
-                  {feature.title}
-                </h3>
-                
-                <p className="text-body text-muted-foreground group-hover:text-muted-foreground transition-colors">
-                  {feature.description}
-                </p>
-                
-                {/* Hover Effect */}
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-border to-transparent group-hover:from-transparent group-hover:via-primary group-hover:to-transparent transition-all duration-300" />
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent className={`${isLarge ? 'p-10' : isFullWidth ? 'p-12' : 'p-8'} text-center relative flex flex-col justify-center h-full`}>
+                  {/* Icon */}
+                  <div className={`${isLarge ? 'w-20 h-20' : isFullWidth ? 'w-24 h-24' : 'w-16 h-16'} bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elegant`}>
+                    <feature.icon className={`${isLarge ? 'h-10 w-10' : isFullWidth ? 'h-12 w-12' : 'h-8 w-8'} text-white`} />
+                  </div>
+                  
+                  {/* Content */}
+                  <h3 className={`${isLarge ? 'text-2xl' : isFullWidth ? 'text-3xl' : 'text-xl'} font-semibold text-foreground mb-4 group-hover:text-foreground transition-colors`}>
+                    {feature.title}
+                  </h3>
+                  
+                  <p className={`${isLarge ? 'text-lg' : isFullWidth ? 'text-xl' : 'text-base'} text-muted-foreground group-hover:text-muted-foreground transition-colors leading-relaxed ${isFullWidth ? 'max-w-3xl mx-auto' : ''}`}>
+                    {feature.description}
+                  </p>
+                  
+                  {/* Additional content for large cards */}
+                  {isLarge && (
+                    <div className="mt-6 flex items-center justify-center gap-4 text-sm text-primary">
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-4 w-4" />
+                        <span>Premium Quality</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Shield className="h-4 w-4" />
+                        <span>Guaranteed</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Hover Effect */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-border to-transparent group-hover:from-transparent group-hover:via-primary group-hover:to-transparent transition-all duration-300" />
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Enhanced Stats Section */}

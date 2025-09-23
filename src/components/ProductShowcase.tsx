@@ -1,4 +1,5 @@
 import ProductCard from "./ProductCard";
+import BentoProductCard from "./BentoProductCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, TrendingUp, Star } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -210,37 +211,94 @@ const ProductShowcase = () => {
           </p>
         </div>
 
-        {/* Enhanced Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-16 auto-rows-fr">
           {accessoriesLoading ? (
-            // Enhanced Loading skeleton
-            Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="animate-pulse">
+            // Enhanced Loading skeleton for bento grid
+            <>
+              <div className="md:col-span-2 lg:col-span-2 animate-pulse">
+                <div className="bg-gradient-to-br from-muted to-muted/50 rounded-2xl h-80 mb-6"></div>
+                <div className="bg-muted rounded-lg h-6 mb-3"></div>
+                <div className="bg-muted rounded-lg h-4 w-3/4 mb-2"></div>
+                <div className="bg-muted rounded-lg h-4 w-1/2"></div>
+              </div>
+              <div className="md:col-span-2 lg:col-span-2 animate-pulse">
                 <div className="bg-gradient-to-br from-muted to-muted/50 rounded-2xl h-64 mb-6"></div>
                 <div className="bg-muted rounded-lg h-6 mb-3"></div>
                 <div className="bg-muted rounded-lg h-4 w-3/4 mb-2"></div>
                 <div className="bg-muted rounded-lg h-4 w-1/2"></div>
               </div>
-            ))
-          ) : (
-            featuredProducts.map((product, index) => (
-              <div 
-                key={index} 
-                className="group animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <ProductCard 
-                  name={product.name}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  image={product.image}
-                  rating={product.rating}
-                  reviews={product.reviews}
-                  features={product.features}
-                  link={product.link}
-                />
+              <div className="md:col-span-4 lg:col-span-2 animate-pulse">
+                <div className="bg-gradient-to-br from-muted to-muted/50 rounded-2xl h-96 mb-6"></div>
+                <div className="bg-muted rounded-lg h-6 mb-3"></div>
+                <div className="bg-muted rounded-lg h-4 w-3/4 mb-2"></div>
+                <div className="bg-muted rounded-lg h-4 w-1/2"></div>
               </div>
-            ))
+              <div className="md:col-span-2 lg:col-span-3 animate-pulse">
+                <div className="bg-gradient-to-br from-muted to-muted/50 rounded-2xl h-72 mb-6"></div>
+                <div className="bg-muted rounded-lg h-6 mb-3"></div>
+                <div className="bg-muted rounded-lg h-4 w-3/4 mb-2"></div>
+                <div className="bg-muted rounded-lg h-4 w-1/2"></div>
+              </div>
+              <div className="md:col-span-2 lg:col-span-3 animate-pulse">
+                <div className="bg-gradient-to-br from-muted to-muted/50 rounded-2xl h-72 mb-6"></div>
+                <div className="bg-muted rounded-lg h-6 mb-3"></div>
+                <div className="bg-muted rounded-lg h-4 w-3/4 mb-2"></div>
+                <div className="bg-muted rounded-lg h-4 w-1/2"></div>
+              </div>
+            </>
+          ) : (
+            featuredProducts.map((product, index) => {
+              // Define bento grid patterns for different positions
+              const getBentoClasses = (index: number) => {
+                const patterns = [
+                  "md:col-span-2 lg:col-span-2", // Large card
+                  "md:col-span-2 lg:col-span-2", // Large card
+                  "md:col-span-4 lg:col-span-2", // Tall card
+                  "md:col-span-2 lg:col-span-3", // Wide card
+                  "md:col-span-2 lg:col-span-3", // Wide card
+                  "md:col-span-4 lg:col-span-2", // Tall card
+                  "md:col-span-2 lg:col-span-2", // Standard card
+                  "md:col-span-2 lg:col-span-2", // Standard card
+                ];
+                return patterns[index % patterns.length];
+              };
+
+              const getBentoImageHeight = (index: number) => {
+                const heights = [
+                  "h-80", // Tall
+                  "h-64", // Medium
+                  "h-96", // Extra tall
+                  "h-72", // Large
+                  "h-72", // Large
+                  "h-96", // Extra tall
+                  "h-64", // Medium
+                  "h-64", // Medium
+                ];
+                return heights[index % heights.length];
+              };
+
+              return (
+                <div 
+                  key={index} 
+                  className={`group animate-fade-in ${getBentoClasses(index)}`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <BentoProductCard
+                    name={product.name}
+                    price={product.price}
+                    originalPrice={product.originalPrice}
+                    image={product.image}
+                    rating={product.rating}
+                    reviews={product.reviews}
+                    features={product.features}
+                    link={product.link}
+                    imageHeight={getBentoImageHeight(index)}
+                    size={index % 3 === 0 ? 'large' : index % 4 === 0 ? 'tall' : 'standard'}
+                  />
+                </div>
+              );
+            })
           )}
         </div>
 

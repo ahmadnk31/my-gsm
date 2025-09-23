@@ -1,6 +1,13 @@
 import Hero from "@/components/Hero";
 import ProductShowcase from "@/components/ProductShowcase";
 import Features from "@/components/Features";
+import StatsCounter from "@/components/StatsCounter";
+import FeaturedProductsAndParts from "@/components/FeaturedProductsAndParts";
+import HowItWorks from "@/components/HowItWorks";
+import Testimonials from "@/components/Testimonials";
+import TrustIndicators from "@/components/TrustIndicators";
+import FAQ from "@/components/FAQ";
+import BlogAndUpdates from "@/components/BlogAndUpdates";
 import { SEO, getPageSEOConfig } from "@/components/SEO";
 import { WebsiteStructuredData, OrganizationStructuredData } from "@/components/StructuredData";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -38,8 +45,15 @@ const Index = () => {
         ]}
       />
       <Hero />
+      <StatsCounter />
       <ProductShowcase />
+      <FeaturedProductsAndParts />
+      <HowItWorks />
       <Features />
+      <Testimonials />
+      <TrustIndicators />
+      <BlogAndUpdates />
+      <FAQ />
     </div>
   );
 };

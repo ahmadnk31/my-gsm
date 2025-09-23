@@ -143,101 +143,102 @@ export const DynamicBanner: React.FC<DynamicBannerProps> = ({
   const typeInfo = getBannerTypeInfo(currentBanner.type);
 
   return (
-    <div className="relative w-full h-auto lg:h-[600px] xl:h-[700px] banner-container">
-      {/* Main Banner Container - Constant height on desktop, flexible on mobile */}
+    <div className="relative w-full h-auto lg:h-[500px] xl:h-[600px] banner-container">
+      {/* Modern Professional Banner Container - Now properly contained */}
       <div 
-        className={`relative overflow-hidden h-full w-full shadow-2xl ${currentBanner.backgroundColor} ${currentBanner.textColor} group banner-hover-scale banner-glow banner-${currentBanner.type}`}
+        className={`relative overflow-hidden h-full w-full bg-white shadow-xl border border-gray-100 rounded-2xl lg:rounded-3xl group`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Minimal Background Effects */}
-        <div className="absolute inset-0">
-          {/* Very subtle gradient overlay - only on text side */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-transparent lg:via-black/5 lg:to-transparent" />
-          
-          {/* Clean separator line between sections on desktop */}
-          <div className="hidden lg:block absolute top-0 left-1/2 w-px h-full bg-white/10 transform -translate-x-1/2" />
-          
-          {/* Minimal floating elements - only on text side */}
-          <div className="absolute inset-0 overflow-hidden opacity-20 lg:w-1/2">
-            <div className="absolute top-1/4 left-1/6 w-1 h-1 bg-white/40 rounded-full animate-pulse" style={{ animationDuration: '4s' }} />
-            <div className="absolute bottom-1/3 left-1/4 w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '2s', animationDuration: '6s' }} />
+        {/* Clean Professional Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white">
+          {/* Subtle pattern overlay */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-10 left-10 w-24 h-24 bg-blue-100 rounded-full blur-3xl" />
+            <div className="absolute bottom-20 right-20 w-32 h-32 bg-orange-100 rounded-full blur-3xl" />
           </div>
         </div>
 
-        {/* Close Button */}
+        {/* Close Button - Professional Style adapted for mobile background */}
         {showCloseButton && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleClose}
-            className="absolute top-6 right-6 z-30 text-current hover:bg-white/20 rounded-full p-2 transition-all duration-300 hover:scale-110"
+            className="absolute top-6 right-6 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm lg:bg-white/80 lg:hover:bg-white text-white lg:text-gray-500 lg:hover:text-gray-700 rounded-full p-2.5 transition-all duration-300 border border-white/20 lg:border-gray-200"
           >
             <X className="h-5 w-5" />
           </Button>
         )}
 
-        {/* Banner Content */}
-        <div className="relative z-20 h-auto lg:h-full flex items-center justify-center p-0">
-          <div className="flex flex-col-reverse lg:flex-row items-stretch w-full h-auto lg:h-full">
-            {/* Left Content - Text Section */}
-            <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12 xl:p-16 bg-gradient-to-br from-white/5 to-transparent min-h-[400px] lg:min-h-full">
-              <div className="space-y-4 sm:space-y-6 lg:space-y-8 max-w-lg xl:max-w-xl">
-                {/* Brand/Type Badge */}
-                <div className="flex items-center gap-3">
-                  {currentBanner.subtitle && (
-                    <Badge className="bg-black/20 text-current border-white/30 px-3 py-1 text-xs font-medium">
-                      {typeInfo.label}
-                    </Badge>
-                  )}
+        {/* Professional Content Layout */}
+        <div className="relative z-20 h-full flex items-stretch">
+          <div className="flex flex-col lg:flex-row w-full h-full">
+            
+            {/* Left Content - Professional Text Section */}
+            <div className="flex-1 flex items-center justify-start p-8 lg:p-12 xl:p-16 min-h-[400px] lg:min-h-full relative">
+              {/* Mobile Background Image Overlay */}
+              {currentBanner.image && (
+                <div className="absolute inset-0 lg:hidden">
+                  <img 
+                    src={currentBanner.image} 
+                    alt={currentBanner.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50" />
                 </div>
-
-                {/* Main Title - Apple Style */}
+              )}
+              
+              <div className="space-y-6 lg:space-y-8 max-w-lg relative z-10">
+                
+                {/* Professional Header */}
                 <div className="space-y-2">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight">
-                    {currentBanner.title}
-                  </h1>
                   {currentBanner.subtitle && (
-                    <p className="text-lg sm:text-xl lg:text-2xl text-current/80 font-light">
+                    <p className="text-sm font-medium text-white lg:text-gray-500 uppercase tracking-wide">
                       {currentBanner.subtitle}
                     </p>
                   )}
+                  
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-white lg:text-gray-900 banner-title">
+                    {currentBanner.title}
+                  </h1>
                 </div>
 
-                {/* Description */}
-                <p className="text-base sm:text-lg lg:text-xl text-current/70 leading-relaxed font-light max-w-md">
+                {/* Professional Description */}
+                <p className="text-lg lg:text-xl text-white/90 lg:text-gray-600 leading-relaxed banner-description" 
+                   style={{ animationDelay: '0.2s' }}>
                   {currentBanner.description}
                 </p>
 
-                {/* Start/End Date Display */}
+                {/* Professional Date Display */}
                 {(currentBanner.startDate || currentBanner.endDate) && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-sm sm:text-base text-current/60">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 p-4 bg-white/10 lg:bg-gray-50 rounded-xl border border-white/20 lg:border-gray-200 banner-description" 
+                       style={{ animationDelay: '0.4s' }}>
                     {currentBanner.startDate && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-white/80 lg:text-gray-600">
                         <Calendar className="h-4 w-4" />
-                        <span>Starts: {currentBanner.startDate.toLocaleDateString()}</span>
+                        <span className="text-sm font-medium">Starts: {currentBanner.startDate.toLocaleDateString()}</span>
                       </div>
                     )}
                     {currentBanner.endDate && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-white/80 lg:text-gray-600">
                         <Clock className="h-4 w-4" />
-                        <span>Ends: {currentBanner.endDate.toLocaleDateString()}</span>
+                        <span className="text-sm font-medium">Ends: {currentBanner.endDate.toLocaleDateString()}</span>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* CTA Button - Apple Style */}
+                {/* Professional CTA Button */}
                 {currentBanner.buttonText && currentBanner.buttonLink && (
-                  <div className="pt-4">
+                  <div className="pt-4 banner-button" style={{ animationDelay: '0.6s' }}>
                     <Button
                       asChild
-                      variant="outline"
-                      className="bg-transparent border-white/30 text-current hover:bg-white/10 px-6 py-3 rounded-full text-base font-medium transition-all duration-300 hover:border-white/50"
+                      className="bg-white/20 hover:bg-white/30 text-white border border-white/30 hover:border-white/50 lg:bg-gray-900 lg:hover:bg-gray-800 lg:text-white lg:border-gray-900 px-8 py-3 rounded-lg text-base font-semibold transition-all duration-300 shadow-lg hover:shadow-xl banner-cta-button group"
                     >
-                      <a href={currentBanner.buttonLink} className="flex items-center gap-2">
+                      <a href={currentBanner.buttonLink} className="flex items-center gap-3">
                         <span>{currentBanner.buttonText}</span>
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                       </a>
                     </Button>
                   </div>
@@ -245,80 +246,76 @@ export const DynamicBanner: React.FC<DynamicBannerProps> = ({
               </div>
             </div>
 
-            {/* Right Content - Product Image Section (Full Height, No Background, No Padding) */}
-            <div className="flex-1 relative flex items-stretch justify-stretch overflow-hidden lg:bg-transparent  sm:h-80 lg:h-full p-0 m-0">
+            {/* Right Content - Professional Image Section (Hidden on Mobile) */}
+            <div className="hidden lg:flex flex-1 relative h-64 sm:h-80 lg:h-full overflow-hidden lg:rounded-r-2xl">
               {currentBanner.image ? (
-                <div className="relative w-full h-full flex items-stretch justify-stretch m-0 p-0">
-                  {/* Main product image - Full height container */}
+                <div className="relative w-full h-full banner-image" style={{ animationDelay: '0.8s' }}>
                   <img 
                     src={currentBanner.image} 
                     alt={currentBanner.title}
-                    className="w-full h-full object-cover lg:object-contain relative z-10 m-0 p-0"
-                    style={{ 
-                      filter: 'drop-shadow(0 25px 50px rgba(0, 0, 0, 0.15))',
-                      objectPosition: 'center center'
-                    }}
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                   
-                  {/* Subtle overlay for mobile only */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20 lg:hidden" />
+                  {/* Professional overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-white/10" />
+                  
+                  {/* Professional corner accent */}
+                  <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-black/20 to-transparent" />
                 </div>
               ) : (
-                // Geometric placeholder when no image - Full height, no padding
-                <div className="relative w-full h-full flex items-center justify-center m-0 p-0">
-                  {/* Background geometric shapes - Full height */}
-                  <div className="absolute inset-0 bg-white/5 lg:bg-white/10" />
-                  <div className="absolute inset-2 bg-white/10 lg:bg-white/10 rounded-2xl rotate-12 transform" />
-                  <div className="absolute inset-4 bg-white/15 lg:bg-white/20 rounded-xl -rotate-6 transform" />
-                  <div className="absolute inset-6 bg-white/20 lg:bg-white/20 rounded-xl rotate-3 transform backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                    <div className="text-8xl lg:text-9xl text-white/40">
-                      {bannerIconInfo.icon}
+                // Professional placeholder with business theme
+                <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 banner-image" 
+                     style={{ animationDelay: '0.8s' }}>
+                  <div className="relative">
+                    {/* Professional icon presentation */}
+                    <div className="w-24 h-24 lg:w-32 lg:h-32 bg-white rounded-2xl shadow-lg flex items-center justify-center">
+                      <div className="text-4xl lg:text-5xl text-gray-600">
+                        {bannerIconInfo.icon}
+                      </div>
                     </div>
+                    
+                    {/* Floating professional elements */}
+                    <div className="absolute -top-4 -right-4 w-6 h-6 bg-blue-200 rounded-full animate-pulse" />
+                    <div className="absolute -bottom-4 -left-4 w-4 h-4 bg-orange-200 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
                   </div>
-                  
-                  {/* Floating elements - closer to edges */}
-                  <div className="absolute top-4 right-4 w-4 h-4 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-                  <div className="absolute bottom-6 left-4 w-3 h-3 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '1s' }} />
-                  <div className="absolute top-1/3 left-2 w-2 h-2 bg-white/50 rounded-full animate-pulse" />
-                  <div className="absolute bottom-1/4 right-2 w-2 h-2 bg-white/40 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Navigation Controls */}
+        {/* Professional Navigation Controls */}
         {showNavigation && activeBanners.length > 1 && (
           <>
-            {/* Navigation Arrows - Positioned to avoid image area */}
+            {/* Clean Navigation Arrows - Adapted for mobile background */}
             <Button
               variant="ghost"
               size="sm"
               onClick={goToPrevious}
-              className="absolute left-4 lg:left-6 bottom-20 lg:top-1/2 lg:bottom-auto transform lg:-translate-y-1/2 z-30 text-current hover:bg-white/20 rounded-full p-3 transition-all duration-300 hover:scale-110"
+              className="absolute left-6 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm lg:bg-white/80 lg:hover:bg-white text-white lg:text-gray-700 lg:hover:text-gray-900 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 border border-white/20 lg:border-gray-200"
             >
-              <ChevronLeft className="h-6 w-6" />
+              <ChevronLeft className="h-5 w-5" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={goToNext}
-              className="absolute right-4 lg:right-6 bottom-20 lg:top-1/2 lg:bottom-auto transform lg:-translate-y-1/2 z-30 text-current hover:bg-white/20 rounded-full p-3 transition-all duration-300 hover:scale-110"
+              className="absolute right-6 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/30 backdrop-blur-sm lg:bg-white/80 lg:hover:bg-white text-white lg:text-gray-700 lg:hover:text-gray-900 rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 border border-white/20 lg:border-gray-200"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-5 w-5" />
             </Button>
 
-            {/* Enhanced Dots Indicator - Better positioning */}
-            <div className="absolute bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 z-30">
-              <div className="flex items-center space-x-3 bg-black/30 backdrop-blur-md rounded-full px-4 lg:px-6 py-2 lg:py-3">
+            {/* Professional Dots Indicator - Adapted for mobile background */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
+              <div className="flex items-center space-x-3 bg-white/20 backdrop-blur-md lg:bg-white/90 rounded-full px-6 py-3 shadow-lg border border-white/20 lg:border-gray-200">
                 {activeBanners.map((banner, index) => (
                   <button
                     key={banner.id}
                     onClick={() => goToSlide(index)}
-                    className={`relative transition-all duration-300 ${
+                    className={`relative transition-all duration-500 ${
                       index === currentIndex
-                        ? 'w-6 lg:w-8 h-2 lg:h-3 bg-white rounded-full shadow-lg'
-                        : 'w-2 lg:w-3 h-2 lg:h-3 bg-white/50 hover:bg-white/70 rounded-full'
+                        ? 'w-8 h-3 bg-white lg:bg-gray-900 rounded-full'
+                        : 'w-3 h-3 bg-white/60 hover:bg-white/80 lg:bg-gray-300 lg:hover:bg-gray-500 rounded-full hover:scale-125'
                     }`}
                   />
                 ))}
@@ -327,17 +324,15 @@ export const DynamicBanner: React.FC<DynamicBannerProps> = ({
           </>
         )}
 
-        {/* Enhanced Progress Bar */}
+        {/* Clean Progress Indicator - Adapted for mobile background */}
         {autoSlide && !isPaused && activeBanners.length > 1 && (
-          <div className="absolute bottom-0 left-0 w-full h-1.5 bg-black/20 overflow-hidden banner-progress">
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20 lg:bg-gray-200 overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-white/70 via-white/90 to-white/70 transition-all duration-100 ease-linear relative"
+              className="h-full bg-white lg:bg-gray-900 transition-all duration-100 ease-linear"
               style={{
                 width: `${((currentIndex + 1) / activeBanners.length) * 100}%`
               }}
-            >
-              <div className="absolute inset-0 bg-white/40 animate-pulse" />
-            </div>
+            />
           </div>
         )}
       </div>

@@ -1,58 +1,8 @@
-/* Advanced Banner Animations */
+/* Professional Banner Animations */
 
-@keyframes float-gentle {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  33% {
-    transform: translateY(-15px) rotate(1deg);
-  }
-  66% {
-    transform: translateY(-5px) rotate(-1deg);
-  }
-}
-
-@keyframes orbital-spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes scale-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
-  }
-}
-
-@keyframes glow-intense {
-  0%, 100% {
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1), 0 0 60px rgba(255, 255, 255, 0.05);
-  }
-  50% {
-    box-shadow: 0 0 50px rgba(255, 255, 255, 0.3), 0 0 100px rgba(255, 255, 255, 0.1);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
-  }
-}
-
-@keyframes slide-in-right {
+@keyframes slide-in-left {
   from {
-    transform: translateX(100px);
+    transform: translateX(-30px);
     opacity: 0;
   }
   to {
@@ -61,9 +11,9 @@
   }
 }
 
-@keyframes slide-in-left {
+@keyframes slide-in-right {
   from {
-    transform: translateX(-100px);
+    transform: translateX(30px);
     opacity: 0;
   }
   to {
@@ -74,7 +24,7 @@
 
 @keyframes fade-in-up {
   from {
-    transform: translateY(30px);
+    transform: translateY(20px);
     opacity: 0;
   }
   to {
@@ -83,118 +33,54 @@
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px);
   }
-  100% {
-    background-position: 1000px 0;
+  50% {
+    transform: translateY(-8px);
   }
 }
 
-/* Banner specific classes */
+@keyframes scale-subtle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Professional banner classes with smooth timing */
 .banner-container {
-  animation: fade-in-up 0.8s ease-out;
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .banner-title {
-  animation: slide-in-left 1s ease-out 0.2s both;
+  animation: slide-in-left 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
 .banner-description {
-  animation: slide-in-left 1s ease-out 0.4s both;
+  animation: slide-in-left 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
 .banner-button {
-  animation: slide-in-left 1s ease-out 0.6s both;
+  animation: slide-in-left 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 
 .banner-image {
-  animation: slide-in-right 1s ease-out 0.8s both;
+  animation: slide-in-right 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
-.banner-icon-float {
-  animation: float-gentle 4s ease-in-out infinite;
+.banner-float {
+  animation: float-gentle 6s ease-in-out infinite;
 }
 
-.banner-glow {
-  animation: glow-intense 3s ease-in-out infinite;
-}
-
-.banner-orbital {
-  animation: orbital-spin 20s linear infinite;
-}
-
-.banner-scale-pulse {
-  animation: scale-pulse 2s ease-in-out infinite;
-}
-
-.banner-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 4s infinite;
-}
-
-/* Hover effects */
-.banner-hover-scale {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.banner-hover-scale:hover {
-  transform: scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive animations */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .banner-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  
-  .banner-glow:hover {
-    box-shadow: 0 0 60px rgba(255, 255, 255, 0.2);
-  }
-}
-
-/* Banner type specific styles */
-.banner-promotion {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
-  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
-}
-
-.banner-feature {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #7c3aed 100%);
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-}
-
-.banner-announcement {
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-}
-
-.banner-seasonal {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #ec4899 100%);
-  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
-}
-
-/* Button animations */
+/* Enhanced professional button effects */
 .banner-cta-button {
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .banner-cta-button::before {
@@ -207,34 +93,113 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.1),
     transparent
   );
-  transition: left 0.5s;
+  transition: left 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .banner-cta-button:hover::before {
   left: 100%;
 }
 
-/* Progress bar animations */
-.banner-progress {
-  position: relative;
-  overflow: hidden;
+.banner-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
 }
 
-.banner-progress::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 30px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.5),
-    transparent
-  );
-  animation: shimmer 2s infinite;
+/* Smooth hover effects */
+.banner-hover-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.banner-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive animations with reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .banner-container,
+  .banner-title,
+  .banner-description,
+  .banner-button,
+  .banner-image,
+  .banner-float {
+    animation: none !important;
+  }
+  
+  .banner-cta-button,
+  .banner-hover-lift {
+    transition: none !important;
+  }
+}
+
+/* Professional background themes */
+.banner-professional {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+}
+
+.banner-business {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%);
+}
+
+.banner-modern {
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 50%, #eeeeee 100%);
+}
+
+/* Container alignment helpers */
+.banner-container-aligned {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .banner-container-aligned {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .banner-container-aligned {
+    padding: 0 2rem;
+  }
+}
+
+/* Mobile-specific banner background styles */
+@media (max-width: 1023px) {
+  .banner-mobile-overlay {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .banner-mobile-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+    z-index: 1;
+  }
+  
+  .banner-mobile-content {
+    position: relative;
+    z-index: 2;
+  }
+  
+  /* Improved text contrast for mobile background */
+  .banner-mobile-text {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Better mobile button styling */
+  .banner-mobile-button {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
 }

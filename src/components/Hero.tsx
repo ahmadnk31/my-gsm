@@ -40,9 +40,9 @@ const Hero = () => {
   const heroContent = getHeroContent();
 
   return (
-    <section className="relative">
-      {/* Dynamic Banner with responsive height */}
-      <div className="w-full">
+    <section className="py-16 lg:py-20 bg-background">
+      {/* Dynamic Banner with proper spacing and container alignment */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <DynamicBanner 
           autoSlide={true}
           slideInterval={8000}
