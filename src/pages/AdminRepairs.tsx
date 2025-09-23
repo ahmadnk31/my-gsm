@@ -17,10 +17,10 @@ export default function AdminRepairs() {
 
   if (!user) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center">Please sign in to access the admin panel.</p>
+            <p className="text-center text-sm sm:text-base">Please sign in to access the admin panel.</p>
           </CardContent>
         </Card>
       </div>
@@ -29,10 +29,10 @@ export default function AdminRepairs() {
 
   if (userRole !== 'admin') {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center">Access denied. Admin privileges required.</p>
+            <p className="text-center text-sm sm:text-base">Access denied. Admin privileges required.</p>
           </CardContent>
         </Card>
       </div>
@@ -44,28 +44,31 @@ export default function AdminRepairs() {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-4 sm:py-8 px-4 sm:px-6">
       <SEO {...seoConfig} />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Repair Services Management</h1>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">Repair Services Management</h1>
         <p className="text-muted-foreground mt-2">
           Manage your custom repair items, services, and pricing
         </p>
       </div>
 
       <Tabs defaultValue="hierarchical" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="hierarchical" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-0 h-auto sm:h-10">
+          <TabsTrigger value="hierarchical" className="flex items-center justify-center gap-2 text-sm">
             <Layers className="h-4 w-4" />
-            Device Management
+            <span className="hidden xs:inline">Device Management</span>
+            <span className="xs:hidden">Devices</span>
           </TabsTrigger>
-          <TabsTrigger value="add" className="flex items-center gap-2">
+          <TabsTrigger value="add" className="flex items-center justify-center gap-2 text-sm">
             <Package className="h-4 w-4" />
-            Add Legacy Item
+            <span className="hidden xs:inline">Add Legacy Item</span>
+            <span className="xs:hidden">Add Item</span>
           </TabsTrigger>
-          <TabsTrigger value="manage" className="flex items-center gap-2">
+          <TabsTrigger value="manage" className="flex items-center justify-center gap-2 text-sm">
             <Settings className="h-4 w-4" />
-            Manage Legacy Items
+            <span className="hidden xs:inline">Manage Legacy Items</span>
+            <span className="xs:hidden">Manage</span>
           </TabsTrigger>
         </TabsList>
 

@@ -114,60 +114,64 @@ export const RepairItemsList: React.FC<RepairItemsListProps> = ({ refreshTrigger
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="space-y-4">
           {items.map((item) => (
             <Card key={item.id}>
-              <CardContent className="pt-6">
-                <div className="flex gap-4">
+              <CardContent className="pt-4 sm:pt-6">
+                <div className="flex flex-col sm:flex-row gap-4">
                   {item.image_url && (
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 self-center sm:self-start">
                       <img
                         src={item.image_url}
                         alt={item.name}
-                        className="w-24 h-24 object-cover rounded-md border"
+                        className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md border mx-auto sm:mx-0"
                       />
                     </div>
                   )}
                   
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-semibold">{item.name}</h4>
+                  <div className="flex-1 space-y-3 sm:space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-2">
+                      <div className="text-center sm:text-left">
+                        <h4 className="font-semibold text-base sm:text-lg">{item.name}</h4>
                         <p className="text-sm text-muted-foreground">
                           {item.device_type} • {item.device_model}
                         </p>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <Badge variant={item.is_active ? "default" : "secondary"}>
+                      <div className="flex items-center justify-center sm:justify-end gap-2 flex-wrap">
+                        <Badge variant={item.is_active ? "default" : "secondary"} className="whitespace-nowrap">
                           {item.is_active ? "Active" : "Inactive"}
                         </Badge>
                         
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => toggleActive(item.id, item.is_active)}
-                        >
-                          {item.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </Button>
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => deleteItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => toggleActive(item.id, item.is_active)}
+                            className="p-2"
+                          >
+                            {item.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => deleteItem(item.id)}
+                            className="p-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                     
                     {item.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2 text-center sm:text-left">
                         {item.description}
                       </p>
                     )}
                     
-                    <div className="flex flex-wrap gap-4 text-sm">
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-4 text-sm">
                       {item.estimated_price && (
                         <span className="font-medium text-primary">
                           ${item.estimated_price}
@@ -175,14 +179,14 @@ export const RepairItemsList: React.FC<RepairItemsListProps> = ({ refreshTrigger
                       )}
                       
                       {item.estimated_duration && (
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground flex items-center gap-1">
                           ⏱️ {item.estimated_duration}
                         </span>
                       )}
                     </div>
                     
                     {item.parts_required.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap justify-center sm:justify-start gap-1">
                         {item.parts_required.map((part, index) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {part}
