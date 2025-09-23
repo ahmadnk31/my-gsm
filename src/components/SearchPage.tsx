@@ -62,6 +62,8 @@ export function SearchPage() {
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [searchedDeviceModel, setSearchedDeviceModel] = useState<string | null>(null);
+  const [hasDeviceResults, setHasDeviceResults] = useState(false);
 
   // Perform search when query changes
   useEffect(() => {
@@ -115,15 +117,21 @@ export function SearchPage() {
   const performSearch = async (searchQuery: string) => {
     setIsLoading(true);
     try {
-      const searchTerm = searchQuery.toLowerCase();
+      const searchTerm = searchQuery.toLowerCase().trim();
+      const searchWords = searchTerm.split(/\s+/).filter(word => word.length > 0);
       const results: SearchResult[] = [];
 
       // Search device categories with broader matching
-      const { data: categories } = await supabase
+      const { data: categories, error: categoriesError } = await supabase
         .from('device_categories')
         .select('id, name, description, icon_name')
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(10);
+
+      if (categoriesError) {
+        console.error('Categories search error:', categoriesError);
+      }
 
       categories?.forEach(category => {
         results.push({
@@ -138,7 +146,7 @@ export function SearchPage() {
       });
 
       // Search device brands with broader matching
-      const { data: brands } = await supabase
+      const { data: brands, error: brandsError } = await supabase
         .from('device_brands')
         .select(`
           id, 
@@ -148,7 +156,12 @@ export function SearchPage() {
           device_categories!inner(name)
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(10);
+
+      if (brandsError) {
+        console.error('Brands search error:', brandsError);
+      }
 
       brands?.forEach(brand => {
         const imageUrl = getImageUrl(brand.logo_url, 'devices');
@@ -166,7 +179,7 @@ export function SearchPage() {
       });
 
       // Search device models with broader matching
-      const { data: models } = await supabase
+      const { data: models, error: modelsError } = await supabase
         .from('device_models')
         .select(`
           id, 
@@ -176,7 +189,12 @@ export function SearchPage() {
           device_brands!inner(name, device_categories!inner(name))
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(10);
+
+      if (modelsError) {
+        console.error('Models search error:', modelsError);
+      }
 
       models?.forEach(model => {
         const imageUrl = getImageUrl(model.image_url, 'devices');
@@ -194,7 +212,7 @@ export function SearchPage() {
       });
 
       // Search device parts with broader matching
-      const { data: parts } = await supabase
+      const { data: parts, error: partsError } = await supabase
         .from('device_parts')
         .select(`
           id, 
@@ -205,7 +223,12 @@ export function SearchPage() {
           device_models!inner(name, device_brands!inner(name, device_categories!inner(name)))
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(10);
+
+      if (partsError) {
+        console.error('Parts search error:', partsError);
+      }
 
       parts?.forEach(part => {
         const imageUrl = getImageUrl(part.image_url, 'devices');
@@ -222,8 +245,86 @@ export function SearchPage() {
         });
       });
 
+      // Enhanced search for device parts by model name (e.g., "iPhone 15 Pro Max" should find its parts)
+      const { data: modelParts, error: modelPartsError } = await supabase
+        .from('device_parts')
+        .select(`
+          id, 
+          name, 
+          description,
+          category,
+          image_url,
+          device_models!inner(name, device_brands!inner(name, device_categories!inner(name)))
+        `)
+        .ilike('device_models.name', `%${searchTerm}%`)
+        .eq('is_active', true)
+        .limit(15);
+
+      if (modelPartsError) {
+        console.error('Model parts search error:', modelPartsError);
+      }
+
+      modelParts?.forEach(part => {
+        // Only add if not already in results
+        if (!results.find(r => r.id === part.id && r.type === 'part')) {
+          const imageUrl = getImageUrl(part.image_url, 'devices');
+          results.push({
+            id: part.id,
+            type: 'part',
+            title: part.name,
+            subtitle: `${part.device_models.device_brands.name} ${part.device_models.name} - ${part.category}`,
+            description: part.description,
+            image: imageUrl,
+            url: `/repairs?category=${part.device_models.device_brands.device_categories.name.toLowerCase().replace(/\s+/g, '-')}&brand=${part.device_models.device_brands.name.toLowerCase().replace(/\s+/g, '-')}&model=${part.device_models.name.toLowerCase().replace(/\s+/g, '')}`,
+            category: part.category,
+            brand: part.device_models.device_brands.name
+          });
+        }
+      });
+
+      // Also search for parts by brand name (e.g., "iPhone" should find all iPhone parts)
+      for (const word of searchWords) {
+        if (word.length > 2) {
+          const { data: brandParts, error: brandPartsError } = await supabase
+            .from('device_parts')
+            .select(`
+              id, 
+              name, 
+              description,
+              category,
+              image_url,
+              device_models!inner(name, device_brands!inner(name, device_categories!inner(name)))
+            `)
+            .ilike('device_models.device_brands.name', `%${word}%`)
+            .eq('is_active', true)
+            .limit(10);
+
+          if (brandPartsError) {
+            console.error('Brand parts search error:', brandPartsError);
+          }
+
+          brandParts?.forEach(part => {
+            // Only add if not already in results
+            if (!results.find(r => r.id === part.id && r.type === 'part')) {
+              const imageUrl = getImageUrl(part.image_url, 'devices');
+              results.push({
+                id: part.id,
+                type: 'part',
+                title: part.name,
+                subtitle: `${part.device_models.device_brands.name} ${part.device_models.name} - ${part.category}`,
+                description: part.description,
+                image: imageUrl,
+                url: `/repairs?category=${part.device_models.device_brands.device_categories.name.toLowerCase().replace(/\s+/g, '-')}&brand=${part.device_models.device_brands.name.toLowerCase().replace(/\s+/g, '-')}&model=${part.device_models.name.toLowerCase().replace(/\s+/g, '')}`,
+                category: part.category,
+                brand: part.device_models.device_brands.name
+              });
+            }
+          });
+        }
+      }
+
       // Search accessories with broader matching
-      const { data: accessories } = await supabase
+      const { data: accessories, error: accessoriesError } = await supabase
         .from('accessories')
         .select(`
           id, 
@@ -239,7 +340,12 @@ export function SearchPage() {
           accessory_brands!inner(name)
         `)
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags::text.ilike.%${searchTerm}%`)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(15);
+
+      if (accessoriesError) {
+        console.error('Accessories search error:', accessoriesError);
+      }
 
       accessories?.forEach(accessory => {
         const imageUrl = getImageUrl(accessory.image_url);
@@ -260,7 +366,7 @@ export function SearchPage() {
       });
 
       // Also search for accessories by category name (e.g., "charger" matches "chargers" category)
-      const { data: categoryAccessories } = await supabase
+      const { data: categoryAccessories, error: categoryAccessoriesError } = await supabase
         .from('accessories')
         .select(`
           id, 
@@ -276,7 +382,12 @@ export function SearchPage() {
           accessory_brands!inner(name)
         `)
         .eq('is_active', true)
-        .ilike('accessory_categories.name', `%${searchTerm}%`);
+        .ilike('accessory_categories.name', `%${searchTerm}%`)
+        .limit(5);
+
+      if (categoryAccessoriesError) {
+        console.error('Category accessories search error:', categoryAccessoriesError);
+      }
 
       categoryAccessories?.forEach(accessory => {
         // Only add if not already in results
@@ -300,7 +411,7 @@ export function SearchPage() {
       });
 
       // Also search for partial matches in brand names for better results
-      const { data: brandMatches } = await supabase
+      const { data: brandMatches, error: brandMatchesError } = await supabase
         .from('device_brands')
         .select(`
           id, 
@@ -309,7 +420,12 @@ export function SearchPage() {
           device_categories!inner(name)
         `)
         .ilike('name', `%${searchTerm}%`)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .limit(5);
+
+      if (brandMatchesError) {
+        console.error('Brand matches search error:', brandMatchesError);
+      }
 
       brandMatches?.forEach(brand => {
         // Only add if not already in results
@@ -327,10 +443,69 @@ export function SearchPage() {
         }
       });
 
-      // Remove duplicates
+      // Enhanced multi-word search for better matching
+      if (searchWords.length > 1) {
+        const multiWordQueries = [];
+        
+        // Try searching each word individually for broader matches
+        for (const word of searchWords) {
+          if (word.length > 2) { // Skip very short words
+            const { data: multiWordAccessories } = await supabase
+              .from('accessories')
+              .select(`
+                id, 
+                name, 
+                description,
+                price,
+                image_url,
+                rating,
+                review_count,
+                tags,
+                slug,
+                accessory_categories!inner(name, slug),
+                accessory_brands!inner(name)
+              `)
+              .or(`name.ilike.%${word}%,description.ilike.%${word}%,tags::text.ilike.%${word}%`)
+              .eq('is_active', true)
+              .limit(5);
+
+            multiWordAccessories?.forEach(accessory => {
+              // Only add if not already in results and matches multiple words
+              if (!results.find(r => r.id === accessory.id && r.type === 'accessory')) {
+                const matchCount = searchWords.reduce((count, searchWord) => {
+                  const lowerName = accessory.name.toLowerCase();
+                  const lowerDesc = (accessory.description || '').toLowerCase();
+                  return count + (lowerName.includes(searchWord) || lowerDesc.includes(searchWord) ? 1 : 0);
+                }, 0);
+                
+                // Only add if it matches multiple search words or is a very good single match
+                if (matchCount > 1 || (matchCount === 1 && searchWords.length === 1)) {
+                  const imageUrl = getImageUrl(accessory.image_url);
+                  results.push({
+                    id: accessory.id,
+                    type: 'accessory',
+                    title: accessory.name,
+                    subtitle: `${accessory.accessory_brands.name} ${accessory.accessory_categories.name}`,
+                    description: accessory.description,
+                    price: accessory.price,
+                    image: imageUrl,
+                    rating: accessory.rating,
+                    reviewCount: accessory.review_count,
+                    url: `/accessories/product?category=${accessory.accessory_categories.slug || 'uncategorized'}&product=${accessory.slug || accessory.id}`,
+                    category: accessory.accessory_categories.name,
+                    brand: accessory.accessory_brands.name
+                  });
+                }
+              }
+            });
+          }
+        }
+      }
+
+      // Remove duplicates and limit to 50 results
       const uniqueResults = results.filter((result, index, self) => 
         index === self.findIndex(r => r.id === result.id && r.type === result.type)
-      );
+      ).slice(0, 50);
 
       setResults(uniqueResults);
     } catch (error) {
@@ -373,7 +548,7 @@ export function SearchPage() {
   const renderResultCard = (result: SearchResult) => (
     <Card 
       key={`${result.type}-${result.id}`}
-      className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+      className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1 group"
       onClick={() => handleResultClick(result)}
     >
       <CardHeader className="pb-3">
@@ -383,7 +558,8 @@ export function SearchPage() {
               <img 
                 src={result.image} 
                 alt={result.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                loading="lazy"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   const container = target.parentElement;
@@ -408,7 +584,9 @@ export function SearchPage() {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg truncate">{result.title}</CardTitle>
+                <CardTitle className="text-lg truncate group-hover:text-primary transition-colors">
+                  {result.title}
+                </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">{result.subtitle}</p>
               </div>
               {getTypeBadge(result.type)}
@@ -542,17 +720,21 @@ export function SearchPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Search Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
           <div className="flex-1 max-w-md">
             <Search />
           </div>
-          <Button variant="outline" onClick={() => navigate('/')}>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/')}
+            className="w-full sm:w-auto"
+          >
             <X className="h-4 w-4 mr-2" />
             Clear
           </Button>
         </div>
         
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Search Results</h1>
             <p className="text-muted-foreground">
@@ -565,8 +747,19 @@ export function SearchPage() {
               variant="outline"
               size="sm"
               onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              className="flex items-center gap-2"
             >
-              {viewMode === 'grid' ? <List className="h-4 w-4" /> : <Grid className="h-4 w-4" />}
+              {viewMode === 'grid' ? (
+                <>
+                  <List className="h-4 w-4" />
+                  <span className="hidden sm:inline">List</span>
+                </>
+              ) : (
+                <>
+                  <Grid className="h-4 w-4" />
+                  <span className="hidden sm:inline">Grid</span>
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -655,13 +848,32 @@ export function SearchPage() {
                 <p className="text-muted-foreground">Searching...</p>
               </div>
             </div>
-          ) : filteredResults.length === 0 ? (
+          ) : filteredResults.length === 0 && query.trim() ? (
             <div className="text-center py-12">
               <SearchIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">No results found</h3>
               <p className="text-muted-foreground mb-4">
                 No results found for "{query}". Try adjusting your search terms or filters.
               </p>
+              <div className="space-y-2 mb-6">
+                <p className="text-sm text-muted-foreground">Try searching for:</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {['iPhone repair', 'Samsung parts', 'phone charger', 'screen replacement', 'battery'].map((suggestion) => (
+                    <Button
+                      key={suggestion}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newSearchParams = new URLSearchParams(searchParams);
+                        newSearchParams.set('q', suggestion);
+                        setSearchParams(newSearchParams);
+                      }}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              </div>
               <Button onClick={clearFilters}>Clear Filters</Button>
             </div>
           ) : (

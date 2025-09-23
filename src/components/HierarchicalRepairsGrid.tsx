@@ -424,6 +424,46 @@ export const HierarchicalRepairsGrid: React.FC = () => {
 
     const brands = brandsQuery.data || [];
 
+    // Show message when no brands are available for this category
+    if (brands.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <div className="mb-6">
+            <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Brands Available</h3>
+            <p className="text-muted-foreground mb-6">
+              {categoryQuery.data ? (
+                <>We don't have device brands available for <strong>{categoryQuery.data.name}</strong> yet.</>
+              ) : (
+                <>We don't have device brands available for this category yet.</>
+              )}
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              We're constantly expanding our supported device brands. Contact us to inquire about your specific device brand.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <BookingModal>
+                <Button className="btn-primary">
+                  Request Custom Quote
+                </Button>
+              </BookingModal>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  // Navigate back to categories
+                  const newNavigation = { level: 'categories' as const };
+                  setNavigation(newNavigation);
+                  updateURL(newNavigation);
+                }}
+              >
+                Browse Other Categories
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
         {brands.map((brand, index) => (
@@ -487,6 +527,49 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     }
 
     const models = modelsQuery.data || [];
+
+    // Show message when no models are available for this brand
+    if (models.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <div className="mb-6">
+            <Smartphone className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Models Available</h3>
+            <p className="text-muted-foreground mb-6">
+              {brandQuery.data ? (
+                <>We don't have device models available for <strong>{brandQuery.data.name}</strong> yet.</>
+              ) : (
+                <>We don't have device models available for this brand yet.</>
+              )}
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              We're constantly adding new device models to our repair services. Contact us to inquire about your specific device.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <BookingModal>
+                <Button className="btn-primary">
+                  Request Custom Quote
+                </Button>
+              </BookingModal>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  // Navigate back to brands
+                  const newNavigation = {
+                    level: 'brands' as const,
+                    categoryId: navigation.categoryId,
+                  };
+                  setNavigation(newNavigation);
+                  updateURL(newNavigation, categoryQuery.data?.name);
+                }}
+              >
+                Browse Other Brands
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
@@ -556,6 +639,50 @@ export const HierarchicalRepairsGrid: React.FC = () => {
     }
 
     const parts = partsQuery.data || [];
+
+    // Show message when no parts are available for this model
+    if (parts.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <div className="mb-6">
+            <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Parts Available</h3>
+            <p className="text-muted-foreground mb-6">
+              {modelQuery.data ? (
+                <>We don't have repair parts available for the <strong>{modelQuery.data.name}</strong> yet.</>
+              ) : (
+                <>We don't have repair parts available for this device model yet.</>
+              )}
+            </p>
+            <p className="text-sm text-muted-foreground mb-6">
+              We're constantly expanding our inventory. Contact us to inquire about parts for your device.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <BookingModal>
+                <Button className="btn-primary">
+                  Request Custom Quote
+                </Button>
+              </BookingModal>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  // Navigate back to models
+                  const newNavigation = {
+                    level: 'models' as const,
+                    categoryId: navigation.categoryId,
+                    brandId: navigation.brandId,
+                  };
+                  setNavigation(newNavigation);
+                  updateURL(newNavigation, categoryQuery.data?.name, brandQuery.data?.name);
+                }}
+              >
+                Browse Other Models
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <>
@@ -977,7 +1104,7 @@ export const HierarchicalRepairsGrid: React.FC = () => {
       
       {renderBreadcrumb()}
       
-      <div className="space-y-6">
+      <div className="space-y-6 my-8">
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
             {navigation.level === 'categories' && 'Select Device Type'}
