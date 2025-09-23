@@ -503,37 +503,36 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
       )}
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl h-[90vh] p-0">
-          <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="flex items-center gap-4 p-4 border-b">
+        <DialogContent className="max-w-4xl max-h-[95vh] h-[95vh] sm:h-[85vh] p-0 flex flex-col overflow-hidden">
+          <div className="flex flex-col h-full min-h-0">{/* Header */}
+            <div className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border-b flex-shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsOpen(false)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 flex-shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <form onSubmit={handleSearchSubmit}>
                   <Input
                     placeholder={t('search.placeholder')}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="border-0 focus-visible:ring-0 text-lg"
+                    className="border-0 focus-visible:ring-0 text-base sm:text-lg"
                     autoFocus
                   />
                 </form>
               </div>
               {query && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={clearSearch}
-                    className="h-8 px-3 text-sm"
+                    className="h-8 px-2 sm:px-3 text-xs sm:text-sm"
                   >
                     {t('search.clear')}
                   </Button>
@@ -551,9 +550,9 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-hidden">
-              <Command className="h-full">
-                <CommandList className="max-h-full">
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <Command className="h-full [&_[cmdk-list]]:h-full [&_[cmdk-list]]:max-h-none">
+                <CommandList className="h-full max-h-none overflow-y-auto overscroll-contain">
                   {isLoading && (
                     <div className="flex items-center justify-center py-12">
                       <Loader2 className="h-6 w-6 animate-spin mr-3" />
@@ -624,7 +623,7 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
                         <CommandItem
                           key={`${result.type}-${result.id}`}
                           onSelect={() => handleResultClick(result)}
-                          className="flex items-start gap-4 p-4 cursor-pointer hover:bg-muted/50"
+                          className="flex items-start gap-4 p-4  cursor-pointer hover:bg-muted/50"
                         >
                           <div className="flex-shrink-0 mt-1">
                             {result.image ? (
@@ -632,7 +631,7 @@ export function Search({ isOpen: externalIsOpen, onClose }: SearchProps = {}) {
                                 <img 
                                   src={result.image} 
                                   alt={result.title}
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-contain aspect-square"
                                   onLoad={(e) => {
                                     // Image loaded successfully, ensure it's visible
                                     const target = e.target as HTMLImageElement;

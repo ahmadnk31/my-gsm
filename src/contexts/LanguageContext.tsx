@@ -86,6 +86,7 @@ const translations = {
       search: 'Search',
       cart: 'Cart',
       wishlist: 'Wishlist',
+      tradeIn: 'Trade In',
     },
     
     // Common
@@ -578,6 +579,7 @@ const translations = {
       title: 'Admin Dashboard',
       manageRepairs: 'Manage Repairs',
       manageAccessories: 'Manage Accessories',
+      accessoriesManagement: 'Accessories Management',
       manageTradeIn: 'Manage Trade-In',
       users: 'Users',
       reports: 'Reports',
@@ -742,6 +744,7 @@ const translations = {
       search: 'Zoeken',
       cart: 'Winkelwagen',
       wishlist: 'Verlanglijst',
+      tradeIn: 'Inruil',
     },
     
     // Common
@@ -1239,6 +1242,7 @@ const translations = {
       title: 'Admin Dashboard',
       manageRepairs: 'Reparaties Beheren',
       manageAccessories: 'Accessoires Beheren',
+      accessoriesManagement: 'Accessoires Beheer',
       manageTradeIn: 'Inruil Beheren',
       users: 'Gebruikers',
       reports: 'Rapporten',
