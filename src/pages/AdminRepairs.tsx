@@ -44,28 +44,28 @@ export default function AdminRepairs() {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <SEO {...seoConfig} />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Repair Services Management</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your custom repair items, services, and pricing
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">{t('admin.repairManagement')}</h1>
+        <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+          {t('admin.repairManagementDescription')}
         </p>
       </div>
 
-      <Tabs defaultValue="hierarchical" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="hierarchical" className="flex items-center gap-2">
+      <Tabs defaultValue="hierarchical" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
+          <TabsTrigger value="hierarchical" className="flex items-center gap-2 p-2 sm:p-3">
             <Layers className="h-4 w-4" />
-            Device Management
+            <span className="text-xs sm:text-sm">{t('admin.deviceManagement')}</span>
           </TabsTrigger>
-          <TabsTrigger value="add" className="flex items-center gap-2">
+          <TabsTrigger value="add" className="flex items-center gap-2 p-2 sm:p-3">
             <Package className="h-4 w-4" />
-            Add Legacy Item
+            <span className="text-xs sm:text-sm">{t('admin.addLegacyItem')}</span>
           </TabsTrigger>
-          <TabsTrigger value="manage" className="flex items-center gap-2">
+          <TabsTrigger value="manage" className="flex items-center gap-2 p-2 sm:p-3">
             <Settings className="h-4 w-4" />
-            Manage Legacy Items
+            <span className="text-xs sm:text-sm">{t('admin.manageLegacyItems')}</span>
           </TabsTrigger>
         </TabsList>
 

@@ -582,6 +582,11 @@ const translations = {
       users: 'Users',
       reports: 'Reports',
       settings: 'Settings',
+      repairManagement: 'Repair Services Management',
+      repairManagementDescription: 'Manage your custom repair items, services, and pricing',
+      deviceManagement: 'Device Management',
+      addLegacyItem: 'Add Legacy Item',
+      manageLegacyItems: 'Manage Legacy Items',
     },
     
     // Footer
@@ -1238,6 +1243,11 @@ const translations = {
       users: 'Gebruikers',
       reports: 'Rapporten',
       settings: 'Instellingen',
+      repairManagement: 'Reparatiediensten Beheer',
+      repairManagementDescription: 'Beheer uw aangepaste reparatie-items, diensten en prijzen',
+      deviceManagement: 'Apparaatbeheer',
+      addLegacyItem: 'Legacy Item Toevoegen',
+      manageLegacyItems: 'Legacy Items Beheren',
     },
     
     // Footer

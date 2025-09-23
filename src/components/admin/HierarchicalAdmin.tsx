@@ -44,27 +44,34 @@ export const HierarchicalAdmin: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="w-full space-y-4 sm:space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Smartphone className="h-6 w-6" />
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Smartphone className="h-5 w-5 sm:h-6 sm:w-6" />
             Device & Repair Management
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto sm:h-10 gap-1">
               {tabs.map((tab) => (
-                <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2">
-                  <tab.icon className="h-4 w-4" />
-                  {tab.label}
+                <TabsTrigger 
+                  key={tab.id} 
+                  value={tab.id} 
+                  className="flex items-center gap-1 sm:gap-2 p-2 sm:p-3 text-xs sm:text-sm"
+                >
+                  <tab.icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">
+                    {tab.label.split(' ')[0]}
+                  </span>
                 </TabsTrigger>
               ))}
             </TabsList>
 
             {tabs.map((tab) => (
-              <TabsContent key={tab.id} value={tab.id} className="mt-6">
+              <TabsContent key={tab.id} value={tab.id} className="mt-4 sm:mt-6">
                 <tab.component />
               </TabsContent>
             ))}

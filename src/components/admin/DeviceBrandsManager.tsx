@@ -180,16 +180,16 @@ export const DeviceBrandsManager: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading brands...</div>;
+    return <div className="flex justify-center p-4">Loading brands...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Device Brands</h3>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h3 className="text-lg sm:text-xl font-semibold">Device Brands</h3>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={handleAddNew}>
+            <Button onClick={handleAddNew} size="sm" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Brand
             </Button>

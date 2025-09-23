@@ -140,16 +140,16 @@ export const DeviceCategoriesManager: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading categories...</div>;
+    return <div className="flex justify-center p-4">Loading categories...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Device Categories</h3>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold">Device Categories</h2>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={handleAddNew}>
+            <Button onClick={() => setEditingCategory(null)} size="sm" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Category
             </Button>
@@ -252,53 +252,99 @@ export const DeviceCategoriesManager: React.FC = () => {
 
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Icon</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categories.map((category) => {
-                const IconComponent = iconOptions.find(opt => opt.value === category.icon_name)?.icon || Smartphone;
-                return (
-                  <TableRow key={category.id}>
-                    <TableCell>
-                      <IconComponent className="h-5 w-5" />
-                    </TableCell>
-                    <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell>{category.description}</TableCell>
-                    <TableCell>{category.display_order}</TableCell>
-                    <TableCell>
-                      <Badge variant={category.is_active ? 'default' : 'secondary'}>
-                        {category.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(category)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleDelete(category)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Icon</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Order</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((category) => {
+                  const IconComponent = iconOptions.find(opt => opt.value === category.icon_name)?.icon || Smartphone;
+                  return (
+                    <TableRow key={category.id}>
+                      <TableCell>
+                        <IconComponent className="h-5 w-5" />
+                      </TableCell>
+                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell>{category.description}</TableCell>
+                      <TableCell>{category.display_order}</TableCell>
+                      <TableCell>
+                        <Badge variant={category.is_active ? 'default' : 'secondary'}>
+                          {category.is_active ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(category)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleDelete(category)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-3 p-4">
+            {categories.map((category) => {
+              const IconComponent = iconOptions.find(opt => opt.value === category.icon_name)?.icon || Smartphone;
+              return (
+                <Card key={category.id} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      <IconComponent className="h-6 w-6 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-medium text-sm">{category.name}</h3>
+                        {category.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {category.description}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant={category.is_active ? 'default' : 'secondary'} className="text-xs">
+                            {category.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">Order: {category.display_order}</span>
+                        </div>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                    </div>
+                    <div className="flex gap-2 ml-2">
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(category)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleDelete(category)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
     </div>
