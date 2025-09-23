@@ -252,142 +252,151 @@ const Dashboard = () => {
   };
 
   const renderBookingsTable = (bookingsData: Booking[], isAdmin = false) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Device & Part</TableHead>
-          <TableHead>Issue</TableHead>
-          <TableHead>Date & Time</TableHead>
-          {isAdmin && <TableHead>Customer</TableHead>}
-          <TableHead>Cost</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {bookingsData.map((booking) => (
-          <TableRow key={booking.id}>
-            <TableCell>
-              <div>
-                <p className="font-medium">{booking.device_type} {booking.device_model}</p>
-                {booking.device_parts ? (
-                  <div className="text-sm text-muted-foreground">
-                    <p>{booking.device_parts.name}</p>
-                    <Badge variant="outline" className="text-xs">
-                      {booking.device_parts.category}
-                    </Badge>
-                    {booking.selected_quality_type && (
-                      <Badge variant="secondary" className="text-xs ml-1">
-                        {booking.selected_quality_type} quality
-                      </Badge>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">General repair</p>
-                )}
-              </div>
-            </TableCell>
-            <TableCell className="max-w-xs">
-              <p className="truncate">{booking.issue_description}</p>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{booking.preferred_date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{booking.preferred_time}</span>
-              </div>
-            </TableCell>
-            {isAdmin && (
-              <TableCell>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="min-w-[200px]">Device & Part</TableHead>
+            <TableHead className="min-w-[150px]">Issue</TableHead>
+            <TableHead className="min-w-[120px]">Date & Time</TableHead>
+            {isAdmin && <TableHead className="min-w-[150px]">Customer</TableHead>}
+            <TableHead className="min-w-[80px]">Cost</TableHead>
+            <TableHead className="min-w-[100px]">Status</TableHead>
+            <TableHead className="min-w-[120px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {bookingsData.map((booking) => (
+            <TableRow key={booking.id}>
+              <TableCell className="min-w-[200px]">
                 <div>
-                  <p className="font-medium">{booking.customer_name}</p>
-                  <p className="text-sm text-muted-foreground">{booking.customer_email}</p>
-                  <p className="text-sm text-muted-foreground">{booking.customer_phone}</p>
+                  <p className="font-medium text-sm">{booking.device_type} {booking.device_model}</p>
+                  {booking.device_parts ? (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      <p className="text-xs">{booking.device_parts.name}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {booking.device_parts.category}
+                        </Badge>
+                        {booking.selected_quality_type && (
+                          <Badge variant="secondary" className="text-xs">
+                            {booking.selected_quality_type} quality
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">General repair</p>
+                  )}
                 </div>
               </TableCell>
-            )}
-            <TableCell>
-              <div className="flex items-center gap-1">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">
-                  ${booking.actual_cost || booking.estimated_cost || booking.quoted_price || 0}
-                </span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <Badge className={getStatusColor(booking.status)}>
-                <div className="flex items-center gap-1">
-                  {getStatusIcon(booking.status)}
-                  {booking.status}
+              <TableCell className="max-w-[150px] min-w-[150px]">
+                <p className="truncate text-sm" title={booking.issue_description}>{booking.issue_description}</p>
+              </TableCell>
+              <TableCell className="min-w-[120px]">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1">
+                    <CalendarDays className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs">{booking.preferred_date}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs">{booking.preferred_time}</span>
+                  </div>
                 </div>
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                {/* Status Update Buttons (Admin only) */}
-                {isAdmin && (
-                  <>
-                    {booking.status === 'pending' && (
-                      <Button
-                        size="sm"
-                        onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                      >
-                        Confirm
-                      </Button>
-                    )}
-                    {booking.status === 'confirmed' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => updateBookingStatus(booking.id, 'in-progress')}
-                      >
-                        Start
-                      </Button>
-                    )}
-                    {booking.status === 'in-progress' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => updateBookingStatus(booking.id, 'completed')}
-                      >
-                        Complete
-                      </Button>
-                    )}
-                  </>
-                )}
-                
-                {/* Chat Button (For registered users only) */}
-                {user && booking.status !== 'cancelled' && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="relative"
-                    onClick={() => {
-                      setChatBookingId(booking.id);
-                      setShowChat(true);
-                      // Mark messages as read when opening chat
-                      markAsRead(booking.id);
-                    }}
-                  >
-                    <MessageSquare className="h-4 w-4 mr-1" />
-                    Chat
-                    {/* Notification Badge */}
-                    {unreadCounts[booking.id] > 0 && (
-                      <div className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {unreadCounts[booking.id] > 9 ? '9+' : unreadCounts[booking.id]}
-                      </div>
-                    )}
-                  </Button>
-                )}
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              </TableCell>
+              {isAdmin && (
+                <TableCell className="min-w-[150px]">
+                  <div>
+                    <p className="font-medium text-sm">{booking.customer_name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{booking.customer_email}</p>
+                    <p className="text-xs text-muted-foreground">{booking.customer_phone}</p>
+                  </div>
+                </TableCell>
+              )}
+              <TableCell className="min-w-[80px]">
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-3 w-3 text-muted-foreground" />
+                  <span className="font-medium text-sm">
+                    ${booking.actual_cost || booking.estimated_cost || booking.quoted_price || 0}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell className="min-w-[100px]">
+                <Badge className={getStatusColor(booking.status)}>
+                  <div className="flex items-center gap-1">
+                    {getStatusIcon(booking.status)}
+                    <span className="text-xs">{booking.status}</span>
+                  </div>
+                </Badge>
+              </TableCell>
+              <TableCell className="min-w-[120px]">
+                <div className="flex flex-col sm:flex-row gap-1">
+                  {/* Status Update Buttons (Admin only) */}
+                  {isAdmin && (
+                    <>
+                      {booking.status === 'pending' && (
+                        <Button
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                        >
+                          Confirm
+                        </Button>
+                      )}
+                      {booking.status === 'confirmed' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                          onClick={() => updateBookingStatus(booking.id, 'in-progress')}
+                        >
+                          Start
+                        </Button>
+                      )}
+                      {booking.status === 'in-progress' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                          onClick={() => updateBookingStatus(booking.id, 'completed')}
+                        >
+                          Complete
+                        </Button>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Chat Button (For registered users only) */}
+                  {user && booking.status !== 'cancelled' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="relative text-xs"
+                      onClick={() => {
+                        setChatBookingId(booking.id);
+                        setShowChat(true);
+                        // Mark messages as read when opening chat
+                        markAsRead(booking.id);
+                      }}
+                    >
+                      <MessageSquare className="h-3 w-3 mr-1" />
+                      <span className="hidden sm:inline">Chat</span>
+                      {/* Notification Badge */}
+                      {unreadCounts[booking.id] > 0 && (
+                        <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                          {unreadCounts[booking.id] > 9 ? '9+' : unreadCounts[booking.id]}
+                        </div>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 
   if (loading || !user) {
@@ -406,16 +415,16 @@ const Dashboard = () => {
       {/* Header */}
       
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {userRole === 'admin' ? (
           <Tabs defaultValue={defaultTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
-              <TabsTrigger value="all-bookings">{t('dashboard.allBookings')}</TabsTrigger>
-              <TabsTrigger value="quotes">{t('dashboard.quotes')}</TabsTrigger>
-              <TabsTrigger value="banners">Banners</TabsTrigger>
-              <TabsTrigger value="analytics">{t('dashboard.analytics')}</TabsTrigger>
-              <TabsTrigger value="my-bookings">{t('dashboard.myBookings')}</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm">{t('dashboard.overview')}</TabsTrigger>
+              <TabsTrigger value="all-bookings" className="text-xs sm:text-sm">{t('dashboard.allBookings')}</TabsTrigger>
+              <TabsTrigger value="quotes" className="text-xs sm:text-sm">{t('dashboard.quotes')}</TabsTrigger>
+              <TabsTrigger value="banners" className="text-xs sm:text-sm">Banners</TabsTrigger>
+              <TabsTrigger value="analytics" className="text-xs sm:text-sm">{t('dashboard.analytics')}</TabsTrigger>
+              <TabsTrigger value="my-bookings" className="text-xs sm:text-sm">{t('dashboard.myBookings')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -525,18 +534,18 @@ const Dashboard = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {stats?.recentActivity?.slice(0, 5).map((activity, index) => (
-                      <div key={index} className="flex items-center justify-between">
+                      <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 bg-primary rounded-full"></div>
+                          <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                           <span className="text-sm">{activity.message}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 ml-5 sm:ml-0">
                           {activity.status && (
                             <Badge className={getStatusColor(activity.status)}>
                               {activity.status}
                             </Badge>
                           )}
-                          <span className="text-xs text-muted-foreground">{activity.time}</span>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
                         </div>
                       </div>
                     ))}
@@ -605,15 +614,15 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="space-y-4">
                       {stats?.monthlyTrend?.map((month, index) => (
-                        <div key={index} className="grid grid-cols-3 gap-4 items-center">
+                        <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center">
                           <span className="font-medium">{month.month}</span>
                           <div className="flex items-center gap-2">
                             <Package className="h-4 w-4 text-muted-foreground" />
-                            <span>{month.bookings} bookings</span>
+                            <span className="text-sm">{month.bookings} bookings</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
-                            <span>${month.revenue.toFixed(2)}</span>
+                            <span className="text-sm">${month.revenue.toFixed(2)}</span>
                           </div>
                         </div>
                       ))}
@@ -725,7 +734,7 @@ const Dashboard = () => {
 
             {/* User Tabs */}
             <Tabs defaultValue="bookings" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
                 <TabsTrigger value="bookings">My Bookings</TabsTrigger>
                 <TabsTrigger value="quotes">My Quotes</TabsTrigger>
                 <TabsTrigger value="orders">My Orders</TabsTrigger>
@@ -794,10 +803,10 @@ const Dashboard = () => {
 
       {/* Chat Modal */}
       {showChat && chatBookingId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background border rounded-lg w-full max-w-2xl max-h-[90vh] h-[600px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-              <h3 className="text-lg font-semibold">Chat - Booking #{chatBookingId.slice(-8)}</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-background border rounded-lg w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] h-full sm:h-[600px] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
+              <h3 className="text-base sm:text-lg font-semibold">Chat - Booking #{chatBookingId.slice(-8)}</h3>
               <Button
                 variant="ghost"
                 size="sm"
