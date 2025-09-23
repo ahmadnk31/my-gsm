@@ -62,6 +62,9 @@ interface RepairPart {
   max_price: number;
   price_range: string;
   popularity_score: number;
+  // Store original data for BookingModal
+  _originalPart?: any;
+  _originalModel?: any;
 }
 
 const FeaturedProductsAndParts: React.FC = () => {
@@ -96,15 +99,20 @@ const FeaturedProductsAndParts: React.FC = () => {
     },
   });
 
-  // Fetch popular repair parts from real database using the correct schema
-  const { data: popularParts, isLoading: partsLoading } = useQuery({
+  // Fetch popular repair parts from real database - get actual parts with pricing
+  const { data: popularParts, isLoading: partsLoading, error: partsError } = useQuery({
     queryKey: ['popular-device-parts-homepage'],
     queryFn: async (): Promise<RepairPart[]> => {
-      // Get device parts with their models, brands, categories, and pricing
-      const { data: parts, error } = await supabase
+      // First approach: Get parts with their full hierarchy in a single query
+      const { data: partsWithFullData, error } = await supabase
         .from('device_parts')
         .select(`
-          *,
+          id,
+          name,
+          description,
+          category,
+          estimated_duration,
+          image_url,
           device_models!inner (
             id,
             name,
@@ -115,8 +123,7 @@ const FeaturedProductsAndParts: React.FC = () => {
               logo_url,
               device_categories!inner (
                 id,
-                name,
-                icon
+                name
               )
             )
           ),
@@ -124,82 +131,69 @@ const FeaturedProductsAndParts: React.FC = () => {
             id,
             price,
             quality_type,
-            availability_status,
             labor_cost,
-            total_cost
+            total_cost,
+            availability_status
           )
         `)
         .eq('is_active', true)
         .eq('device_models.is_active', true)
         .eq('device_models.device_brands.is_active', true)
         .eq('device_models.device_brands.device_categories.is_active', true)
-        .order('created_at', { ascending: false })
         .limit(8);
 
       if (error) {
-        console.error('Error fetching device parts:', error);
-        // Return fallback data
-        return [
-          {
-            id: '1',
-            name: 'iPhone Screen Replacement',
-            category: 'Screen Repair',
-            model_name: 'iPhone',
-            brand_name: 'Apple',
-            device_type: 'Smartphone',
-            estimated_duration: '30-60 min',
-            image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop',
-            min_price: 89,
-            max_price: 299,
-            price_range: '€89 - €299',
-            popularity_score: 95
-          },
-          {
-            id: '2',
-            name: 'Samsung Battery Replacement',
-            category: 'Battery Replacement',
-            model_name: 'Galaxy S24',
-            brand_name: 'Samsung',
-            device_type: 'Smartphone',
-            estimated_duration: '45-90 min',
-            image_url: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=300&h=200&fit=crop',
-            min_price: 69,
-            max_price: 149,
-            price_range: '€69 - €149',
-            popularity_score: 87
-          }
-        ] as RepairPart[];
+        console.error('Database error:', error);
+        throw error;
       }
 
-      // Transform the data
-      const transformedParts: RepairPart[] = parts.map((part: any, index) => {
+      console.log('Raw parts data:', partsWithFullData);
+
+      if (!partsWithFullData || partsWithFullData.length === 0) {
+        console.log('No parts found in database');
+        return [];
+      }
+
+      // Transform the data to our interface
+      const transformedParts: RepairPart[] = partsWithFullData.map((part: any, index) => {
         const pricing = part.part_pricing || [];
         const prices = pricing
-          .map((p: any) => p.total_cost || p.price)
+          .map((p: any) => p.total_cost || (p.price + (p.labor_cost || 0)))
           .filter((p: any) => p > 0);
         
         const minPrice = prices.length > 0 ? Math.min(...prices) : 50;
         const maxPrice = prices.length > 0 ? Math.max(...prices) : 200;
+        const avgPrice = prices.length > 0 ? Math.round(prices.reduce((a: number, b: number) => a + b, 0) / prices.length) : 100;
+
+        const modelData = part.device_models || {};
+        const brandData = modelData.device_brands || {};
+        const categoryData = brandData.device_categories || {};
 
         return {
           id: part.id,
           name: part.name,
           description: part.description,
           category: part.category,
-          model_name: part.device_models?.name || 'Unknown Model',
-          brand_name: part.device_models?.device_brands?.name || 'Unknown Brand',
-          device_type: part.device_models?.device_brands?.device_categories?.name || 'Device',
-          estimated_duration: part.estimated_duration,
-          image_url: part.image_url || part.device_models?.image_url || part.device_models?.device_brands?.logo_url,
+          model_name: modelData.name || 'Unknown Model',
+          brand_name: brandData.name || 'Unknown Brand',
+          device_type: categoryData.name || 'Device',
+          estimated_duration: part.estimated_duration || '60 min',
+          image_url: part.image_url || modelData.image_url || brandData.logo_url,
           min_price: minPrice,
           max_price: maxPrice,
-          price_range: `€${minPrice}${minPrice !== maxPrice ? ` - €${maxPrice}` : ''}`,
-          popularity_score: Math.max(60, 95 - (index * 4))
+          price_range: minPrice === maxPrice ? `€${minPrice}` : `€${minPrice} - €${maxPrice}`,
+          popularity_score: Math.max(60, 95 - (index * 4)),
+          // Store original data for BookingModal
+          _originalPart: part,
+          _originalModel: modelData
         };
       });
 
+      console.log('Transformed parts:', transformedParts);
       return transformedParts;
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   return (
@@ -263,7 +257,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                         <img
                           src={product.image_url}
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="w-full h-full object-contain aspect-square transition-transform duration-700 group-hover:scale-110"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
@@ -374,15 +368,15 @@ const FeaturedProductsAndParts: React.FC = () => {
                   <div className="bg-muted rounded h-3 w-1/2"></div>
                 </div>
               ))
-            ) : (
-              popularParts?.map((part, index) => (
+            ) : popularParts && popularParts.length > 0 ? (
+              popularParts.map((part, index) => (
                 <Card key={part.id} className="group bg-card/50 backdrop-blur-sm border-border/50 hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   <div className="relative">
-                    <div className="h-48 relative bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-t-xl">
+                    <div className="h-full relative mx-auto">
                       <img
-                        src={part.image_url}
+                        src={part.image_url || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop'}
                         alt={part.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-contain aspect-square transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
@@ -439,34 +433,208 @@ const FeaturedProductsAndParts: React.FC = () => {
                         Compatible: {part.model_name} ({part.brand_name})
                       </p>
                       
-                      <Suspense fallback={
-                        <ModalFallback>
-                          <Button size="sm" className="w-full">
-                            <Zap className="h-3 w-3 mr-2" />
-                            Book Repair
-                          </Button>
-                        </ModalFallback>
-                      }>
-                        <BookingModal
-                          selectedPart={{
-                            id: part.id,
-                            name: part.name,
-                            category: part.category,
-                            model: part.model_name,
-                            brand: part.brand_name,
-                            device_type: part.device_type,
-                            quality_type: 'Standard',
-                            price: part.min_price,
-                            estimated_duration: part.estimated_duration || '60 min'
-                          }}
-                        >
-                          <Button size="sm" className="w-full group/btn">
-                            <Zap className="h-3 w-3 mr-2" />
-                            <span>Book Repair</span>
-                            <ArrowRight className="h-3 w-3 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                          </Button>
-                        </BookingModal>
-                      </Suspense>
+                      {/* Show pricing options if available */}
+                      {part._originalPart?.part_pricing && part._originalPart.part_pricing.length > 0 ? (
+                        <div className="space-y-2">
+                          {part._originalPart.part_pricing.slice(0, 2).map((pricing: any, pricingIndex: number) => (
+                            <Suspense key={pricingIndex} fallback={
+                              <ModalFallback>
+                                <Button size="sm" className="w-full text-xs">
+                                  <Zap className="h-3 w-3 mr-2" />
+                                  {pricing.quality_type} - €{pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                                </Button>
+                              </ModalFallback>
+                            }>
+                              <BookingModal
+                                selectedPart={{
+                                  id: part.id,
+                                  name: part.name,
+                                  category: part.category,
+                                  model: part.model_name,
+                                  brand: part.brand_name,
+                                  device_type: part.device_type,
+                                  quality_type: pricing.quality_type,
+                                  price: pricing.total_cost || (pricing.price + (pricing.labor_cost || 0)),
+                                  estimated_duration: part.estimated_duration || '60 min'
+                                }}
+                              >
+                                <Button size="sm" className="w-full text-xs group/btn">
+                                  <Zap className="h-3 w-3 mr-1" />
+                                  <span className="capitalize">{pricing.quality_type}</span>
+                                  <span className="ml-auto font-bold">
+                                    €{pricing.total_cost || (pricing.price + (pricing.labor_cost || 0))}
+                                  </span>
+                                  <ArrowRight className="h-3 w-3 ml-1 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                                </Button>
+                              </BookingModal>
+                            </Suspense>
+                          ))}
+                          
+                          {part._originalPart.part_pricing.length > 2 && (
+                            <Button asChild size="sm" variant="outline" className="w-full text-xs">
+                              <Link to="/repairs" className="flex items-center justify-center gap-2">
+                                <span>View all options</span>
+                                <ArrowRight className="h-3 w-3" />
+                              </Link>
+                            </Button>
+                          )}
+                        </div>
+                      ) : (
+                        <Suspense fallback={
+                          <ModalFallback>
+                            <Button size="sm" className="w-full">
+                              <Zap className="h-3 w-3 mr-2" />
+                              Book Repair
+                            </Button>
+                          </ModalFallback>
+                        }>
+                          <BookingModal
+                            selectedPart={{
+                              id: part.id,
+                              name: part.name,
+                              category: part.category,
+                              model: part.model_name,
+                              brand: part.brand_name,
+                              device_type: part.device_type,
+                              quality_type: 'Standard',
+                              price: part.min_price,
+                              estimated_duration: part.estimated_duration || '60 min'
+                            }}
+                          >
+                            <Button size="sm" className="w-full group/btn">
+                              <Zap className="h-3 w-3 mr-2" />
+                              <span>Book Repair</span>
+                              <ArrowRight className="h-3 w-3 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                            </Button>
+                          </BookingModal>
+                        </Suspense>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              // Fallback when no data available - show sample popular repair services
+              [
+                {
+                  id: 'sample-1',
+                  name: 'iPhone Screen Replacement',
+                  category: 'Screen Repair',
+                  model_name: 'iPhone 15 Pro',
+                  brand_name: 'Apple',
+                  device_type: 'Smartphones',
+                  estimated_duration: '45 min',
+                  price_range: '€95 - €250',
+                  popularity_score: 95,
+                  image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop'
+                },
+                {
+                  id: 'sample-2',
+                  name: 'Samsung Battery Replacement',
+                  category: 'Battery Replacement',
+                  model_name: 'Galaxy S24',
+                  brand_name: 'Samsung',
+                  device_type: 'Smartphones',
+                  estimated_duration: '60 min',
+                  price_range: '€65 - €140',
+                  popularity_score: 87,
+                  image_url: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=300&h=200&fit=crop'
+                },
+                {
+                  id: 'sample-3',
+                  name: 'iPhone Camera Repair',
+                  category: 'Camera Repair',
+                  model_name: 'iPhone 14',
+                  brand_name: 'Apple',
+                  device_type: 'Smartphones',
+                  estimated_duration: '90 min',
+                  price_range: '€110 - €200',
+                  popularity_score: 78,
+                  image_url: 'https://images.unsplash.com/photo-1580910051103-d53f5f33a137?w=300&h=200&fit=crop'
+                },
+                {
+                  id: 'sample-4',
+                  name: 'Charging Port Repair',
+                  category: 'Hardware Repair',
+                  model_name: 'Universal',
+                  brand_name: 'All Brands',
+                  device_type: 'All Devices',
+                  estimated_duration: '45 min',
+                  price_range: '€50 - €90',
+                  popularity_score: 82,
+                  image_url: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=300&h=200&fit=crop'
+                }
+              ].map((part, index) => (
+                <Card key={part.id} className="group bg-card/50 backdrop-blur-sm border-border/50 hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <div className="relative">
+                    <div className="h-48 relative bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-t-xl">
+                      <img
+                        src={part.image_url}
+                        alt={part.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                      
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-success/90 text-white text-xs">
+                          #{index + 1} Popular
+                        </Badge>
+                      </div>
+                      
+                      <div className="absolute top-3 right-3">
+                        <div className="bg-black/40 backdrop-blur-sm rounded-full p-2">
+                          <Wrench className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-4">
+                    <div className="mb-3">
+                      <Badge variant="outline" className="text-xs mb-2">
+                        {part.category}
+                      </Badge>
+                      <h3 className="font-semibold text-foreground text-base line-clamp-1 group-hover:text-primary transition-colors">
+                        {part.name}
+                      </h3>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Price:</span>
+                        <span className="font-semibold text-primary">{part.price_range}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Time:</span>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span className="font-medium">{part.estimated_duration}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Demand:</span>
+                        <div className="flex items-center gap-1">
+                          <TrendingUp className="h-3 w-3 text-success" />
+                          <span className="font-medium text-success">{part.popularity_score}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-border/50">
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Compatible: {part.model_name} ({part.brand_name})
+                      </p>
+                      
+                      <Button asChild size="sm" className="w-full group/btn">
+                        <Link to="/repairs" className="flex items-center justify-center gap-2">
+                          <Zap className="h-3 w-3" />
+                          <span>Book Repair</span>
+                          <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                        </Link>
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
