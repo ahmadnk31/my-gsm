@@ -220,7 +220,7 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
                   control={form.control}
                   name="name"
@@ -287,7 +287,7 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                   control={form.control}
                   name="estimated_duration"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="lg:col-span-1">
                       <FormLabel>Repair Time *</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g., 30-60 minutes, 2-3 hours" {...field} />
@@ -326,11 +326,12 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
               <div className="space-y-4">
               <Label>Parts Required</Label>
               {parts.map((part, index) => (
-                <div key={index} className="flex gap-2">
+                <div key={index} className="flex flex-col sm:flex-row gap-2">
                   <Input
                     placeholder="Part name"
                     value={part}
                     onChange={(e) => updatePart(index, e.target.value)}
+                    className="flex-1"
                   />
                   {parts.length > 1 && (
                     <Button
@@ -338,6 +339,7 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                       variant="outline"
                       size="icon"
                       onClick={() => removePart(index)}
+                      className="w-full sm:w-auto"
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
@@ -363,7 +365,7 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                 {partsWithVersions.map((part, partIndex) => (
                   <Card key={partIndex} className="p-4 bg-muted/20">
                     <div className="space-y-4">
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Input
                           placeholder="Part name (e.g., Screen Assembly, Battery)"
                           value={part.name}
@@ -377,6 +379,7 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                             size="icon"
                             onClick={() => removePartWithVersions(partIndex)}
                             title="Remove this part"
+                            className="w-full sm:w-auto"
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -389,19 +392,19 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                           <span className="text-xs text-muted-foreground">(Add different quality/price versions)</span>
                         </Label>
                         {part.versions.map((version, versionIndex) => (
-                          <div key={versionIndex} className="grid grid-cols-6 gap-2 items-center bg-background p-3 rounded border">
-                            <div className="col-span-2">
+                          <div key={versionIndex} className="flex flex-col sm:grid sm:grid-cols-6 gap-3 sm:gap-2 items-start sm:items-center bg-background p-3 rounded border">
+                            <div className="w-full sm:col-span-2">
                               <Label className="text-xs text-muted-foreground">Quality Type</Label>
                               <select
                                 value={version.type}
                                 onChange={(e) => updatePartVersion(partIndex, versionIndex, 'type', e.target.value)}
-                                className="w-full px-2 py-1 border border-input rounded text-sm"
+                                className="w-full px-2 py-1 border border-input rounded text-sm mt-1"
                               >
                                 <option value="original">Original</option>
                                 <option value="copy">Copy</option>
                               </select>
                             </div>
-                            <div>
+                            <div className="w-full sm:w-auto">
                               <Label className="text-xs text-muted-foreground">Price ($)</Label>
                               <Input
                                 type="number"
@@ -409,29 +412,32 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                                 placeholder="150"
                                 value={version.price}
                                 onChange={(e) => updatePartVersion(partIndex, versionIndex, 'price', parseFloat(e.target.value) || 0)}
-                                className="text-sm"
+                                className="text-sm mt-1"
                               />
                             </div>
-                            <div className="col-span-2">
+                            <div className="w-full sm:col-span-2">
                               <Label className="text-xs text-muted-foreground">Quality Description</Label>
                               <Input
                                 placeholder="e.g., OEM, Aftermarket"
                                 value={version.quality}
                                 onChange={(e) => updatePartVersion(partIndex, versionIndex, 'quality', e.target.value)}
-                                className="text-sm"
+                                className="text-sm mt-1"
                               />
                             </div>
                             {part.versions.length > 1 && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => removeVersionFromPart(partIndex, versionIndex)}
-                                className="h-8 w-8 p-0"
-                                title="Remove this price option"
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
+                              <div className="w-full sm:w-auto">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => removeVersionFromPart(partIndex, versionIndex)}
+                                  className="w-full sm:w-auto h-8 sm:mt-5"
+                                  title="Remove this price option"
+                                >
+                                  <Minus className="h-3 w-3 sm:mr-1" />
+                                  <span className="sm:hidden">Remove Option</span>
+                                </Button>
+                              </div>
                             )}
                           </div>
                         ))}
@@ -478,12 +484,14 @@ export const RepairItemForm: React.FC<RepairItemFormProps> = ({ onSuccess }) => 
                     }}
                   />
                   {imagePreview && (
-                    <div className="relative w-32 h-32">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-full h-full object-cover rounded-md border"
-                      />
+                    <div className="flex justify-center sm:justify-start">
+                      <div className="relative w-32 h-32">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-full h-full object-cover rounded-md border"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
