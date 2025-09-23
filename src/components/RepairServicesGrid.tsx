@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BookingModal } from '@/components/booking/BookingModal';
 import { Separator } from '@/components/ui/separator';
 import { Clock, DollarSign, Package } from 'lucide-react';
 import { toast } from 'sonner';
+
+// Lazy load BookingModal
+const BookingModal = lazy(() => import('@/components/booking/BookingModal').then(module => ({ default: module.BookingModal })));
+
+// Fallback component for lazy-loaded modal
+const ModalFallback = ({ children }: { children: React.ReactNode }) => (
+  <div>{children}</div>
+);
 
 interface PartVersion {
   type: 'original' | 'copy';
@@ -167,11 +174,19 @@ export const RepairServicesGrid: React.FC = () => {
               </div>
             </div>
 
-            <BookingModal>
-              <Button variant="default" className="w-full mt-4">
-                Book This Service
-              </Button>
-            </BookingModal>
+            <Suspense fallback={
+              <ModalFallback>
+                <Button variant="default" className="w-full mt-4">
+                  Book This Service
+                </Button>
+              </ModalFallback>
+            }>
+              <BookingModal>
+                <Button variant="default" className="w-full mt-4">
+                  Book This Service
+                </Button>
+              </BookingModal>
+            </Suspense>
           </CardContent>
         </Card>
       ))}

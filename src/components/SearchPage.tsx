@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { Search } from './Search';
 
@@ -30,6 +31,69 @@ const getImageUrl = (imageUrl: string | null, bucket = 'accessories') => {
   const { data } = supabase.storage.from(bucket).getPublicUrl(imageUrl);
   return data.publicUrl;
 };
+
+// Lazy loading image component for search results
+interface LazySearchImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+const LazySearchImage: React.FC<LazySearchImageProps> = ({ src, alt, className = "" }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div className="relative">
+      {!loaded && !error && (
+        <Skeleton className="absolute inset-0 w-full h-full" />
+      )}
+      {!error && (
+        <img
+          src={src}
+          alt={alt}
+          className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
+          loading="lazy"
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+        />
+      )}
+      {error && (
+        <div className="absolute inset-0 bg-muted flex items-center justify-center">
+          <Package className="h-6 w-6 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Skeleton component for search result cards
+const SearchResultSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardHeader className="pb-3">
+      <div className="flex items-start gap-3">
+        <Skeleton className="w-16 h-16 rounded-lg flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <Skeleton className="h-5 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+            <Skeleton className="h-6 w-16" />
+          </div>
+        </div>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-2/3 mb-3" />
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-6 w-16" />
+      </div>
+    </CardContent>
+  </Card>
+);
 
 interface SearchResult {
   id: string;
@@ -62,9 +126,7 @@ export function SearchPage() {
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [searchedDeviceModel, setSearchedDeviceModel] = useState<string | null>(null);
-  const [hasDeviceResults, setHasDeviceResults] = useState(false);
-
+  
   // Perform search when query changes
   useEffect(() => {
     if (query.trim()) {
@@ -555,22 +617,10 @@ export function SearchPage() {
         <div className="flex items-start gap-3">
           {result.image ? (
             <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0 relative">
-              <img 
-                src={result.image} 
+              <LazySearchImage
+                src={result.image}
                 alt={result.title}
                 className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                loading="lazy"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  const container = target.parentElement;
-                  if (container) {
-                    target.style.display = 'none';
-                    const fallback = container.querySelector('.fallback-icon') as HTMLElement;
-                    if (fallback) {
-                      fallback.style.display = 'flex';
-                    }
-                  }
-                }}
               />
               <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
                 <Package className="h-6 w-6 text-muted-foreground" />
@@ -634,21 +684,10 @@ export function SearchPage() {
         <div className="flex items-center gap-4">
           {result.image ? (
             <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0 relative">
-              <img 
+              <LazySearchImage 
                 src={result.image} 
                 alt={result.title}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  const container = target.parentElement;
-                  if (container) {
-                    target.style.display = 'none';
-                    const fallback = container.querySelector('.fallback-icon') as HTMLElement;
-                    if (fallback) {
-                      fallback.style.display = 'flex';
-                    }
-                  }
-                }}
               />
               <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
                 <Package className="h-6 w-6 text-muted-foreground" />
@@ -842,11 +881,10 @@ export function SearchPage() {
         {/* Results */}
         <div className="lg:col-span-3">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Searching...</p>
-              </div>
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-4'}>
+              {[...Array(6)].map((_, i) => (
+                <SearchResultSkeleton key={i} />
+              ))}
             </div>
           ) : filteredResults.length === 0 && query.trim() ? (
             <div className="text-center py-12">

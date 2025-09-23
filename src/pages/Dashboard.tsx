@@ -252,87 +252,70 @@ const Dashboard = () => {
   };
 
   const renderBookingsTable = (bookingsData: Booking[], isAdmin = false) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Device & Part</TableHead>
-          <TableHead>Issue</TableHead>
-          <TableHead>Date & Time</TableHead>
-          {isAdmin && <TableHead>Customer</TableHead>}
-          <TableHead>Cost</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <div className="w-full">
+      {/* Mobile Card Layout */}
+      <div className="block md:hidden space-y-4">
         {bookingsData.map((booking) => (
-          <TableRow key={booking.id}>
-            <TableCell>
-              <div>
-                <p className="font-medium">{booking.device_type} {booking.device_model}</p>
-                {booking.device_parts ? (
-                  <div className="text-sm text-muted-foreground">
-                    <p>{booking.device_parts.name}</p>
-                    <Badge variant="outline" className="text-xs">
-                      {booking.device_parts.category}
-                    </Badge>
-                    {booking.selected_quality_type && (
-                      <Badge variant="secondary" className="text-xs ml-1">
-                        {booking.selected_quality_type} quality
-                      </Badge>
-                    )}
+          <Card key={booking.id} className="p-4">
+            <div className="space-y-3">
+              {/* Device & Status */}
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="font-semibold text-sm">{booking.device_type} {booking.device_model}</p>
+                  {booking.device_parts && (
+                    <p className="text-xs text-muted-foreground">{booking.device_parts.name}</p>
+                  )}
+                </div>
+                <Badge className={getStatusColor(booking.status)}>
+                  <div className="flex items-center gap-1">
+                    {getStatusIcon(booking.status)}
+                    <span className="text-xs">{booking.status}</span>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">General repair</p>
+                </Badge>
+              </div>
+
+              {/* Issue Description */}
+              <p className="text-sm text-muted-foreground line-clamp-2">{booking.issue_description}</p>
+
+              {/* Date, Time, Cost */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="flex items-center gap-1">
+                  <CalendarDays className="h-3 w-3" />
+                  <span>{booking.preferred_date}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>{booking.preferred_time}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-3 w-3" />
+                  <span>${booking.actual_cost || booking.estimated_cost || booking.quoted_price || 0}</span>
+                </div>
+                {booking.device_parts && booking.selected_quality_type && (
+                  <Badge variant="secondary" className="text-xs w-fit">
+                    {booking.selected_quality_type}
+                  </Badge>
                 )}
               </div>
-            </TableCell>
-            <TableCell className="max-w-xs">
-              <p className="truncate">{booking.issue_description}</p>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{booking.preferred_date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{booking.preferred_time}</span>
-              </div>
-            </TableCell>
-            {isAdmin && (
-              <TableCell>
-                <div>
+
+              {/* Customer Info (Admin only) */}
+              {isAdmin && (
+                <div className="pt-2 border-t text-xs space-y-1">
                   <p className="font-medium">{booking.customer_name}</p>
-                  <p className="text-sm text-muted-foreground">{booking.customer_email}</p>
-                  <p className="text-sm text-muted-foreground">{booking.customer_phone}</p>
+                  <p className="text-muted-foreground">{booking.customer_email}</p>
+                  <p className="text-muted-foreground">{booking.customer_phone}</p>
                 </div>
-              </TableCell>
-            )}
-            <TableCell>
-              <div className="flex items-center gap-1">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">
-                  ${booking.actual_cost || booking.estimated_cost || booking.quoted_price || 0}
-                </span>
-              </div>
-            </TableCell>
-            <TableCell>
-              <Badge className={getStatusColor(booking.status)}>
-                <div className="flex items-center gap-1">
-                  {getStatusIcon(booking.status)}
-                  {booking.status}
-                </div>
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <div className="flex gap-2">
+              )}
+
+              {/* Actions */}
+              <div className="flex flex-wrap gap-2">
                 {/* Status Update Buttons (Admin only) */}
                 {isAdmin && (
                   <>
                     {booking.status === 'pending' && (
                       <Button
                         size="sm"
+                        className="text-xs"
                         onClick={() => updateBookingStatus(booking.id, 'confirmed')}
                       >
                         Confirm
@@ -342,6 +325,7 @@ const Dashboard = () => {
                       <Button
                         size="sm"
                         variant="outline"
+                        className="text-xs"
                         onClick={() => updateBookingStatus(booking.id, 'in-progress')}
                       >
                         Start
@@ -351,6 +335,7 @@ const Dashboard = () => {
                       <Button
                         size="sm"
                         variant="outline"
+                        className="text-xs"
                         onClick={() => updateBookingStatus(booking.id, 'completed')}
                       >
                         Complete
@@ -359,35 +344,177 @@ const Dashboard = () => {
                   </>
                 )}
                 
-                {/* Chat Button (For registered users only) */}
+                {/* Chat Button */}
                 {user && booking.status !== 'cancelled' && (
                   <Button
                     size="sm"
                     variant="outline"
-                    className="relative"
+                    className="relative text-xs"
                     onClick={() => {
                       setChatBookingId(booking.id);
                       setShowChat(true);
-                      // Mark messages as read when opening chat
                       markAsRead(booking.id);
                     }}
                   >
-                    <MessageSquare className="h-4 w-4 mr-1" />
+                    <MessageSquare className="h-3 w-3 mr-1" />
                     Chat
-                    {/* Notification Badge */}
                     {unreadCounts[booking.id] > 0 && (
-                      <div className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                         {unreadCounts[booking.id] > 9 ? '9+' : unreadCounts[booking.id]}
                       </div>
                     )}
                   </Button>
                 )}
               </div>
-            </TableCell>
-          </TableRow>
+            </div>
+          </Card>
         ))}
-      </TableBody>
-    </Table>
+      </div>
+
+      {/* Desktop Table Layout */}
+      <div className="hidden md:block overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="min-w-[200px]">Device & Part</TableHead>
+              <TableHead className="min-w-[150px]">Issue</TableHead>
+              <TableHead className="min-w-[120px]">Date & Time</TableHead>
+              {isAdmin && <TableHead className="min-w-[150px]">Customer</TableHead>}
+              <TableHead>Cost</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {bookingsData.map((booking) => (
+              <TableRow key={booking.id}>
+                <TableCell>
+                  <div>
+                    <p className="font-medium">{booking.device_type} {booking.device_model}</p>
+                    {booking.device_parts ? (
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>{booking.device_parts.name}</p>
+                        <div className="flex gap-1 flex-wrap">
+                          <Badge variant="outline" className="text-xs">
+                            {booking.device_parts.category}
+                          </Badge>
+                          {booking.selected_quality_type && (
+                            <Badge variant="secondary" className="text-xs">
+                              {booking.selected_quality_type} quality
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">General repair</p>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-xs">
+                  <p className="truncate text-sm">{booking.issue_description}</p>
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{booking.preferred_date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-sm">{booking.preferred_time}</span>
+                    </div>
+                  </div>
+                </TableCell>
+                {isAdmin && (
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-sm">{booking.customer_name}</p>
+                      <p className="text-xs text-muted-foreground">{booking.customer_email}</p>
+                      <p className="text-xs text-muted-foreground">{booking.customer_phone}</p>
+                    </div>
+                  </TableCell>
+                )}
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <DollarSign className="h-3 w-3 text-muted-foreground" />
+                    <span className="font-medium text-sm">
+                      ${booking.actual_cost || booking.estimated_cost || booking.quoted_price || 0}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge className={getStatusColor(booking.status)}>
+                    <div className="flex items-center gap-1">
+                      {getStatusIcon(booking.status)}
+                      <span className="text-xs">{booking.status}</span>
+                    </div>
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2 flex-wrap">
+                    {/* Status Update Buttons (Admin only) */}
+                    {isAdmin && (
+                      <>
+                        {booking.status === 'pending' && (
+                          <Button
+                            size="sm"
+                            onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                          >
+                            Confirm
+                          </Button>
+                        )}
+                        {booking.status === 'confirmed' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateBookingStatus(booking.id, 'in-progress')}
+                          >
+                            Start
+                          </Button>
+                        )}
+                        {booking.status === 'in-progress' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateBookingStatus(booking.id, 'completed')}
+                          >
+                            Complete
+                          </Button>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Chat Button (For registered users only) */}
+                    {user && booking.status !== 'cancelled' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="relative"
+                        onClick={() => {
+                          setChatBookingId(booking.id);
+                          setShowChat(true);
+                          // Mark messages as read when opening chat
+                          markAsRead(booking.id);
+                        }}
+                      >
+                        <MessageSquare className="h-4 w-4 mr-1" />
+                        Chat
+                        {/* Notification Badge */}
+                        {unreadCounts[booking.id] > 0 && (
+                          <div className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                            {unreadCounts[booking.id] > 9 ? '9+' : unreadCounts[booking.id]}
+                          </div>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 
   if (loading || !user) {
@@ -406,28 +533,28 @@ const Dashboard = () => {
       {/* Header */}
       
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         {userRole === 'admin' ? (
           <Tabs defaultValue={defaultTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
-              <TabsTrigger value="all-bookings">{t('dashboard.allBookings')}</TabsTrigger>
-              <TabsTrigger value="quotes">{t('dashboard.quotes')}</TabsTrigger>
-              <TabsTrigger value="banners">Banners</TabsTrigger>
-              <TabsTrigger value="analytics">{t('dashboard.analytics')}</TabsTrigger>
-              <TabsTrigger value="my-bookings">{t('dashboard.myBookings')}</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 h-auto p-1">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2">{t('dashboard.overview')}</TabsTrigger>
+              <TabsTrigger value="all-bookings" className="text-xs sm:text-sm px-2 py-2">{t('dashboard.allBookings')}</TabsTrigger>
+              <TabsTrigger value="quotes" className="text-xs sm:text-sm px-2 py-2">{t('dashboard.quotes')}</TabsTrigger>
+              <TabsTrigger value="banners" className="text-xs sm:text-sm px-2 py-2">Banners</TabsTrigger>
+              <TabsTrigger value="analytics" className="text-xs sm:text-sm px-2 py-2">{t('dashboard.analytics')}</TabsTrigger>
+              <TabsTrigger value="my-bookings" className="text-xs sm:text-sm px-2 py-2">{t('dashboard.myBookings')}</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-6">
+            <TabsContent value="overview" className="space-y-4 sm:space-y-6">
               {/* Key Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{t('dashboard.totalBookings')}</CardTitle>
                     <Package className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{stats?.totalBookings || 0}</div>
+                    <div className="text-xl sm:text-2xl font-bold">{stats?.totalBookings || 0}</div>
                     <p className="text-xs text-muted-foreground">
                       +12% from last month
                     </p>
@@ -440,7 +567,7 @@ const Dashboard = () => {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">${stats?.totalRevenue?.toFixed(2) || '0.00'}</div>
+                    <div className="text-xl sm:text-2xl font-bold">${stats?.totalRevenue?.toFixed(2) || '0.00'}</div>
                     <p className="text-xs text-muted-foreground">
                       ${stats?.monthlyRevenue?.toFixed(2) || '0.00'} this month
                     </p>
@@ -453,7 +580,7 @@ const Dashboard = () => {
                     <Target className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{stats?.completionRate?.toFixed(1) || '0'}%</div>
+                    <div className="text-xl sm:text-2xl font-bold">{stats?.completionRate?.toFixed(1) || '0'}%</div>
                     <Progress value={stats?.completionRate || 0} className="mt-2" />
                   </CardContent>
                 </Card>
@@ -464,7 +591,7 @@ const Dashboard = () => {
                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">${stats?.averageRepairValue?.toFixed(2) || '0.00'}</div>
+                    <div className="text-xl sm:text-2xl font-bold">${stats?.averageRepairValue?.toFixed(2) || '0.00'}</div>
                     <p className="text-xs text-muted-foreground">
                       Per repair booking
                     </p>
@@ -473,42 +600,42 @@ const Dashboard = () => {
               </div>
 
               {/* Status Overview */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Clock className="h-5 w-5 text-yellow-500" />
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                      <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
                       Pending
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-yellow-600">{stats?.pendingBookings || 0}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-yellow-600">{stats?.pendingBookings || 0}</div>
                     <p className="text-sm text-muted-foreground">Awaiting confirmation</p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Wrench className="h-5 w-5 text-blue-500" />
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                      <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                       In Progress
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-blue-600">{stats?.inProgressBookings || 0}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-blue-600">{stats?.inProgressBookings || 0}</div>
                     <p className="text-sm text-muted-foreground">Currently being repaired</p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                       Completed
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-green-600">{stats?.completedBookings || 0}</div>
+                    <div className="text-2xl sm:text-3xl font-bold text-green-600">{stats?.completedBookings || 0}</div>
                     <p className="text-sm text-muted-foreground">Successfully completed</p>
                   </CardContent>
                 </Card>
@@ -545,26 +672,26 @@ const Dashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="analytics" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TabsContent value="analytics" className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Popular Devices</CardTitle>
-                    <CardDescription>Most frequently repaired devices</CardDescription>
+                    <CardTitle className="text-base sm:text-lg">Popular Devices</CardTitle>
+                    <CardDescription className="text-sm">Most frequently repaired devices</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {stats?.popularDevices?.map((device, index) => (
                         <div key={index} className="flex items-center justify-between">
-                          <span className="text-sm font-medium">{device.device}</span>
-                          <div className="flex items-center gap-2">
-                            <div className="w-20 bg-secondary rounded-full h-2">
+                          <span className="text-sm font-medium truncate pr-2">{device.device}</span>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="w-16 sm:w-20 bg-secondary rounded-full h-2">
                               <div 
-                                className="bg-primary h-2 rounded-full" 
+                                className="bg-primary h-2 rounded-full transition-all duration-500" 
                                 style={{ width: `${(device.count / (stats?.popularDevices?.[0]?.count || 1)) * 100}%` }}
                               ></div>
                             </div>
-                            <span className="text-sm text-muted-foreground">{device.count}</span>
+                            <span className="text-sm text-muted-foreground min-w-[20px]">{device.count}</span>
                           </div>
                         </div>
                       ))}
@@ -574,22 +701,22 @@ const Dashboard = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Popular Repairs</CardTitle>
-                    <CardDescription>Most common repair types</CardDescription>
+                    <CardTitle className="text-base sm:text-lg">Popular Repairs</CardTitle>
+                    <CardDescription className="text-sm">Most common repair types</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {stats?.popularRepairs?.map((repair, index) => (
                         <div key={index} className="flex items-center justify-between">
-                          <span className="text-sm font-medium capitalize">{repair.repair}</span>
-                          <div className="flex items-center gap-2">
-                            <div className="w-20 bg-secondary rounded-full h-2">
+                          <span className="text-sm font-medium capitalize truncate pr-2">{repair.repair}</span>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="w-16 sm:w-20 bg-secondary rounded-full h-2">
                               <div 
-                                className="bg-primary h-2 rounded-full" 
+                                className="bg-primary h-2 rounded-full transition-all duration-500" 
                                 style={{ width: `${(repair.count / (stats?.popularRepairs?.[0]?.count || 1)) * 100}%` }}
                               ></div>
                             </div>
-                            <span className="text-sm text-muted-foreground">{repair.count}</span>
+                            <span className="text-sm text-muted-foreground min-w-[20px]">{repair.count}</span>
                           </div>
                         </div>
                       ))}
@@ -599,21 +726,21 @@ const Dashboard = () => {
 
                 <Card className="lg:col-span-2">
                   <CardHeader>
-                    <CardTitle>Monthly Trend</CardTitle>
-                    <CardDescription>Bookings and revenue over the last 6 months</CardDescription>
+                    <CardTitle className="text-base sm:text-lg">Monthly Trend</CardTitle>
+                    <CardDescription className="text-sm">Bookings and revenue over the last 6 months</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {stats?.monthlyTrend?.map((month, index) => (
-                        <div key={index} className="grid grid-cols-3 gap-4 items-center">
-                          <span className="font-medium">{month.month}</span>
+                        <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 items-center py-2 border-b last:border-b-0">
+                          <span className="font-medium text-sm sm:text-base">{month.month}</span>
                           <div className="flex items-center gap-2">
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                            <span>{month.bookings} bookings</span>
+                            <Package className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                            <span className="text-sm">{month.bookings} bookings</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
-                            <span>${month.revenue.toFixed(2)}</span>
+                            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">${month.revenue.toFixed(2)}</span>
                           </div>
                         </div>
                       ))}
@@ -676,16 +803,16 @@ const Dashboard = () => {
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* User Dashboard Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">{t('dashboard.myBookings')}</CardTitle>
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{bookings.length}</div>
+                  <div className="text-xl sm:text-2xl font-bold">{bookings.length}</div>
                   <p className="text-xs text-muted-foreground">
                     Total repair requests
                   </p>
@@ -698,7 +825,7 @@ const Dashboard = () => {
                   <CheckCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     {bookings.filter(b => b.status === 'completed').length}
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -713,7 +840,7 @@ const Dashboard = () => {
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     ${bookings.reduce((sum, booking) => sum + (booking.actual_cost || booking.estimated_cost || booking.quoted_price || 0), 0).toFixed(2)}
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -725,10 +852,10 @@ const Dashboard = () => {
 
             {/* User Tabs */}
             <Tabs defaultValue="bookings" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="bookings">My Bookings</TabsTrigger>
-                <TabsTrigger value="quotes">My Quotes</TabsTrigger>
-                <TabsTrigger value="orders">My Orders</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+                <TabsTrigger value="bookings" className="text-sm px-3 py-2">My Bookings</TabsTrigger>
+                <TabsTrigger value="quotes" className="text-sm px-3 py-2">My Quotes</TabsTrigger>
+                <TabsTrigger value="orders" className="text-sm px-3 py-2">My Orders</TabsTrigger>
               </TabsList>
 
               <TabsContent value="bookings" className="space-y-6">
@@ -795,9 +922,9 @@ const Dashboard = () => {
       {/* Chat Modal */}
       {showChat && chatBookingId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-background border rounded-lg w-full max-w-2xl max-h-[90vh] h-[600px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-              <h3 className="text-lg font-semibold">Chat - Booking #{chatBookingId.slice(-8)}</h3>
+          <div className="bg-background border rounded-lg w-full max-w-2xl max-h-[90vh] h-[500px] sm:h-[600px] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-3 sm:p-4 border-b flex-shrink-0">
+              <h3 className="text-base sm:text-lg font-semibold">Chat - Booking #{chatBookingId.slice(-8)}</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -805,6 +932,7 @@ const Dashboard = () => {
                   setShowChat(false);
                   setChatBookingId(null);
                 }}
+                className="h-8 w-8 p-0"
               >
                 ✕
               </Button>

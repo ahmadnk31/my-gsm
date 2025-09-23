@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Skeleton } from '@/components/ui/skeleton';
 import { SEO } from '@/components/SEO';
 import { ServiceStructuredData, BreadcrumbStructuredData } from '@/components/StructuredData';
 import { 
@@ -14,13 +15,9 @@ import {
   Watch,
   ChevronRight,
   Clock,
-  DollarSign,
-  Star,
   Shield,
   Package
 } from 'lucide-react';
-import { BookingModal } from './booking/BookingModal';
-import { QuoteRequestModal } from './quote/QuoteRequestModal';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
 import {
@@ -31,14 +28,117 @@ import {
   useDeviceCategory,
   useDeviceBrand,
   useDeviceModel,
-  useDeviceBrandByName,
-  useDeviceCategoryByName,
   useDeviceCategoryBySlug,
   useDeviceBrandBySlug,
   useDeviceModelBySlug,
 } from '@/hooks/useRepairQueries';
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatPriceToEuro, generateSlug } from '@/lib/utils';
+
+// Lazy load modal components
+const BookingModal = lazy(() => import('./booking/BookingModal').then(module => ({ default: module.BookingModal })));
+const QuoteRequestModal = lazy(() => import('./quote/QuoteRequestModal').then(module => ({ default: module.QuoteRequestModal })));
+
+// Fallback component for lazy-loaded modals
+const ModalFallback = ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+  <div onClick={onClick}>{children}</div>
+);
+
+// Lazy loading image component with skeleton
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  fallbackClassName?: string;
+  skeletonClassName?: string;
+  onError?: () => void;
+}
+
+const LazyImage: React.FC<LazyImageProps> = ({ 
+  src, 
+  alt, 
+  className = "", 
+  fallbackClassName = "",
+  skeletonClassName = "w-full h-full",
+  onError 
+}) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div className={`relative ${fallbackClassName}`}>
+      {!loaded && !error && (
+        <Skeleton className={`absolute inset-0 ${skeletonClassName}`} />
+      )}
+      {!error && (
+        <img
+          src={src}
+          alt={alt}
+          className={`${className} ${loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300 h-full w-full object-contain aspect-square`}
+          loading="lazy"
+          onLoad={() => setLoaded(true)}
+          onError={() => {
+            setError(true);
+            onError?.();
+          }}
+        />
+      )}
+      {error && (
+        <div className={`absolute inset-0 bg-muted flex items-center justify-center ${fallbackClassName}`}>
+          <Package className="h-6 w-6 text-muted-foreground" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Skeleton components for different card types
+const CategoryCardSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardHeader className="text-center pb-4">
+      <Skeleton className="w-20 h-20 rounded-full mx-auto mb-4" />
+      <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
+    </CardHeader>
+  </Card>
+);
+
+const BrandCardSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardHeader className="text-center pb-4">
+      <Skeleton className="w-20 h-20 rounded-full mx-auto mb-4" />
+      <Skeleton className="h-6 w-3/4 mx-auto" />
+    </CardHeader>
+  </Card>
+);
+
+const ModelCardSkeleton = () => (
+  <Card className="animate-pulse">
+    <CardHeader className="text-center pb-4">
+      <Skeleton className="w-24 h-32 mx-auto mb-4 rounded-lg" />
+      <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
+      <Skeleton className="h-4 w-1/2 mx-auto" />
+    </CardHeader>
+  </Card>
+);
+
+const PartCardSkeleton = () => (
+  <Card className="animate-pulse">
+    <div className="h-32 w-full mb-4">
+      <Skeleton className="w-full h-full" />
+    </div>
+    <CardHeader className="pt-0">
+      <Skeleton className="h-4 w-3/4 mb-2" />
+      <div className="flex gap-2">
+        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-6 w-12" />
+      </div>
+    </CardHeader>
+    <CardContent>
+      <Skeleton className="h-3 w-full mb-2" />
+      <Skeleton className="h-3 w-2/3" />
+    </CardContent>
+  </Card>
+);
 
 type DeviceCategory = Tables<'device_categories'>;
 type DeviceBrand = Tables<'device_brands'>;
@@ -343,18 +443,9 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderCategories = () => {
     if (categoriesQuery.isLoading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-16 w-16 bg-muted rounded-full mx-auto mb-4"></div>
-                <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-3 bg-muted rounded w-full mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3 mx-auto"></div>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-4 xl:gap-6">
+          {[...Array(5)].map((_, i) => (
+            <CategoryCardSkeleton key={i} />
           ))}
         </div>
       );
@@ -400,18 +491,9 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderBrands = () => {
     if (brandsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-16 w-16 bg-muted rounded-full mx-auto mb-4"></div>
-                <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-3 bg-muted rounded w-full mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3 mx-auto"></div>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2 md:gap-4 xl:gap-6">
+          {[...Array(4)].map((_, i) => (
+            <BrandCardSkeleton key={i} />
           ))}
         </div>
       );
@@ -474,16 +556,17 @@ export const HierarchicalRepairsGrid: React.FC = () => {
             onClick={() => navigateToBrand(brand)}
           >
             <CardHeader className="text-center pb-4">
-              {brand.logo_url && (
+              {brand.logo_url ? (
                 <div className=" mx-auto mb-4 overflow-hidden p-2">
-                  <img 
-                    src={brand.logo_url} 
+                  <LazyImage
+                    src={brand.logo_url}
                     alt={brand.name}
                     className="w-full h-full object-contain aspect-square"
+                    skeletonClassName="w-full h-full rounded-full"
+                    fallbackClassName="w-full h-full"
                   />
                 </div>
-              )}
-              {!brand.logo_url && (
+              ) : (
                 <div className="w-20 h-20 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
                   <span className="text-white font-bold text-xl">
                     {brand.name.charAt(0)}
@@ -504,18 +587,9 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderModels = () => {
     if (modelsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-32 w-24 bg-muted rounded-lg mx-auto mb-4"></div>
-                <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-3 bg-muted rounded w-full mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3 mx-auto"></div>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2 md:gap-4 xl:gap-6">
+          {[...Array(6)].map((_, i) => (
+            <ModelCardSkeleton key={i} />
           ))}
         </div>
       );
@@ -581,16 +655,17 @@ export const HierarchicalRepairsGrid: React.FC = () => {
             onClick={() => navigateToModel(model)}
           >
             <CardHeader className="text-center pb-4">
-              {model.image_url && (
-                <div className="mx-auto">
-                  <img 
-                    src={model.image_url} 
+              {model.image_url ? (
+                <div className=" mx-auto mb-4">
+                  <LazyImage
+                    src={model.image_url}
                     alt={model.name}
                     className="w-full h-full object-contain aspect-square"
+                    skeletonClassName="w-full h-full rounded-lg"
+                    fallbackClassName="w-full h-full"
                   />
                 </div>
-              )}
-              {!model.image_url && (
+              ) : (
                 <div className="w-24 h-32 mx-auto mb-4 rounded-lg bg-gradient-primary flex items-center justify-center">
                   <span className="text-white font-bold text-xl">
                     {model.name.split(' ').map(word => word.charAt(0)).join('').slice(0, 2)}
@@ -616,20 +691,44 @@ export const HierarchicalRepairsGrid: React.FC = () => {
   const renderParts = () => {
     if (partsQuery.isLoading) {
       return (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="h-32 sm:h-40 md:h-12 bg-muted mb-2 md:mb-4"></div>
-              <CardHeader className="pt-0">
-                <div className="h-3 md:h-4 bg-muted rounded w-3/4"></div>
-              </CardHeader>
-              <CardContent>
-                <div className="h-2 md:h-3 bg-muted rounded w-full mb-1 md:mb-2"></div>
-                <div className="h-2 md:h-3 bg-muted rounded w-2/3"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <>
+          {/* Mobile Layout */}
+          <div className="block md:hidden">
+            <div className="grid grid-cols-2 gap-2 items-start">
+              {[...Array(4)].map((_, i) => (
+                <PartCardSkeleton key={i} />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3  gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start gap-4">
+                    <Skeleton className="w-12 h-12 rounded-lg flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <Skeleton className="h-5 w-3/4 mb-2" />
+                      <div className="flex gap-2">
+                        <Skeleton className="h-5 w-16" />
+                        <Skeleton className="h-5 w-12" />
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-2/3 mb-4" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full rounded-lg" />
+                    <Skeleton className="h-16 w-full rounded-lg" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       );
     }
 
@@ -696,13 +795,16 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                   className="animate-fade-in border-0 h-full"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <Card className="overflow-hidden bg-gradient-card shadow-card h-full flex flex-col">{/* Fixed image header */}
+                  <Card className="overflow-hidden bg-gradient-card shadow-card h-full flex flex-col">
+                    {/* Fixed image header */}
                     {part.image_url ? (
-                      <div className="mx-auto overflow-hidden flex-shrink-0">
-                        <img 
-                          src={part.image_url} 
+                      <div className="mx-auto h-32 overflow-hidden flex-shrink-0">
+                        <LazyImage
+                          src={part.image_url}
                           alt={part.name}
-                          className="w-full h-32 object-contain"
+                          className="w-full h-full object-contain"
+                          skeletonClassName="w-full h-full"
+                          fallbackClassName="w-full h-full"
                         />
                       </div>
                     ) : (
@@ -822,10 +924,12 @@ export const HierarchicalRepairsGrid: React.FC = () => {
                 <div className="flex items-start gap-4">
                   {part.image_url ? (
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                      <img 
-                        src={part.image_url} 
+                      <LazyImage
+                        src={part.image_url}
                         alt={part.name}
                         className="w-full h-full object-cover"
+                        skeletonClassName="w-full h-full"
+                        fallbackClassName="w-full h-full"
                       />
                     </div>
                   ) : (

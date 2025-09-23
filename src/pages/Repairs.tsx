@@ -3,10 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SEO, getPageSEOConfig } from "@/components/SEO";
 import { ServiceStructuredData } from "@/components/StructuredData";
-import { BookingModal } from "@/components/booking/BookingModal";
 import { HierarchicalRepairsGrid } from "@/components/HierarchicalRepairsGrid";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Smartphone, Shield, Clock, CheckCircle, Wrench, Battery, Camera, Volume2, Wifi, Droplets, Star, Calendar, MapPin, Phone } from "lucide-react";
+import { Suspense, lazy } from "react";
+
+// Lazy load BookingModal
+const BookingModal = lazy(() => import("@/components/booking/BookingModal").then(module => ({ default: module.BookingModal })));
+
+// Fallback component for lazy-loaded modal
+const ModalFallback = ({ children }: { children: React.ReactNode }) => (
+  <div>{children}</div>
+);
 
 
 const RepairServices = () => {
@@ -140,12 +148,21 @@ const ContactRepair = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <BookingModal>
-              <Button className="btn-primary" size="lg">
-                <Calendar className="h-5 w-5 mr-2" />
-                {t('repairs.bookAppointment')}
-              </Button>
-            </BookingModal>
+            <Suspense fallback={
+              <ModalFallback>
+                <Button className="btn-primary" size="lg">
+                  <Calendar className="h-5 w-5 mr-2" />
+                  {t('repairs.bookAppointment')}
+                </Button>
+              </ModalFallback>
+            }>
+              <BookingModal>
+                <Button className="btn-primary" size="lg">
+                  <Calendar className="h-5 w-5 mr-2" />
+                  {t('repairs.bookAppointment')}
+                </Button>
+              </BookingModal>
+            </Suspense>
             <Button variant="outline" size="lg" className="btn-ghost border-2 border-white/30 hover:text-white hover:scale-105 hover:bg-white/10 backdrop-blur-md">
               <MapPin className="h-5 w-5 mr-2" />
               {t('repairs.findStore')}
