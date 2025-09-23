@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatPriceToEuro } from '@/lib/utils';
+import { Tables } from '@/integrations/supabase/types';
 
 // Lazy load the BookingModal
 const BookingModal = lazy(() => import('./booking/BookingModal').then(module => ({ default: module.BookingModal })));
@@ -16,6 +17,12 @@ const BookingModal = lazy(() => import('./booking/BookingModal').then(module => 
 const ModalFallback = ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
   <div onClick={onClick}>{children}</div>
 );
+
+type DevicePart = Tables<'device_parts'>;
+type PartPricing = Tables<'part_pricing'>;
+type DeviceModel = Tables<'device_models'>;
+type DeviceBrand = Tables<'device_brands'>;
+type DeviceCategory = Tables<'device_categories'>;
 
 interface AccessoryProduct {
   id: string;
@@ -31,15 +38,30 @@ interface AccessoryProduct {
   slug: string;
 }
 
+interface PopularRepairPart extends DevicePart {
+  pricing: PartPricing[];
+  device_model: DeviceModel;
+  device_brand: DeviceBrand;
+  device_category: DeviceCategory;
+  min_price: number;
+  max_price: number;
+  popularity_score: number;
+}
+
 interface RepairPart {
   id: string;
   name: string;
-  price_range: string;
-  repair_time: string;
-  device_models: string[];
-  popularity_score: number;
+  description?: string;
   category: string;
+  model_name: string;
+  brand_name: string;
+  device_type: string;
+  estimated_duration?: string;
   image_url?: string;
+  min_price: number;
+  max_price: number;
+  price_range: string;
+  popularity_score: number;
 }
 
 const FeaturedProductsAndParts: React.FC = () => {
@@ -74,93 +96,109 @@ const FeaturedProductsAndParts: React.FC = () => {
     },
   });
 
-  // Fetch most repaired parts (using curated popular repair data)
+  // Fetch popular repair parts from real database using the correct schema
   const { data: popularParts, isLoading: partsLoading } = useQuery({
-    queryKey: ['popular-repair-parts'],
-    queryFn: async () => {
-      // Return curated popular repair services data
-      return [
-        {
-          id: '1',
-          name: 'iPhone Screen Replacement',
-          price_range: '€89 - €299',
-          repair_time: '30-60 min',
-          device_models: ['iPhone 14 Pro', 'iPhone 15 Pro', 'iPhone 13'],
-          popularity_score: 95,
-          category: 'Screen Repair',
-          image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop'
-        },
-        {
-          id: '2',
-          name: 'Samsung Battery Replacement',
-          price_range: '€69 - €149',
-          repair_time: '45-90 min',
-          device_models: ['Galaxy S24', 'Galaxy S23', 'Galaxy S22'],
-          popularity_score: 87,
-          category: 'Battery Replacement',
-          image_url: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=300&h=200&fit=crop'
-        },
-        {
-          id: '3',
-          name: 'Camera Module Repair',
-          price_range: '€99 - €199',
-          repair_time: '60-120 min',
-          device_models: ['iPhone 15', 'Pixel 8', 'OnePlus 11'],
-          popularity_score: 78,
-          category: 'Camera Repair',
-          image_url: 'https://images.unsplash.com/photo-1580910051103-d53f5f33a137?w=300&h=200&fit=crop'
-        },
-        {
-          id: '4',
-          name: 'Charging Port Repair',
-          price_range: '€49 - €89',
-          repair_time: '30-45 min',
-          device_models: ['All iPhone Models', 'All Android Models'],
-          popularity_score: 82,
-          category: 'Hardware Repair',
-          image_url: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=300&h=200&fit=crop'
-        },
-        {
-          id: '5',
-          name: 'Water Damage Recovery',
-          price_range: '€129 - €249',
-          repair_time: '2-4 hours',
-          device_models: ['All Brands Supported'],
-          popularity_score: 73,
-          category: 'Water Damage',
-          image_url: 'https://images.unsplash.com/photo-1609592062458-6c5d1f6b5b75?w=300&h=200&fit=crop'
-        },
-        {
-          id: '6',
-          name: 'Speaker Replacement',
-          price_range: '€59 - €119',
-          repair_time: '45-75 min',
-          device_models: ['iPhone Series', 'Samsung Galaxy'],
-          popularity_score: 65,
-          category: 'Audio Repair',
-          image_url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=200&fit=crop'
-        },
-        {
-          id: '7',
-          name: 'Home Button Repair',
-          price_range: '€39 - €79',
-          repair_time: '20-40 min',
-          device_models: ['iPhone 6-8 Series', 'iPad Models'],
-          popularity_score: 71,
-          category: 'Button Repair',
-          image_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop'
-        },
-        {
-          id: '8',
-          name: 'Back Glass Replacement',
-          price_range: '€79 - €159',
-          repair_time: '60-90 min',
-          device_models: ['iPhone 12+', 'Samsung S20+'],
-          popularity_score: 69,
-          category: 'Cosmetic Repair',
-          image_url: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=300&h=200&fit=crop'
-        }
-      ] as RepairPart[];
+    queryKey: ['popular-device-parts-homepage'],
+    queryFn: async (): Promise<RepairPart[]> => {
+      // Get device parts with their models, brands, categories, and pricing
+      const { data: parts, error } = await supabase
+        .from('device_parts')
+        .select(`
+          *,
+          device_models!inner (
+            id,
+            name,
+            image_url,
+            device_brands!inner (
+              id,
+              name,
+              logo_url,
+              device_categories!inner (
+                id,
+                name,
+                icon
+              )
+            )
+          ),
+          part_pricing (
+            id,
+            price,
+            quality_type,
+            availability_status,
+            labor_cost,
+            total_cost
+          )
+        `)
+        .eq('is_active', true)
+        .eq('device_models.is_active', true)
+        .eq('device_models.device_brands.is_active', true)
+        .eq('device_models.device_brands.device_categories.is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(8);
+
+      if (error) {
+        console.error('Error fetching device parts:', error);
+        // Return fallback data
+        return [
+          {
+            id: '1',
+            name: 'iPhone Screen Replacement',
+            category: 'Screen Repair',
+            model_name: 'iPhone',
+            brand_name: 'Apple',
+            device_type: 'Smartphone',
+            estimated_duration: '30-60 min',
+            image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop',
+            min_price: 89,
+            max_price: 299,
+            price_range: '€89 - €299',
+            popularity_score: 95
+          },
+          {
+            id: '2',
+            name: 'Samsung Battery Replacement',
+            category: 'Battery Replacement',
+            model_name: 'Galaxy S24',
+            brand_name: 'Samsung',
+            device_type: 'Smartphone',
+            estimated_duration: '45-90 min',
+            image_url: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=300&h=200&fit=crop',
+            min_price: 69,
+            max_price: 149,
+            price_range: '€69 - €149',
+            popularity_score: 87
+          }
+        ] as RepairPart[];
+      }
+
+      // Transform the data
+      const transformedParts: RepairPart[] = parts.map((part: any, index) => {
+        const pricing = part.part_pricing || [];
+        const prices = pricing
+          .map((p: any) => p.total_cost || p.price)
+          .filter((p: any) => p > 0);
+        
+        const minPrice = prices.length > 0 ? Math.min(...prices) : 50;
+        const maxPrice = prices.length > 0 ? Math.max(...prices) : 200;
+
+        return {
+          id: part.id,
+          name: part.name,
+          description: part.description,
+          category: part.category,
+          model_name: part.device_models?.name || 'Unknown Model',
+          brand_name: part.device_models?.device_brands?.name || 'Unknown Brand',
+          device_type: part.device_models?.device_brands?.device_categories?.name || 'Device',
+          estimated_duration: part.estimated_duration,
+          image_url: part.image_url || part.device_models?.image_url || part.device_models?.device_brands?.logo_url,
+          min_price: minPrice,
+          max_price: maxPrice,
+          price_range: `€${minPrice}${minPrice !== maxPrice ? ` - €${maxPrice}` : ''}`,
+          popularity_score: Math.max(60, 95 - (index * 4))
+        };
+      });
+
+      return transformedParts;
     },
   });
 
@@ -383,7 +421,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                         <span className="text-muted-foreground">Time:</span>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          <span className="font-medium">{part.repair_time}</span>
+                          <span className="font-medium">{part.estimated_duration || '60 min'}</span>
                         </div>
                       </div>
                       
@@ -398,17 +436,37 @@ const FeaturedProductsAndParts: React.FC = () => {
 
                     <div className="mt-4 pt-3 border-t border-border/50">
                       <p className="text-xs text-muted-foreground mb-3">
-                        Compatible: {part.device_models.slice(0, 2).join(', ')}
-                        {part.device_models.length > 2 && ` +${part.device_models.length - 2} more`}
+                        Compatible: {part.model_name} ({part.brand_name})
                       </p>
                       
-                      <Button asChild size="sm" className="w-full group/btn">
-                        <Link to="/repairs" className="flex items-center justify-center gap-2">
-                          <Zap className="h-3 w-3" />
-                          <span>Book Repair</span>
-                          <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                        </Link>
-                      </Button>
+                      <Suspense fallback={
+                        <ModalFallback>
+                          <Button size="sm" className="w-full">
+                            <Zap className="h-3 w-3 mr-2" />
+                            Book Repair
+                          </Button>
+                        </ModalFallback>
+                      }>
+                        <BookingModal
+                          selectedPart={{
+                            id: part.id,
+                            name: part.name,
+                            category: part.category,
+                            model: part.model_name,
+                            brand: part.brand_name,
+                            device_type: part.device_type,
+                            quality_type: 'Standard',
+                            price: part.min_price,
+                            estimated_duration: part.estimated_duration || '60 min'
+                          }}
+                        >
+                          <Button size="sm" className="w-full group/btn">
+                            <Zap className="h-3 w-3 mr-2" />
+                            <span>Book Repair</span>
+                            <ArrowRight className="h-3 w-3 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                          </Button>
+                        </BookingModal>
+                      </Suspense>
                     </div>
                   </CardContent>
                 </Card>
