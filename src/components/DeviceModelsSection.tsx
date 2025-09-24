@@ -29,29 +29,24 @@ const DeviceModelsSection = () => {
             logo_url,
             device_categories(name, icon_name)
           ),
-          device_parts(id)
+          device_parts!inner(id)
         `)
         .eq('is_active', true)
+        .eq('device_parts.is_active', true)
         .limit(8);
 
       if (error) throw error;
 
-      // Sort by models with parts first, then by release year
-      const sortedData = (data || []).sort((a, b) => {
-        const aPartsCount = a.device_parts?.length || 0;
-        const bPartsCount = b.device_parts?.length || 0;
-        
-        // First, prioritize models with parts
-        if (aPartsCount > 0 && bPartsCount === 0) return -1;
-        if (aPartsCount === 0 && bPartsCount > 0) return 1;
-        
-        // Then sort by release year (newest first)
-        const aYear = a.release_year || 0;
-        const bYear = b.release_year || 0;
-        return bYear - aYear;
-      });
+      // Filter to only include models with parts and sort by release year (newest first)
+      const filteredData = (data || [])
+        .filter(model => model.device_parts && model.device_parts.length > 0)
+        .sort((a, b) => {
+          const aYear = a.release_year || 0;
+          const bYear = b.release_year || 0;
+          return bYear - aYear;
+        });
 
-      return sortedData;
+      return filteredData;
     },
   });
 
