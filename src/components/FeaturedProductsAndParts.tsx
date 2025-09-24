@@ -298,15 +298,15 @@ const FeaturedProductsAndParts: React.FC = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
               <Award className="h-4 w-4" />
-              <span>Featured Products</span>
+              <span>{t('homepage.featuredProducts')}</span>
             </div>
             
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Premium Accessories
+              {t('accessories.title')}
             </h2>
             
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Discover our top-rated accessories and protection solutions for your devices
+              {t('accessories.subtitle')}
             </p>
           </div>
 
@@ -351,7 +351,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                         
                         <div className="absolute top-4 left-4">
-                          <Badge className="bg-primary text-primary-foreground">Featured</Badge>
+                          <Badge className="bg-primary text-primary-foreground">{t('accessories.featured')}</Badge>
                         </div>
                         
                         {product.original_price && (
@@ -406,7 +406,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                       <Button asChild className="w-full mt-4 group/btn">
                         <Link to={`/accessories/product?slug=${product.slug}`} className="flex items-center justify-center gap-2">
                           <ShoppingCart className="h-4 w-4" />
-                          <span>Add to Cart</span>
+                          <span>{t('accessories.addToCart')}</span>
                           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
                         </Link>
                       </Button>
@@ -420,7 +420,7 @@ const FeaturedProductsAndParts: React.FC = () => {
           <div className="text-center">
             <Button asChild size="lg" variant="outline">
               <Link to="/accessories" className="flex items-center gap-2">
-                <span>View All Accessories</span>
+                <span>{t('accessories.viewAll')}</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -432,15 +432,15 @@ const FeaturedProductsAndParts: React.FC = () => {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-success to-success/80 text-success-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
               <TrendingUp className="h-4 w-4" />
-              <span>Popular Repairs</span>
+              <span>{t('repairs.ourRepairServices')}</span>
             </div>
             
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Most Requested Services
+              {t('home.showcase.title')}
             </h2>
             
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Our most popular repair services with transparent pricing and quick turnaround times
+              {t('home.showcase.subtitle')}
             </p>
           </div>
 
@@ -460,7 +460,7 @@ const FeaturedProductsAndParts: React.FC = () => {
               popularParts.map((part, index) => (
                 <Card key={part.id} className="group bg-card/50 backdrop-blur-sm border-border/50 hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   <div className="relative">
-                    <div className="h-full relative mx-auto">
+                    <div className="h-48 relative bg-gradient-to-br from-muted to-muted/50 overflow-hidden rounded-t-xl flex items-center justify-center">
                       <img
                         src={part.image_url || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop'}
                         alt={part.name}
@@ -471,7 +471,9 @@ const FeaturedProductsAndParts: React.FC = () => {
                       
                       <div className="absolute top-3 left-3">
                         <Badge className="bg-success/90 text-white text-xs">
-                          #{index + 1} Popular
+                          {part.booking_count && part.booking_count > 0 
+                            ? `${part.booking_count}× ${t('booking.booked') || 'Booked'}`
+                            : `#${index + 1} ${t('home.showcase.popular') || 'Popular'}`}
                         </Badge>
                       </div>
                       
@@ -495,12 +497,12 @@ const FeaturedProductsAndParts: React.FC = () => {
 
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Price:</span>
+                        <span className="text-muted-foreground">{t('common.price')}:</span>
                         <span className="font-semibold text-primary">{part.price_range}</span>
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Time:</span>
+                        <span className="text-muted-foreground">{t('common.time')}:</span>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           <span className="font-medium">{part.estimated_duration || '60 min'}</span>
@@ -508,12 +510,12 @@ const FeaturedProductsAndParts: React.FC = () => {
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Demand:</span>
+                        <span className="text-muted-foreground">{t('booking.demand') || 'Demand'}:</span>
                         <div className="flex items-center gap-1">
                           <TrendingUp className="h-3 w-3 text-success" />
                           <span className="font-medium text-success">
                             {part.booking_count && part.booking_count > 0 
-                              ? `${part.booking_count} bookings` 
+                              ? `${part.booking_count} ${t('booking.bookings') || 'bookings'}` 
                               : `${part.popularity_score}%`}
                           </span>
                         </div>
@@ -522,7 +524,7 @@ const FeaturedProductsAndParts: React.FC = () => {
 
                     <div className="mt-4 pt-3 border-t border-border/50">
                       <p className="text-xs text-muted-foreground mb-3">
-                        Compatible: {part.model_name} ({part.brand_name})
+                        {t('booking.compatibility') || 'Compatible'}: {part.model_name} ({part.brand_name})
                       </p>
                       
                       {/* Show pricing options if available */}
@@ -565,7 +567,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                           {part._originalPart.part_pricing.length > 2 && (
                             <Button asChild size="sm" variant="outline" className="w-full text-xs">
                               <Link to="/repairs" className="flex items-center justify-center gap-2">
-                                <span>View all options</span>
+                                <span>{t('accessories.viewAll')}</span>
                                 <ArrowRight className="h-3 w-3" />
                               </Link>
                             </Button>
@@ -595,7 +597,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                           >
                             <Button size="sm" className="w-full group/btn">
                               <Zap className="h-3 w-3 mr-2" />
-                              <span>Book Repair</span>
+                              <span>{t('repairs.bookAppointment')}</span>
                               <ArrowRight className="h-3 w-3 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
                             </Button>
                           </BookingModal>
@@ -605,6 +607,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                   </CardContent>
                 </Card>
               ))
+            
             ) : (
               // Fallback when no data available - show sample popular repair services
               [
@@ -717,13 +720,13 @@ const FeaturedProductsAndParts: React.FC = () => {
 
                     <div className="mt-4 pt-3 border-t border-border/50">
                       <p className="text-xs text-muted-foreground mb-3">
-                        Compatible: {part.model_name} ({part.brand_name})
+                        {t('booking.compatibility') || 'Compatible'}: {part.model_name} ({part.brand_name})
                       </p>
                       
                       <Button asChild size="sm" className="w-full group/btn">
                         <Link to="/repairs" className="flex items-center justify-center gap-2">
                           <Zap className="h-3 w-3" />
-                          <span>Book Repair</span>
+                          <span>{t('repairs.bookAppointment')}</span>
                           <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover/btn:translate-x-1" />
                         </Link>
                       </Button>
@@ -731,6 +734,7 @@ const FeaturedProductsAndParts: React.FC = () => {
                   </CardContent>
                 </Card>
               ))
+              
             )}
           </div>
 
@@ -739,7 +743,7 @@ const FeaturedProductsAndParts: React.FC = () => {
               <Button asChild size="lg">
                 <Link to="/repairs" className="flex items-center gap-2">
                   <Wrench className="h-5 w-5" />
-                  <span>Book a Repair</span>
+                  <span>{t('repairs.bookAppointment')}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -747,7 +751,7 @@ const FeaturedProductsAndParts: React.FC = () => {
               <Button asChild size="lg" variant="outline">
                 <Link to="/accessories" className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
-                  <span>Shop Accessories</span>
+                  <span>{t('homepage.browseAccessories')}</span>
                 </Link>
               </Button>
             </div>

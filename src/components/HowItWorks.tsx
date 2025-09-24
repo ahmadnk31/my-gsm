@@ -5,65 +5,81 @@ import { ArrowRight, Phone, Wrench, CheckCircle, Smartphone, Clock, Shield, Star
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const steps = [
-  {
-    id: 1,
-    icon: Phone,
-    title: "Book Your Repair",
-    description: "Schedule online or call us. Get instant pricing and available time slots for your device repair.",
-    details: ["Free diagnosis", "Transparent pricing", "Flexible scheduling"],
-    color: "from-blue-500 to-blue-600",
-    bgColor: "from-blue-500/10 to-blue-600/5"
-  },
-  {
-    id: 2,
-    icon: Wrench,
-    title: "Expert Repair",
-    description: "Our certified technicians use genuine parts and professional tools to restore your device.",
-    details: ["Certified technicians", "Genuine parts", "Professional tools"],
-    color: "from-orange-500 to-orange-600",
-    bgColor: "from-orange-500/10 to-orange-600/5"
-  },
-  {
-    id: 3,
-    icon: CheckCircle,
-    title: "Quality Testing",
-    description: "We thoroughly test all functions to ensure your device works perfectly before returning it.",
-    details: ["Full functionality test", "Quality assurance", "Performance check"],
-    color: "from-green-500 to-green-600",
-    bgColor: "from-green-500/10 to-green-600/5"
-  },
-  {
-    id: 4,
-    icon: Smartphone,
-    title: "Device Ready",
-    description: "Your device is ready! Enjoy our 6-month warranty and ongoing support for complete peace of mind.",
-    details: ["6-month warranty", "Ongoing support", "Performance guarantee"],
-    color: "from-purple-500 to-purple-600",
-    bgColor: "from-purple-500/10 to-purple-600/5"
-  }
-];
-
-const guarantees = [
-  {
-    icon: Clock,
-    title: "Fast Turnaround",
-    description: "Most repairs completed within 1-2 hours"
-  },
-  {
-    icon: Shield,
-    title: "Secure Process",
-    description: "Your data privacy and device security protected"
-  },
-  {
-    icon: Star,
-    title: "Quality Guarantee",
-    description: "100% satisfaction or we'll make it right"
-  }
-];
-
 const HowItWorks: React.FC = () => {
   const { t } = useLanguage();
+
+  const steps = [
+    {
+      id: 1,
+      icon: Phone,
+      title: t('howItWorks.steps.book.title'),
+      description: t('howItWorks.steps.book.description'),
+      details: [
+        t('howItWorks.steps.book.detail1'),
+        t('howItWorks.steps.book.detail2'),
+        t('howItWorks.steps.book.detail3')
+      ],
+      color: "from-blue-500 to-blue-600",
+      bgColor: "from-blue-500/10 to-blue-600/5"
+    },
+    {
+      id: 2,
+      icon: Wrench,
+      title: t('howItWorks.steps.repair.title'),
+      description: t('howItWorks.steps.repair.description'),
+      details: [
+        t('howItWorks.steps.repair.detail1'),
+        t('howItWorks.steps.repair.detail2'),
+        t('howItWorks.steps.repair.detail3')
+      ],
+      color: "from-orange-500 to-orange-600",
+      bgColor: "from-orange-500/10 to-orange-600/5"
+    },
+    {
+      id: 3,
+      icon: CheckCircle,
+      title: t('howItWorks.steps.test.title'),
+      description: t('howItWorks.steps.test.description'),
+      details: [
+        t('howItWorks.steps.test.detail1'),
+        t('howItWorks.steps.test.detail2'),
+        t('howItWorks.steps.test.detail3')
+      ],
+      color: "from-green-500 to-green-600",
+      bgColor: "from-green-500/10 to-green-600/5"
+    },
+    {
+      id: 4,
+      icon: Smartphone,
+      title: t('howItWorks.steps.ready.title'),
+      description: t('howItWorks.steps.ready.description'),
+      details: [
+        t('howItWorks.steps.ready.detail1'),
+        t('howItWorks.steps.ready.detail2'),
+        t('howItWorks.steps.ready.detail3')
+      ],
+      color: "from-purple-500 to-purple-600",
+      bgColor: "from-purple-500/10 to-purple-600/5"
+    }
+  ];
+
+  const guarantees = [
+    {
+      icon: Clock,
+      title: t('howItWorks.guarantees.fastTurnaround.title'),
+      description: t('howItWorks.guarantees.fastTurnaround.description')
+    },
+    {
+      icon: Shield,
+      title: t('howItWorks.guarantees.secureProcess.title'),
+      description: t('howItWorks.guarantees.secureProcess.description')
+    },
+    {
+      icon: Star,
+      title: t('howItWorks.guarantees.qualityGuarantee.title'),
+      description: t('howItWorks.guarantees.qualityGuarantee.description')
+    }
+  ];
 
   return (
     <section className="py-24 bg-muted/20 relative overflow-hidden">
@@ -78,15 +94,15 @@ const HowItWorks: React.FC = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-info to-info/80 text-info-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
             <Wrench className="h-4 w-4" />
-            <span>Our Process</span>
+            <span>{t('howItWorks.ourProcess')}</span>
           </div>
           
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            How It Works
+            {t('howItWorks.title')}
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Simple, transparent, and professional. Here's how we get your device back to perfect working condition.
+            {t('howItWorks.description')}
           </p>
         </div>
 
@@ -157,10 +173,9 @@ const HowItWorks: React.FC = () => {
         <Card className="bg-gradient-to-r from-foreground via-foreground to-foreground text-background relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-success/10" />
           <CardContent className="p-12 text-center relative">
-            <h3 className="text-3xl font-bold mb-4">Ready to Get Started?</h3>
+            <h3 className="text-3xl font-bold mb-4">{t('howItWorks.cta.title')}</h3>
             <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              Join thousands of satisfied customers who trust us with their device repairs. 
-              Book your repair today and experience the difference.
+              {t('howItWorks.cta.description')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -171,7 +186,7 @@ const HowItWorks: React.FC = () => {
               >
                 <Link to="/repairs" className="flex items-center gap-2">
                   <Wrench className="h-5 w-5" />
-                  <span>Book Repair Now</span>
+                  <span>{t('howItWorks.cta.bookRepairNow')}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -184,7 +199,7 @@ const HowItWorks: React.FC = () => {
               >
                 <Link to="/contact" className="flex items-center gap-2">
                   <Phone className="h-5 w-5" />
-                  <span>Call: (555) 123-REPAIR</span>
+                  <span>{t('howItWorks.cta.callUs')}</span>
                 </Link>
               </Button>
             </div>
@@ -192,17 +207,17 @@ const HowItWorks: React.FC = () => {
             <div className="mt-6 flex items-center justify-center gap-6 text-sm opacity-80">
               <div className="flex items-center gap-1">
                 <CheckCircle className="h-4 w-4" />
-                <span>Free Diagnosis</span>
+                <span>{t('howItWorks.cta.freeDiagnosis')}</span>
               </div>
               <div>•</div>
               <div className="flex items-center gap-1">
                 <Shield className="h-4 w-4" />
-                <span>6-Month Warranty</span>
+                <span>{t('howItWorks.cta.sixMonthWarranty')}</span>
               </div>
               <div>•</div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>Same-Day Service</span>
+                <span>{t('howItWorks.cta.sameDayService')}</span>
               </div>
             </div>
           </CardContent>

@@ -29,42 +29,48 @@ const Features = () => {
       title: t('home.features.warranty.title'),
       description: `${t('home.features.warranty.description')} ${stats?.totalBookings ? `${stats.totalBookings}+ repairs completed` : 'Trusted by thousands'}.`,
       gradient: "from-success to-success/80",
-      bgGradient: "from-success/10 to-success/5"
+      bgGradient: "from-success/10 to-success/5",
+      iconColor: "text-white"
     },
     {
       icon: Truck,
       title: t('home.features.fastRepair.title'),
       description: t('home.features.fastRepair.description'),
       gradient: "from-primary to-primary-glow",
-      bgGradient: "from-primary/10 to-primary-glow/5"
+      bgGradient: "from-primary/10 to-primary-glow/5",
+      iconColor: "text-white"
     },
     {
       icon: Headphones,
       title: t('home.features.expertTechnicians.title'),
       description: t('home.features.expertTechnicians.description'),
-      gradient: "from-info to-info/80",
-      bgGradient: "from-info/10 to-info/5"
+      gradient: "from-blue-500 to-blue-600",
+      bgGradient: "from-blue-500/10 to-blue-600/5",
+      iconColor: "text-white"
     },
     {
       icon: CreditCard,
       title: t('home.features.qualityParts.title'),
       description: t('home.features.qualityParts.description'),
-      gradient: "from-warning to-warning/80",
-      bgGradient: "from-warning/10 to-warning/5"
+      gradient: "from-orange-500 to-orange-600",
+      bgGradient: "from-orange-500/10 to-orange-600/5",
+      iconColor: "text-white"
     },
     {
       icon: Clock,
       title: t('home.features.fastRepair.title'),
       description: `${t('home.features.fastRepair.description')} ${stats?.totalBookings ? `${stats.totalBookings}+ successful repairs` : 'Fast turnaround times'}.`,
       gradient: "from-primary to-primary-glow",
-      bgGradient: "from-primary/10 to-primary-glow/5"
+      bgGradient: "from-primary/10 to-primary-glow/5",
+      iconColor: "text-white"
     },
     {
       icon: Award,
       title: t('home.features.qualityParts.title'),
       description: `${t('home.features.qualityParts.description')} ${stats?.totalAccessories ? `${stats.totalAccessories}+ products available` : 'Competitive pricing'}.`,
-      gradient: "from-warning to-warning/80",
-      bgGradient: "from-warning/10 to-warning/5"
+      gradient: "from-orange-500 to-orange-600",
+      bgGradient: "from-orange-500/10 to-orange-600/5",
+      iconColor: "text-white"
     }
   ];
 
@@ -121,7 +127,7 @@ const Features = () => {
                 <CardContent className={`${isLarge ? 'p-10' : isFullWidth ? 'p-12' : 'p-8'} text-center relative flex flex-col justify-center h-full`}>
                   {/* Icon */}
                   <div className={`${isLarge ? 'w-20 h-20' : isFullWidth ? 'w-24 h-24' : 'w-16 h-16'} bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-elegant`}>
-                    <feature.icon className={`${isLarge ? 'h-10 w-10' : isFullWidth ? 'h-12 w-12' : 'h-8 w-8'} text-white`} />
+                    <feature.icon className={`${isLarge ? 'h-10 w-10' : isFullWidth ? 'h-12 w-12' : 'h-8 w-8'} ${feature.iconColor}`} />
                   </div>
                   
                   {/* Content */}

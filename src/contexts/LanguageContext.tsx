@@ -165,6 +165,7 @@ const translations = {
         title: 'Popular Services',
         subtitle: 'Most requested repair services',
         viewAll: 'View All',
+        popular: 'Popular',
       },
     },
     
@@ -323,6 +324,10 @@ const translations = {
       contactInformation: 'Contact Information',
       bookingSummary: 'Booking Summary',
       device: 'Device',
+      compatibility: 'Compatible',
+      demand: 'Demand',
+      bookings: 'bookings',
+      booked: 'Booked',
     },
     
     // Homepage/ProductShowcase
@@ -339,6 +344,253 @@ const translations = {
       exploreDescription: 'From premium accessories to expert repair services, we have everything you need to enhance your mobile experience.',
       browseAccessories: 'Browse Accessories',
       bookRepair: 'Book Repair',
+      trustedByThousands: 'Trusted by Thousands Worldwide',
+      trustedDescription: 'Real numbers that show our commitment to quality service and customer satisfaction',
+      stats: {
+        devicesRepaired: 'Devices Repaired',
+        devicesRepairedDesc: 'Successfully completed repairs',
+        happyCustomers: 'Happy Customers',
+        happyCustomersDesc: 'Satisfied customers worldwide',
+        customerRating: 'Customer Rating',
+        customerRatingDesc: 'Based on 5,000+ reviews',
+        averageRepairTime: 'Average Repair Time',
+        averageRepairTimeDesc: 'Most repairs completed same day',
+        warrantyCoverage: 'Warranty Coverage',
+        warrantyCoverageDesc: 'Full protection guarantee',
+        successRate: 'Success Rate',
+        successRateDesc: 'First-time fix rate',
+        deviceModels: 'Device Models',
+        deviceModelsDesc: 'All major brands supported',
+        supportAvailable: 'Support Available',
+        supportAvailableDesc: 'Always here when you need us',
+        liveUpdateText: 'Live stats updated every 30 seconds'
+      }
+    },
+    
+    // Testimonials
+    testimonials: {
+      trustedByThousands: 'Trusted by Thousands',
+      trustedDescription: 'Real experiences from real customers who trust us with their most important devices',
+      verified: 'Verified Customer',
+      customerStories: 'Customer Stories',
+      repairsCompleted: 'Repairs Completed',
+      successRate: 'Success Rate',
+      averageRating: 'Average Rating',
+      supportAvailable: 'Support Available',
+      trustedCertified: 'Trusted & Certified',
+      certifiedTechnicians: 'Certified Technicians',
+      qualityGuaranteed: 'Quality Guaranteed',
+      authorizedService: 'Authorized Service',
+    },
+
+    // FAQ Section
+    faq: {
+      title: 'Frequently Asked Questions',
+      description: 'Get answers to the most common questions about our repair services, warranties, and process',
+      stillHaveQuestions: 'Still Have Questions?',
+      supportTeamDescription: 'Our friendly support team is here to help. Get in touch and we\'ll answer any questions you have about our services.',
+      callUs: 'Call Us: (555) 123-REPAIR',
+      liveChatSupport: 'Live Chat Support',
+      available247: 'Available 24/7',
+      supportEmail: 'support@phonerepair.com',
+      questions: {
+        repairTime: {
+          question: 'How long does a typical phone repair take?',
+          answer: 'Most screen repairs and battery replacements take 30-60 minutes. More complex repairs like motherboard issues or water damage can take 2-4 hours. We\'ll give you an accurate time estimate during diagnosis and keep you updated throughout the process.'
+        },
+        warranty: {
+          question: 'Do you offer warranty on repairs?',
+          answer: 'Yes! We provide a 6-month warranty on all repairs using genuine parts, and 3 months on compatible parts. Our warranty covers defects in workmanship and part failures. If you experience any issues, just bring your device back and we\'ll fix it free of charge.'
+        },
+        dataSafety: {
+          question: 'Will my data be safe during the repair?',
+          answer: 'Absolutely. We take data privacy very seriously. In most cases, your data remains untouched during repairs. However, we always recommend backing up your device before any repair. Our technicians are trained to handle devices with the utmost care and confidentiality.'
+        },
+        pricing: {
+          question: 'How much do repairs typically cost?',
+          answer: 'Repair costs vary by device and type of repair. Screen repairs typically range from $89-$299, battery replacements from $59-$149, and water damage repairs from $99-$249. We provide free diagnostics and transparent pricing before any work begins.'
+        },
+        partsQuality: {
+          question: 'Do you use genuine parts?',
+          answer: 'We offer both genuine OEM parts and high-quality compatible parts. Genuine parts come with our premium warranty, while compatible parts offer excellent value with standard warranty. We\'ll explain the differences and let you choose what\'s best for your needs and budget.'
+        },
+        appointment: {
+          question: 'Do I need an appointment?',
+          answer: 'While appointments are preferred and guarantee immediate service, we also accept walk-ins based on availability. Booking online ensures you get seen right away and can often secure same-day service for most repairs.'
+        },
+        deviceTypes: {
+          question: 'What devices do you repair?',
+          answer: 'We repair all major smartphone brands including iPhone, Samsung, Google Pixel, OnePlus, Huawei, and more. We also service tablets, laptops, smartwatches, and gaming devices. If you\'re unsure about your device, just give us a call!'
+        },
+        payment: {
+          question: 'What payment methods do you accept?',
+          answer: 'We accept all major credit cards, debit cards, PayPal, Apple Pay, Google Pay, and cash. We also offer financing options for repairs over $200 through our partner Affirm, with 0% APR available for qualified customers.'
+        },
+        emergency: {
+          question: 'Do you offer emergency or same-day service?',
+          answer: 'Yes! We understand how important your device is. We offer priority emergency service for urgent repairs. Most screen and battery repairs can be completed the same day, often within 1-2 hours. Emergency service includes a small priority fee.'
+        },
+        tradeIn: {
+          question: 'Can I trade in my old device?',
+          answer: 'Absolutely! We offer competitive trade-in values for working and non-working devices. Trade-in credit can be applied toward repairs, accessories, or even cash back. We\'ll evaluate your device and provide an instant quote.'
+        }
+      }
+    },
+
+    // How It Works Section
+    howItWorks: {
+      ourProcess: 'Our Process',
+      title: 'How It Works',
+      description: 'Simple, transparent, and professional. Here\'s how we get your device back to perfect working condition.',
+      steps: {
+        book: {
+          title: 'Book Your Repair',
+          description: 'Schedule online or call us. Get instant pricing and available time slots for your device repair.',
+          detail1: 'Free diagnosis',
+          detail2: 'Transparent pricing',
+          detail3: 'Flexible scheduling'
+        },
+        repair: {
+          title: 'Expert Repair',
+          description: 'Our certified technicians use genuine parts and professional tools to restore your device.',
+          detail1: 'Certified technicians',
+          detail2: 'Genuine parts',
+          detail3: 'Professional tools'
+        },
+        test: {
+          title: 'Quality Testing',
+          description: 'We thoroughly test all functions to ensure your device works perfectly before returning it.',
+          detail1: 'Full functionality test',
+          detail2: 'Quality assurance',
+          detail3: 'Performance check'
+        },
+        ready: {
+          title: 'Device Ready',
+          description: 'Your device is ready! Enjoy our 6-month warranty and ongoing support for complete peace of mind.',
+          detail1: '6-month warranty',
+          detail2: 'Ongoing support',
+          detail3: 'Performance guarantee'
+        }
+      },
+      guarantees: {
+        fastTurnaround: {
+          title: 'Fast Turnaround',
+          description: 'Most repairs completed within 1-2 hours'
+        },
+        secureProcess: {
+          title: 'Secure Process',
+          description: 'Your data privacy and device security protected'
+        },
+        qualityGuarantee: {
+          title: 'Quality Guarantee',
+          description: '100% satisfaction or we\'ll make it right'
+        }
+      },
+      cta: {
+        title: 'Ready to Get Started?',
+        description: 'Join thousands of satisfied customers who trust us with their device repairs. Book your repair today and experience the difference.',
+        bookRepairNow: 'Book Repair Now',
+        callUs: 'Call: (555) 123-REPAIR',
+        freeDiagnosis: 'Free Diagnosis',
+        sixMonthWarranty: '6-Month Warranty',
+        sameDayService: 'Same-Day Service'
+      }
+    },
+
+    // Trust Indicators Section
+    trustIndicators: {
+      authorizedTrusted: 'Authorized & Trusted',
+      officialRepairPartners: 'Official Repair Partners',
+      authorizedDescription: 'We\'re officially authorized by major manufacturers to provide warranty-compliant repairs',
+      partners: {
+        appleAuthorized: 'Apple Authorized',
+        appleDescription: 'Authorized Service Provider',
+        samsungCertified: 'Samsung Certified',
+        samsungDescription: 'Official Repair Partner',
+        googleCertified: 'Google Certified',
+        googleDescription: 'Pixel Repair Specialist',
+        onePlusPartner: 'OnePlus Partner',
+        onePlusDescription: 'Certified Technicians'
+      },
+      achievements: {
+        industryRecognition: {
+          title: 'Industry Recognition',
+          items: {
+            bestService: 'Best Phone Repair Service 2024',
+            customerChoice: 'Customer Choice Award',
+            excellence: 'Excellence in Service Quality',
+            topRated: 'Top-Rated Business Certificate'
+          }
+        },
+        certifications: {
+          title: 'Certifications',
+          items: {
+            ipcCertified: 'IPC Certified Technicians',
+            iso9001: 'ISO 9001:2015 Quality Management',
+            mobileRepair: 'Mobile Device Repair Certification',
+            dataPrivacy: 'Data Privacy Compliance'
+          }
+        },
+        communityTrust: {
+          title: 'Community Trust',
+          items: {
+            bbbRating: 'BBB A+ Rating',
+            googleReviews: '5-Star Google Reviews',
+            yelpBusiness: 'Yelp Business of the Year',
+            communityPartner: 'Local Community Partner'
+          }
+        }
+      },
+      serviceGuarantees: {
+        title: 'Our Service Guarantees',
+        description: 'We stand behind our work with industry-leading guarantees and commitments',
+        warranty: {
+          title: '6-Month Warranty',
+          description: 'Full coverage on all repairs'
+        },
+        sameDayService: {
+          title: 'Same-Day Service',
+          description: 'Most repairs completed today'
+        },
+        priceMatch: {
+          title: 'Price Match',
+          description: 'We\'ll beat competitor prices'
+        },
+        satisfaction: {
+          title: '100% Satisfaction',
+          description: 'Not happy? We\'ll make it right'
+        }
+      },
+      locations: {
+        title: 'Visit Our Locations',
+        description: 'Conveniently located across major cities with expert technicians ready to help'
+      }
+    },
+
+    // Blog and Updates Section
+    blogAndUpdates: {
+      latestUpdates: 'Latest Updates',
+      expertTipsTitle: 'Expert Tips & Insights',
+      expertTipsDescription: 'Stay updated with the latest repair techniques, device care tips, and industry insights from our expert technicians',
+      quickStats: {
+        devicesRepaired: 'Devices Repaired',
+        happyCustomers: 'Happy Customers',
+        averageRating: 'Average Rating',
+        averageRepairTime: 'Average Repair Time'
+      },
+      newsletter: {
+        title: 'Stay in the Loop',
+        description: 'Get expert repair tips, exclusive offers, and the latest tech news delivered to your inbox weekly',
+        emailPlaceholder: 'Enter your email address',
+        subscribeButton: 'Subscribe',
+        subscribersNote: 'Join 5,000+ subscribers. Unsubscribe anytime.'
+      },
+      readMore: 'Read More',
+      viewAllArticles: 'View All Articles',
+      blogPost: {
+        readTime: 'min read',
+        featured: 'Featured'
+      }
     },
     
     // Search Modal
@@ -823,6 +1075,7 @@ const translations = {
         title: 'Populaire Diensten',
         subtitle: 'Meest gevraagde reparatiediensten',
         viewAll: 'Alles Bekijken',
+        popular: 'Populair',
       },
     },
     
@@ -980,6 +1233,10 @@ const translations = {
       contactInformation: 'Contactinformatie',
       bookingSummary: 'Boekingsoverzicht',
       device: 'Apparaat',
+      compatibility: 'Compatibel',
+      demand: 'Vraag',
+      bookings: 'boekingen',
+      booked: 'Geboekt',
     },
     
     // Homepage/ProductShowcase
@@ -996,6 +1253,253 @@ const translations = {
       exploreDescription: 'Van premium accessoires tot expert reparatiediensten, we hebben alles wat u nodig heeft om uw mobiele ervaring te verbeteren.',
       browseAccessories: 'Blader door Accessoires',
       bookRepair: 'Boek Reparatie',
+      trustedByThousands: 'Vertrouwd door Duizenden Wereldwijd',
+      trustedDescription: 'Echte cijfers die onze toewijding aan kwaliteitsservice en klanttevredenheid tonen',
+      stats: {
+        devicesRepaired: 'Apparaten Gerepareerd',
+        devicesRepairedDesc: 'Succesvol voltooide reparaties',
+        happyCustomers: 'Tevreden Klanten',
+        happyCustomersDesc: 'Tevreden klanten wereldwijd',
+        customerRating: 'Klantbeoordeling',
+        customerRatingDesc: 'Gebaseerd op 5.000+ beoordelingen',
+        averageRepairTime: 'Gemiddelde Reparatietijd',
+        averageRepairTimeDesc: 'Meeste reparaties zelfde dag voltooid',
+        warrantyCoverage: 'Garantiedekking',
+        warrantyCoverageDesc: 'Volledige beschermingsgarantie',
+        successRate: 'Successpercentage',
+        successRateDesc: 'Eerste keer goed percentage',
+        deviceModels: 'Apparaatmodellen',
+        deviceModelsDesc: 'Alle grote merken ondersteund',
+        supportAvailable: 'Ondersteuning Beschikbaar',
+        supportAvailableDesc: 'Altijd hier wanneer u ons nodig heeft',
+        liveUpdateText: 'Live statistieken elke 30 seconden bijgewerkt'
+      }
+    },
+    
+    // Testimonials
+    testimonials: {
+      trustedByThousands: 'Vertrouwd door Duizenden',
+      trustedDescription: 'Echte ervaringen van echte klanten die ons vertrouwen met hun belangrijkste apparaten',
+      verified: 'Geverifieerde Klant',
+      customerStories: 'Klantverhalen',
+      repairsCompleted: 'Reparaties Voltooid',
+      successRate: 'Successpercentage',
+      averageRating: 'Gemiddelde Beoordeling',
+      supportAvailable: 'Ondersteuning Beschikbaar',
+      trustedCertified: 'Vertrouwd & Gecertificeerd',
+      certifiedTechnicians: 'Gecertificeerde Technici',
+      qualityGuaranteed: 'Kwaliteit Gegarandeerd',
+      authorizedService: 'Geautoriseerde Service',
+    },
+
+    // FAQ Section
+    faq: {
+      title: 'Veelgestelde Vragen',
+      description: 'Krijg antwoorden op de meest gestelde vragen over onze reparatiediensten, garanties en proces',
+      stillHaveQuestions: 'Heeft u nog vragen?',
+      supportTeamDescription: 'Ons vriendelijke supportteam staat klaar om te helpen. Neem contact met ons op en we beantwoorden alle vragen die u heeft over onze diensten.',
+      callUs: 'Bel Ons: (555) 123-REPAIR',
+      liveChatSupport: 'Live Chat Ondersteuning',
+      available247: 'Beschikbaar 24/7',
+      supportEmail: 'support@phonerepair.com',
+      questions: {
+        repairTime: {
+          question: 'Hoe lang duurt een typische telefoonreparatie?',
+          answer: 'De meeste schermreparaties en batterijvervangingen duren 30-60 minuten. Meer complexe reparaties zoals moederbordproblemen of waterschade kunnen 2-4 uur duren. We geven u een nauwkeurige tijdschatting tijdens de diagnose en houden u gedurende het proces op de hoogte.'
+        },
+        warranty: {
+          question: 'Bieden jullie garantie op reparaties?',
+          answer: 'Ja! We bieden 6 maanden garantie op alle reparaties met originele onderdelen, en 3 maanden op compatibele onderdelen. Onze garantie dekt defecten in vakmanschap en onderdeelfouten. Als u problemen ondervindt, breng uw apparaat dan terug en wij repareren het gratis.'
+        },
+        dataSafety: {
+          question: 'Zijn mijn gegevens veilig tijdens de reparatie?',
+          answer: 'Absoluut. We nemen gegevensprivacy zeer serieus. In de meeste gevallen blijven uw gegevens onaangeroerd tijdens reparaties. We raden echter altijd aan om een back-up van uw apparaat te maken voor elke reparatie. Onze technici zijn opgeleid om apparaten met de grootste zorg en vertrouwelijkheid te behandelen.'
+        },
+        pricing: {
+          question: 'Hoeveel kosten reparaties doorgaans?',
+          answer: 'Reparatiekosten variëren per apparaat en type reparatie. Schermreparaties kosten doorgaans tussen €89-€299, batterijvervangingen tussen €59-€149, en waterschadereparaties tussen €99-€249. We bieden gratis diagnose en transparante prijzen voordat we beginnen met het werk.'
+        },
+        partsQuality: {
+          question: 'Gebruiken jullie originele onderdelen?',
+          answer: 'We bieden zowel originele OEM-onderdelen als hoogwaardige compatibele onderdelen aan. Originele onderdelen komen met onze premium garantie, terwijl compatibele onderdelen uitstekende waarde bieden met standaard garantie. We leggen de verschillen uit en laten u kiezen wat het beste past bij uw behoeften en budget.'
+        },
+        appointment: {
+          question: 'Heb ik een afspraak nodig?',
+          answer: 'Hoewel afspraken de voorkeur hebben en directe service garanderen, accepteren we ook walk-ins op basis van beschikbaarheid. Online boeken zorgt ervoor dat u meteen geholpen wordt en kan vaak nog dezelfde dag service veiligstellen voor de meeste reparaties.'
+        },
+        deviceTypes: {
+          question: 'Welke apparaten repareren jullie?',
+          answer: 'We repareren alle grote smartphonemerken waaronder iPhone, Samsung, Google Pixel, OnePlus, Huawei, en meer. We onderhouden ook tablets, laptops, smartwatches en gaming apparaten. Als u niet zeker weet over uw apparaat, bel ons gewoon!'
+        },
+        payment: {
+          question: 'Welke betaalmethoden accepteren jullie?',
+          answer: 'We accepteren alle grote creditcards, betaalkaarten, PayPal, Apple Pay, Google Pay, en contant geld. We bieden ook financieringsopties voor reparaties boven €200 via onze partner Affirm, met 0% rente beschikbaar voor gekwalificeerde klanten.'
+        },
+        emergency: {
+          question: 'Bieden jullie nood- of zelfde dag service?',
+          answer: 'Ja! We begrijpen hoe belangrijk uw apparaat is. We bieden prioriteit noodservice voor urgente reparaties. De meeste scherm- en batterijreparaties kunnen dezelfde dag worden voltooid, vaak binnen 1-2 uur. Noodservice omvat een kleine prioriteitsvergoeding.'
+        },
+        tradeIn: {
+          question: 'Kan ik mijn oude apparaat inruilen?',
+          answer: 'Absoluut! We bieden concurrerende inruilwaarden voor werkende en niet-werkende apparaten. Inruilkrediet kan worden toegepast op reparaties, accessoires, of zelfs contante terugbetaling. We evalueren uw apparaat en bieden een directe offerte.'
+        }
+      }
+    },
+
+    // How It Works Section
+    howItWorks: {
+      ourProcess: 'Ons Proces',
+      title: 'Hoe Het Werkt',
+      description: 'Eenvoudig, transparant en professioneel. Zo krijgen we uw apparaat weer in perfecte staat.',
+      steps: {
+        book: {
+          title: 'Boek Uw Reparatie',
+          description: 'Plan online of bel ons. Krijg directe prijzen en beschikbare tijdslots voor uw apparaatreparatie.',
+          detail1: 'Gratis diagnose',
+          detail2: 'Transparante prijzen',
+          detail3: 'Flexibele planning'
+        },
+        repair: {
+          title: 'Expert Reparatie',
+          description: 'Onze gecertificeerde technici gebruiken originele onderdelen en professionele gereedschappen om uw apparaat te herstellen.',
+          detail1: 'Gecertificeerde technici',
+          detail2: 'Originele onderdelen',
+          detail3: 'Professionele gereedschappen'
+        },
+        test: {
+          title: 'Kwaliteitstest',
+          description: 'We testen alle functies grondig om ervoor te zorgen dat uw apparaat perfect werkt voordat we het terugbrengen.',
+          detail1: 'Volledige functionaliteitstest',
+          detail2: 'Kwaliteitsborging',
+          detail3: 'Prestatie controle'
+        },
+        ready: {
+          title: 'Apparaat Klaar',
+          description: 'Uw apparaat is klaar! Geniet van onze 6 maanden garantie en doorlopende ondersteuning voor volledige gemoedsrust.',
+          detail1: '6 maanden garantie',
+          detail2: 'Doorlopende ondersteuning',
+          detail3: 'Prestatie garantie'
+        }
+      },
+      guarantees: {
+        fastTurnaround: {
+          title: 'Snelle Doorlooptijd',
+          description: 'Meeste reparaties voltooid binnen 1-2 uur'
+        },
+        secureProcess: {
+          title: 'Veilig Proces',
+          description: 'Uw gegevensprivacy en apparaatveiligheid beschermd'
+        },
+        qualityGuarantee: {
+          title: 'Kwaliteitsgarantie',
+          description: '100% tevredenheid of we maken het goed'
+        }
+      },
+      cta: {
+        title: 'Klaar om te Beginnen?',
+        description: 'Sluit u aan bij duizenden tevreden klanten die ons vertrouwen met hun apparaatreparaties. Boek vandaag uw reparatie en ervaar het verschil.',
+        bookRepairNow: 'Boek Nu Reparatie',
+        callUs: 'Bel: (555) 123-REPAIR',
+        freeDiagnosis: 'Gratis Diagnose',
+        sixMonthWarranty: '6 Maanden Garantie',
+        sameDayService: 'Zelfde Dag Service'
+      }
+    },
+
+    // Trust Indicators Section
+    trustIndicators: {
+      authorizedTrusted: 'Geautoriseerd & Vertrouwd',
+      officialRepairPartners: 'Officiële Reparatiepartners',
+      authorizedDescription: 'We zijn officieel geautoriseerd door grote fabrikanten om garantieconforme reparaties te bieden',
+      partners: {
+        appleAuthorized: 'Apple Geautoriseerd',
+        appleDescription: 'Geautoriseerde Serviceprovider',
+        samsungCertified: 'Samsung Gecertificeerd',
+        samsungDescription: 'Officiële Reparatiepartner',
+        googleCertified: 'Google Gecertificeerd',
+        googleDescription: 'Pixel Reparatie Specialist',
+        onePlusPartner: 'OnePlus Partner',
+        onePlusDescription: 'Gecertificeerde Technici'
+      },
+      achievements: {
+        industryRecognition: {
+          title: 'Branche Erkenning',
+          items: {
+            bestService: 'Beste Telefoon Reparatieservice 2024',
+            customerChoice: 'Klantenkeuze Award',
+            excellence: 'Excellentie in Servicekwaliteit',
+            topRated: 'Top-beoordeeld Bedrijfscertificaat'
+          }
+        },
+        certifications: {
+          title: 'Certificeringen',
+          items: {
+            ipcCertified: 'IPC Gecertificeerde Technici',
+            iso9001: 'ISO 9001:2015 Kwaliteitsmanagement',
+            mobileRepair: 'Mobiele Apparaat Reparatie Certificering',
+            dataPrivacy: 'Gegevensprivacy Naleving'
+          }
+        },
+        communityTrust: {
+          title: 'Gemeenschapsvertrouwen',
+          items: {
+            bbbRating: 'BBB A+ Beoordeling',
+            googleReviews: '5-Sterren Google Reviews',
+            yelpBusiness: 'Yelp Bedrijf van het Jaar',
+            communityPartner: 'Lokale Gemeenschapspartner'
+          }
+        }
+      },
+      serviceGuarantees: {
+        title: 'Onze Service Garanties',
+        description: 'We staan achter ons werk met toonaangevende garanties en toezeggingen',
+        warranty: {
+          title: '6 Maanden Garantie',
+          description: 'Volledige dekking op alle reparaties'
+        },
+        sameDayService: {
+          title: 'Zelfde Dag Service',
+          description: 'Meeste reparaties vandaag nog voltooid'
+        },
+        priceMatch: {
+          title: 'Prijsvergelijking',
+          description: 'We kloppen concurrentprijzen'
+        },
+        satisfaction: {
+          title: '100% Tevredenheid',
+          description: 'Niet tevreden? We maken het goed'
+        }
+      },
+      locations: {
+        title: 'Bezoek Onze Locaties',
+        description: 'Gunstig gelegen in grote steden met expert technici klaar om te helpen'
+      }
+    },
+
+    // Blog and Updates Section
+    blogAndUpdates: {
+      latestUpdates: 'Laatste Updates',
+      expertTipsTitle: 'Expert Tips & Inzichten',
+      expertTipsDescription: 'Blijf op de hoogte van de nieuwste reparatietechnieken, apparaatverzorgingstips en branche-inzichten van onze expert technici',
+      quickStats: {
+        devicesRepaired: 'Apparaten Gerepareerd',
+        happyCustomers: 'Tevreden Klanten',
+        averageRating: 'Gemiddelde Beoordeling',
+        averageRepairTime: 'Gemiddelde Reparatietijd'
+      },
+      newsletter: {
+        title: 'Blijf op de Hoogte',
+        description: 'Ontvang wekelijks expert reparatietips, exclusieve aanbiedingen en het laatste tech nieuws in uw inbox',
+        emailPlaceholder: 'Voer uw e-mailadres in',
+        subscribeButton: 'Inschrijven',
+        subscribersNote: 'Sluit u aan bij 5.000+ abonnees. Altijd uitschrijven mogelijk.'
+      },
+      readMore: 'Lees Meer',
+      viewAllArticles: 'Bekijk Alle Artikelen',
+      blogPost: {
+        readTime: 'min lezen',
+        featured: 'Uitgelicht'
+      }
     },
     
     // Search Modal

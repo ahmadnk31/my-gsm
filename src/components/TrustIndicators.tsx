@@ -4,91 +4,91 @@ import { Badge } from '@/components/ui/badge';
 import { Shield, Award, Zap, Users, Clock, MapPin, Phone, Mail } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const companyLogos = [
-  {
-    name: "Apple Authorized",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-    description: "Authorized Service Provider"
-  },
-  {
-    name: "Samsung Certified",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
-    description: "Official Repair Partner"
-  },
-  {
-    name: "Google Certified",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-    description: "Pixel Repair Specialist"
-  },
-  {
-    name: "OnePlus Partner",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/02/OnePlus_logo.svg",
-    description: "Certified Technicians"
-  }
-];
-
-const achievements = [
-  {
-    icon: Award,
-    title: "Industry Recognition",
-    items: [
-      "Best Phone Repair Service 2024",
-      "Customer Choice Award",
-      "Excellence in Service Quality",
-      "Top-Rated Business Certificate"
-    ]
-  },
-  {
-    icon: Shield,
-    title: "Certifications",
-    items: [
-      "IPC Certified Technicians",
-      "ISO 9001:2015 Quality Management",
-      "Mobile Device Repair Certification",
-      "Data Privacy Compliance"
-    ]
-  },
-  {
-    icon: Users,
-    title: "Community Trust",
-    items: [
-      "BBB A+ Rating",
-      "5-Star Google Reviews",
-      "Yelp Business of the Year",
-      "Local Community Partner"
-    ]
-  }
-];
-
-const locations = [
-  {
-    city: "New York",
-    address: "123 Tech Street, Manhattan, NY 10001",
-    phone: "(555) 123-0001",
-    hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
-  },
-  {
-    city: "Los Angeles",
-    address: "456 Repair Ave, Hollywood, CA 90028",
-    phone: "(555) 123-0002",
-    hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
-  },
-  {
-    city: "Chicago",
-    address: "789 Mobile Blvd, Chicago, IL 60601",
-    phone: "(555) 123-0003",
-    hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
-  },
-  {
-    city: "Miami",
-    address: "321 Phone Plaza, Miami, FL 33101",
-    phone: "(555) 123-0004",
-    hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
-  }
-];
-
 const TrustIndicators: React.FC = () => {
   const { t } = useLanguage();
+
+  const companyLogos = [
+    {
+      name: t('trustIndicators.partners.appleAuthorized'),
+      logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
+      description: t('trustIndicators.partners.appleDescription')
+    },
+    {
+      name: t('trustIndicators.partners.samsungCertified'),
+      logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
+      description: t('trustIndicators.partners.samsungDescription')
+    },
+    {
+      name: t('trustIndicators.partners.googleCertified'),
+      logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+      description: t('trustIndicators.partners.googleDescription')
+    },
+    {
+      name: t('trustIndicators.partners.onePlusPartner'),
+      logo: "https://upload.wikimedia.org/wikipedia/commons/0/02/OnePlus_logo.svg",
+      description: t('trustIndicators.partners.onePlusDescription')
+    }
+  ];
+
+  const achievements = [
+    {
+      icon: Award,
+      title: t('trustIndicators.achievements.industryRecognition.title'),
+      items: [
+        t('trustIndicators.achievements.industryRecognition.items.bestService'),
+        t('trustIndicators.achievements.industryRecognition.items.customerChoice'),
+        t('trustIndicators.achievements.industryRecognition.items.excellence'),
+        t('trustIndicators.achievements.industryRecognition.items.topRated')
+      ]
+    },
+    {
+      icon: Shield,
+      title: t('trustIndicators.achievements.certifications.title'),
+      items: [
+        t('trustIndicators.achievements.certifications.items.ipcCertified'),
+        t('trustIndicators.achievements.certifications.items.iso9001'),
+        t('trustIndicators.achievements.certifications.items.mobileRepair'),
+        t('trustIndicators.achievements.certifications.items.dataPrivacy')
+      ]
+    },
+    {
+      icon: Users,
+      title: t('trustIndicators.achievements.communityTrust.title'),
+      items: [
+        t('trustIndicators.achievements.communityTrust.items.bbbRating'),
+        t('trustIndicators.achievements.communityTrust.items.googleReviews'),
+        t('trustIndicators.achievements.communityTrust.items.yelpBusiness'),
+        t('trustIndicators.achievements.communityTrust.items.communityPartner')
+      ]
+    }
+  ];
+
+  const locations = [
+    {
+      city: "New York",
+      address: "123 Tech Street, Manhattan, NY 10001",
+      phone: "(555) 123-0001",
+      hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
+    },
+    {
+      city: "Los Angeles",
+      address: "456 Repair Ave, Hollywood, CA 90028",
+      phone: "(555) 123-0002",
+      hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
+    },
+    {
+      city: "Chicago",
+      address: "789 Mobile Blvd, Chicago, IL 60601",
+      phone: "(555) 123-0003",
+      hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
+    },
+    {
+      city: "Miami",
+      address: "321 Phone Plaza, Miami, FL 33101",
+      phone: "(555) 123-0004",
+      hours: "Mon-Sat 9AM-8PM, Sun 11AM-6PM"
+    }
+  ];
 
   return (
     <section className="py-24 bg-muted/30 relative overflow-hidden">
@@ -103,15 +103,15 @@ const TrustIndicators: React.FC = () => {
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-success to-success/80 text-success-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
             <Shield className="h-4 w-4" />
-            <span>Authorized & Trusted</span>
+            <span>{t('trustIndicators.authorizedTrusted')}</span>
           </div>
           
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-6">
-            Official Repair Partners
+            {t('trustIndicators.officialRepairPartners')}
           </h2>
           
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12">
-            We're officially authorized by major manufacturers to provide warranty-compliant repairs
+            {t('trustIndicators.authorizedDescription')}
           </p>
 
           {/* Company Logos */}
@@ -165,9 +165,9 @@ const TrustIndicators: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-success/10" />
           <CardContent className="p-12 relative">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold mb-4">Our Service Guarantees</h3>
+              <h3 className="text-3xl font-bold mb-4">{t('trustIndicators.serviceGuarantees.title')}</h3>
               <p className="text-lg opacity-90 max-w-2xl mx-auto">
-                We stand behind our work with industry-leading guarantees and commitments
+                {t('trustIndicators.serviceGuarantees.description')}
               </p>
             </div>
 
@@ -176,32 +176,32 @@ const TrustIndicators: React.FC = () => {
                 <div className="w-16 h-16 bg-background/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Shield className="h-8 w-8 text-background" />
                 </div>
-                <h4 className="font-bold mb-2">6-Month Warranty</h4>
-                <p className="text-sm opacity-80">Full coverage on all repairs</p>
+                <h4 className="font-bold mb-2">{t('trustIndicators.serviceGuarantees.warranty.title')}</h4>
+                <p className="text-sm opacity-80">{t('trustIndicators.serviceGuarantees.warranty.description')}</p>
               </div>
 
               <div className="text-center">
                 <div className="w-16 h-16 bg-background/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Zap className="h-8 w-8 text-background" />
                 </div>
-                <h4 className="font-bold mb-2">Same-Day Service</h4>
-                <p className="text-sm opacity-80">Most repairs completed today</p>
+                <h4 className="font-bold mb-2">{t('trustIndicators.serviceGuarantees.sameDayService.title')}</h4>
+                <p className="text-sm opacity-80">{t('trustIndicators.serviceGuarantees.sameDayService.description')}</p>
               </div>
 
               <div className="text-center">
                 <div className="w-16 h-16 bg-background/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-8 w-8 text-background" />
                 </div>
-                <h4 className="font-bold mb-2">Price Match</h4>
-                <p className="text-sm opacity-80">We'll beat competitor prices</p>
+                <h4 className="font-bold mb-2">{t('trustIndicators.serviceGuarantees.priceMatch.title')}</h4>
+                <p className="text-sm opacity-80">{t('trustIndicators.serviceGuarantees.priceMatch.description')}</p>
               </div>
 
               <div className="text-center">
                 <div className="w-16 h-16 bg-background/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-background" />
                 </div>
-                <h4 className="font-bold mb-2">100% Satisfaction</h4>
-                <p className="text-sm opacity-80">Not happy? We'll make it right</p>
+                <h4 className="font-bold mb-2">{t('trustIndicators.serviceGuarantees.satisfaction.title')}</h4>
+                <p className="text-sm opacity-80">{t('trustIndicators.serviceGuarantees.satisfaction.description')}</p>
               </div>
             </div>
           </CardContent>
@@ -209,9 +209,9 @@ const TrustIndicators: React.FC = () => {
 
         {/* Locations */}
         <div className="text-center mb-12">
-          <h3 className="text-3xl font-bold text-foreground mb-6">Visit Our Locations</h3>
+          <h3 className="text-3xl font-bold text-foreground mb-6">{t('trustIndicators.locations.title')}</h3>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-12">
-            Conveniently located across major cities with expert technicians ready to help
+            {t('trustIndicators.locations.description')}
           </p>
         </div>
 

@@ -31,70 +31,76 @@ const StatsCounter: React.FC = () => {
     {
       icon: Zap,
       value: stats?.totalRepairs ? `${Math.floor(stats.totalRepairs * 1.2)}+` : '15,247+',
-      label: 'Devices Repaired',
-      description: 'Successfully completed repairs',
+      label: t('homepage.stats.devicesRepaired'),
+      description: t('homepage.stats.devicesRepairedDesc'),
       color: 'from-primary to-primary-glow',
-      bgColor: 'from-primary/10 to-primary-glow/5'
+      bgColor: 'from-primary/10 to-primary-glow/5',
+      iconColor: 'text-white'
     },
     {
       icon: Users,
       value: stats?.totalRepairs ? `${Math.floor(stats.totalRepairs * 0.85)}+` : '12,891+',
-      label: 'Happy Customers',
-      description: 'Satisfied customers worldwide',
-      color: 'from-success to-success/80',
-      bgColor: 'from-success/10 to-success/5'
+      label: t('homepage.stats.happyCustomers'),
+      description: t('homepage.stats.happyCustomersDesc'),
+      color: 'from-indigo-500 to-indigo-600',
+      bgColor: 'from-indigo-500/10 to-indigo-600/5',
+      iconColor: 'text-white'
     },
     {
       icon: Star,
       value: '4.9/5',
-      label: 'Customer Rating',
-      description: 'Based on 5,000+ reviews',
-      color: 'from-warning to-warning/80',
-      bgColor: 'from-warning/10 to-warning/5'
+      label: t('homepage.stats.customerRating'),
+      description: t('homepage.stats.customerRatingDesc'),
+      color: 'from-orange-500 to-orange-600',
+      bgColor: 'from-orange-500/10 to-orange-600/5',
+      iconColor: 'text-white'
     },
     {
       icon: Clock,
       value: '< 1 Hour',
-      label: 'Average Repair Time',
-      description: 'Most repairs completed same day',
-      color: 'from-info to-info/80',
-      bgColor: 'from-info/10 to-info/5'
+      label: t('homepage.stats.averageRepairTime'),
+      description: t('homepage.stats.averageRepairTimeDesc'),
+      color: 'from-blue-500 to-blue-600',
+      bgColor: 'from-blue-500/10 to-blue-600/5',
+      iconColor: 'text-white'
     },
     {
       icon: Shield,
       value: '6 Months',
-      label: 'Warranty Coverage',
-      description: 'Full protection guarantee',
+      label: t('homepage.stats.warrantyCoverage'),
+      description: t('homepage.stats.warrantyCoverageDesc'),
       color: 'from-purple-500 to-purple-600',
-      bgColor: 'from-purple-500/10 to-purple-600/5'
+      bgColor: 'from-purple-500/10 to-purple-600/5',
+      iconColor: 'text-white'
     },
     {
       icon: Award,
       value: '99.2%',
-      label: 'Success Rate',
-      description: 'First-time fix rate',
+      label: t('homepage.stats.successRate'),
+      description: t('homepage.stats.successRateDesc'),
       color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'from-emerald-500/10 to-emerald-600/5'
+      bgColor: 'from-emerald-500/10 to-emerald-600/5',
+      iconColor: 'text-white'
     },
     {
       icon: Phone,
       value: stats?.deviceTypes ? `${stats.deviceTypes * 15}+` : '180+',
-      label: 'Device Models',
-      description: 'All major brands supported',
+      label: t('homepage.stats.deviceModels'),
+      description: t('homepage.stats.deviceModelsDesc'),
       color: 'from-cyan-500 to-cyan-600',
-      bgColor: 'from-cyan-500/10 to-cyan-600/5'
+      bgColor: 'from-cyan-500/10 to-cyan-600/5',
+      iconColor: 'text-white'
     },
     {
       icon: TrendingUp,
       value: '24/7',
-      label: 'Support Available',
-      description: 'Always here when you need us',
+      label: t('homepage.stats.supportAvailable'),
+      description: t('homepage.stats.supportAvailableDesc'),
       color: 'from-rose-500 to-rose-600',
-      bgColor: 'from-rose-500/10 to-rose-600/5'
+      bgColor: 'from-rose-500/10 to-rose-600/5',
+      iconColor: 'text-white'
     }
-  ];
-
-  return (
+  ];  return (
     <section className="py-16 bg-muted/20 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
@@ -105,10 +111,10 @@ const StatsCounter: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Trusted by Thousands Worldwide
+            {t('homepage.trustedByThousands')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Real numbers that show our commitment to quality service and customer satisfaction
+            {t('homepage.trustedDescription')}
           </p>
         </div>
 
@@ -126,7 +132,7 @@ const StatsCounter: React.FC = () => {
               <CardContent className="p-6 text-center relative">
                 {/* Icon */}
                 <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                  <stat.icon className="h-7 w-7 text-white" />
+                  <stat.icon className={`h-7 w-7 ${stat.iconColor}`} />
                 </div>
                 
                 {/* Value */}
@@ -155,7 +161,7 @@ const StatsCounter: React.FC = () => {
         <div className="text-center mt-8">
           <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
-            <span>Live stats updated every 30 seconds</span>
+            <span>{t('homepage.stats.liveUpdateText')}</span>
           </div>
         </div>
       </div>

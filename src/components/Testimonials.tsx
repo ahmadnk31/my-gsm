@@ -11,8 +11,8 @@ const testimonials = [
     company: "TechStart LLC",
     image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    text: "Absolutely incredible service! They fixed my iPhone 13 Pro screen in just 30 minutes. The quality is outstanding and the price was very reasonable. Highly recommend!",
-    location: "New York, NY",
+    text: "Extreem tevreden met de snelle en professionele service. Mijn iPhone 13 Pro scherm was binnen 30 minuten gerepareerd. De kwaliteit is uitstekend en de prijs zeer redelijk. Zeer aan te bevelen!",
+    location: "Leuven, België",
     verified: true,
     service: "Screen Repair"
   },
@@ -23,8 +23,8 @@ const testimonials = [
     company: "Google",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    text: "Professional, fast, and reliable. My Samsung Galaxy was back to perfect condition. The technician explained everything clearly and the warranty gave me peace of mind.",
-    location: "San Francisco, CA",
+    text: "Professioneel, snel en betrouwbaar. Mijn Samsung Galaxy was weer in perfecte staat. De technicus legde alles duidelijk uit en de garantie gaf me gemoedsrust.",
+    location: "Heverleen, België",
     verified: true,
     service: "Battery Replacement"
   },
@@ -32,11 +32,11 @@ const testimonials = [
     id: 3,
     name: "Emma Rodriguez",
     role: "Marketing Manager",
-    company: "Adobe",
+    company: "Colruyt",
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    text: "Best phone repair experience I've ever had. Quick turnaround, excellent customer service, and my phone looks brand new. Will definitely come back!",
-    location: "Austin, TX",
+    text: "Beste telefoonreparatie-ervaring die ik ooit heb gehad. Snelle doorlooptijd, uitstekende klantenservice en mijn telefoon ziet er weer als nieuw uit. Kom zeker terug!",
+    location: "Brussel, België",
     verified: true,
     service: "Water Damage Repair"
   },
@@ -44,11 +44,11 @@ const testimonials = [
     id: 4,
     name: "David Kim",
     role: "Entrepreneur",
-    company: "StartupXYZ",
+    company: "Telenet",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    text: "They saved my business! My phone had critical data and they recovered everything while fixing the hardware. True professionals with amazing skills.",
-    location: "Seattle, WA",
+    text: "Hun hebben mijn bedrijf gered! Mijn telefoon bevatte cruciale gegevens en ze hebben alles hersteld terwijl ze de hardware repareerden. Echte professionals met geweldige vaardigheden.",
+    location: "Kessel-Lo, België",
     verified: true,
     service: "Data Recovery"
   },
@@ -56,11 +56,11 @@ const testimonials = [
     id: 5,
     name: "Lisa Thompson",
     role: "Doctor",
-    company: "City Hospital",
+    company: "UZ Leuven",
     image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    text: "Exceptional service with genuine care for customers. They explained the repair process, provided updates, and delivered exactly what they promised.",
-    location: "Miami, FL",
+    text: "Uitstekende service met oprechte zorg voor klanten. Ze legden het reparatieproces uit, gaven updates en leverden precies wat ze beloofden.",
+    location: "Leuven, België",
     verified: true,
     service: "Screen & Battery"
   },
@@ -71,8 +71,8 @@ const testimonials = [
     company: "Premium Properties",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     rating: 5,
-    text: "Outstanding value and quality. My phone looks and works like new. The team is knowledgeable, friendly, and truly cares about customer satisfaction.",
-    location: "Chicago, IL",
+    text: "Uitstekende waarde en kwaliteit. Mijn telefoon ziet er weer als nieuw uit en werkt perfect. Het team is deskundig, vriendelijk en geeft echt om klanttevredenheid.",
+    location: "Antwerpen, België",
     verified: true,
     service: "Complete Restoration"
   }
@@ -94,15 +94,15 @@ const Testimonials: React.FC = () => {
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-glow text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
             <Quote className="h-4 w-4" />
-            <span>Customer Stories</span>
+            <span>{t('testimonials.customerStories')}</span>
           </div>
           
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Trusted by Thousands
+            {t('testimonials.trustedByThousands')}
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Real experiences from real customers who trust us with their most important devices
+            {t('testimonials.trustedDescription')}
           </p>
         </div>
 
@@ -180,37 +180,37 @@ const Testimonials: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           <div className="text-center">
             <div className="text-3xl font-bold text-primary mb-2">15K+</div>
-            <div className="text-muted-foreground">Repairs Completed</div>
+            <div className="text-muted-foreground">{t('testimonials.repairsCompleted')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-success mb-2">99%</div>
-            <div className="text-muted-foreground">Success Rate</div>
+            <div className="text-muted-foreground">{t('testimonials.successRate')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-warning mb-2">4.9★</div>
-            <div className="text-muted-foreground">Average Rating</div>
+            <div className="text-muted-foreground">{t('testimonials.averageRating')}</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-info mb-2">24/7</div>
-            <div className="text-muted-foreground">Support Available</div>
+            <div className="text-muted-foreground">{t('testimonials.supportAvailable')}</div>
           </div>
         </div>
 
         {/* Certifications */}
         <div className="text-center">
-          <p className="text-muted-foreground mb-6">Trusted & Certified</p>
+          <p className="text-muted-foreground mb-6">{t('testimonials.trustedCertified')}</p>
           <div className="flex items-center justify-center gap-8 flex-wrap">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Shield className="h-5 w-5" />
-              <span className="text-sm">Certified Technicians</span>
+              <span className="text-sm">{t('testimonials.certifiedTechnicians')}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Award className="h-5 w-5" />
-              <span className="text-sm">Quality Guaranteed</span>
+              <span className="text-sm">{t('testimonials.qualityGuaranteed')}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Verified className="h-5 w-5" />
-              <span className="text-sm">Authorized Service</span>
+              <span className="text-sm">{t('testimonials.authorizedService')}</span>
             </div>
           </div>
         </div>

@@ -46,35 +46,35 @@ const blogPosts = [
   }
 ];
 
-const quickStats = [
-  {
-    icon: Smartphone,
-    value: "15K+",
-    label: "Devices Repaired",
-    color: "text-primary"
-  },
-  {
-    icon: Users,
-    value: "12K+",
-    label: "Happy Customers",
-    color: "text-success"
-  },
-  {
-    icon: Star,
-    value: "4.9",
-    label: "Average Rating",
-    color: "text-warning"
-  },
-  {
-    icon: Clock,
-    value: "<1hr",
-    label: "Average Repair Time",
-    color: "text-info"
-  }
-];
-
 const BlogAndUpdates: React.FC = () => {
   const { t } = useLanguage();
+
+  const quickStats = [
+    {
+      icon: Smartphone,
+      value: "15K+",
+      label: t('blogAndUpdates.quickStats.devicesRepaired'),
+      color: "text-primary"
+    },
+    {
+      icon: Users,
+      value: "12K+",
+      label: t('blogAndUpdates.quickStats.happyCustomers'),
+      color: "text-success"
+    },
+    {
+      icon: Star,
+      value: "4.9",
+      label: t('blogAndUpdates.quickStats.averageRating'),
+      color: "text-warning"
+    },
+    {
+      icon: Clock,
+      value: "<1hr",
+      label: t('blogAndUpdates.quickStats.averageRepairTime'),
+      color: "text-info"
+    }
+  ];
 
   return (
     <section className="py-24 bg-background relative overflow-hidden">
@@ -104,15 +104,15 @@ const BlogAndUpdates: React.FC = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-warning to-warning/80 text-warning-foreground px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-elegant">
             <TrendingUp className="h-4 w-4" />
-            <span>Latest Updates</span>
+            <span>{t('blogAndUpdates.latestUpdates')}</span>
           </div>
           
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Expert Tips & Insights
+            {t('blogAndUpdates.expertTipsTitle')}
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Stay updated with the latest repair techniques, device care tips, and industry insights from our expert technicians
+            {t('blogAndUpdates.expertTipsDescription')}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ const BlogAndUpdates: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute top-4 left-4">
-                  <Badge className="bg-warning text-warning-foreground">Featured</Badge>
+                  <Badge className="bg-warning text-warning-foreground">{t('blogAndUpdates.blogPost.featured')}</Badge>
                 </div>
                 <div className="absolute bottom-6 left-6 right-6">
                   <Badge variant="outline" className="mb-3 bg-background/20 backdrop-blur-sm text-background border-background/20">
@@ -189,28 +189,28 @@ const BlogAndUpdates: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/5" />
           <CardContent className="p-12 text-center relative">
             <div className="max-w-2xl mx-auto">
-              <h3 className="text-3xl font-bold mb-4">Stay in the Loop</h3>
+              <h3 className="text-3xl font-bold mb-4">{t('blogAndUpdates.newsletter.title')}</h3>
               <p className="text-lg mb-8 opacity-90">
-                Get expert repair tips, exclusive offers, and the latest tech news delivered to your inbox weekly
+                {t('blogAndUpdates.newsletter.description')}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <input 
                   type="email" 
-                  placeholder="Enter your email address"
+                  placeholder={t('blogAndUpdates.newsletter.emailPlaceholder')}
                   className="flex-1 px-4 py-3 rounded-lg text-foreground bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
                 <Button 
                   size="lg" 
                   className="bg-background text-foreground hover:bg-background/90 px-8 py-3 font-semibold whitespace-nowrap"
                 >
-                  Subscribe
+                  {t('blogAndUpdates.newsletter.subscribeButton')}
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
               
               <p className="text-sm opacity-80 mt-4">
-                Join 5,000+ subscribers. Unsubscribe anytime.
+                {t('blogAndUpdates.newsletter.subscribersNote')}
               </p>
             </div>
           </CardContent>
@@ -221,7 +221,7 @@ const BlogAndUpdates: React.FC = () => {
           <Button asChild size="lg" className="px-8 py-3 font-semibold">
             <Link to="/blog" className="flex items-center gap-2">
               <Wrench className="h-5 w-5" />
-              View All Articles
+              {t('blogAndUpdates.viewAllArticles')}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

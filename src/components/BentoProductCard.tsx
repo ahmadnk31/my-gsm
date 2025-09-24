@@ -36,11 +36,11 @@ const BentoProductCard: React.FC<BentoProductCardProps> = ({
   return (
     <Card className="group overflow-hidden bg-background border-border/50 hover:border-border transition-all duration-500 hover:shadow-xl hover:shadow-primary/5 h-full flex flex-col">
       <div className="relative overflow-hidden">
-        <div className={`${imageHeight} relative bg-gradient-to-br from-muted to-muted/50 overflow-hidden`}>
+        <div className={`${imageHeight} relative h-auto mx-auto overflow-hidden`}>
           <img
             src={image}
             alt={name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full object-contain aspect-square transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
           />
           
