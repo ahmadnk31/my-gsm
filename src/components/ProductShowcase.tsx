@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { generateSlug } from "@/lib/utils";
+import { formatPriceToEuro, generateSlug } from "@/lib/utils";
 import phoneCollectionImage from "@/assets/phone-collection.jpg";
 import accessoriesImage from "@/assets/accessories.jpg";
 
@@ -89,8 +89,8 @@ const ProductShowcase = () => {
       accessories.forEach((accessory) => {
         products.push({
           name: accessory.name,
-          price: `$${accessory.price}`,
-          originalPrice: accessory.original_price ? `$${accessory.original_price}` : undefined,
+          price: `${formatPriceToEuro(accessory.price)}`,
+          originalPrice: accessory.original_price ? `${formatPriceToEuro(accessory.original_price)}` : undefined,
           image: accessory.image_url || accessoriesImage,
           rating: accessory.rating || 4,
           reviews: accessory.review_count || Math.floor(Math.random() * 500) + 100,
@@ -108,7 +108,7 @@ const ProductShowcase = () => {
       brands.forEach((brand) => {
         products.push({
           name: `${brand.name} Collection`,
-          price: "From $699",
+          price: "From €699",
           image: brand.logo_url || phoneCollectionImage,
           rating: 5,
           reviews: Math.floor(Math.random() * 800) + 500,
@@ -123,7 +123,7 @@ const ProductShowcase = () => {
     if (bookingStats && bookingStats.length > 0) {
       products.push({
         name: "Expert Repair Services",
-        price: "From $49",
+        price: "From €49",
         image: accessoriesImage,
         rating: 5,
         reviews: bookingStats.length,
@@ -138,7 +138,7 @@ const ProductShowcase = () => {
       const fallbackProducts = [
         {
           name: "Smartphone Collection",
-          price: "From $699",
+          price: "From €699",
           image: phoneCollectionImage,
           rating: 5,
           reviews: 1200,
@@ -148,17 +148,17 @@ const ProductShowcase = () => {
         },
         {
           name: "Premium Accessories",
-          price: "From $29",
+          price: "From €29",
           image: accessoriesImage,
           rating: 5,
           reviews: 856,
           features: ["High Quality", "Fast Shipping", "Warranty"],
           link: '/accessories?featured=true', // Link to featured accessories
-          isRealProduct: false
+          isRealProduct: false  
         },
         {
           name: "Repair Services",
-          price: "From $49",
+          price: "From €49",
           image: accessoriesImage,
           rating: 5,
           reviews: 500,

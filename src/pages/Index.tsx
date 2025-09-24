@@ -1,5 +1,7 @@
 import Hero from "@/components/Hero";
-import ProductShowcase from "@/components/ProductShowcase";
+import DeviceCategoriesSection from "@/components/DeviceCategoriesSection";
+import DeviceBrandsSection from "@/components/DeviceBrandsSection";
+import DeviceModelsSection from "@/components/DeviceModelsSection";
 import Features from "@/components/Features";
 import StatsCounter from "@/components/StatsCounter";
 import FeaturedProductsAndParts from "@/components/FeaturedProductsAndParts";
@@ -46,7 +48,9 @@ const Index = () => {
       />
       <Hero />
       <StatsCounter />
-      <ProductShowcase />
+      <DeviceCategoriesSection />
+      <DeviceBrandsSection />
+      <DeviceModelsSection />
       <FeaturedProductsAndParts />
       <HowItWorks />
       <Features />

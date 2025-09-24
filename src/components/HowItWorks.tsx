@@ -194,8 +194,8 @@ const HowItWorks: React.FC = () => {
               <Button 
                 asChild
                 size="lg" 
-                variant="outline" 
-                className="border-background/20 text-background hover:bg-background/10 px-8 py-3 font-semibold"
+                variant="glass" 
+                
               >
                 <Link to="/contact" className="flex items-center gap-2">
                   <Phone className="h-5 w-5" />

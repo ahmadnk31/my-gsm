@@ -149,8 +149,8 @@ const FAQ: React.FC = () => {
               
               <Button 
                 size="lg" 
-                variant="outline" 
-                className="border-background/20 text-background hover:bg-background/10 px-8 py-3 font-semibold"
+                variant="glass" 
+              
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
                 {t('faq.liveChatSupport')}

@@ -28,8 +28,8 @@ const Features = () => {
       icon: Shield,
       title: t('home.features.warranty.title'),
       description: `${t('home.features.warranty.description')} ${stats?.totalBookings ? `${stats.totalBookings}+ repairs completed` : 'Trusted by thousands'}.`,
-      gradient: "from-success to-success/80",
-      bgGradient: "from-success/10 to-success/5",
+      gradient: "from-indigo-500 to-indigo-600",
+      bgGradient: "from-indigo-500/10 to-indigo-600/5",
       iconColor: "text-white"
     },
     {

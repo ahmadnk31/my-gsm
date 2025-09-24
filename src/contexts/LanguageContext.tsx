@@ -346,6 +346,46 @@ const translations = {
       bookRepair: 'Book Repair',
       trustedByThousands: 'Trusted by Thousands Worldwide',
       trustedDescription: 'Real numbers that show our commitment to quality service and customer satisfaction',
+      
+      // Device sections
+      deviceCategories: {
+        sectionLabel: 'Device Categories',
+        title: 'Choose Your Device Type',
+        subtitle: 'Professional repair services for all major device categories with expert technicians and genuine parts',
+        viewRepairs: 'View Repairs',
+        brands: 'Brands',
+        brand: 'Brand',
+        models: 'Models',
+        model: 'Model',
+        notFound: "Can't find your device? We support many more brands and models.",
+        viewAllServices: 'View All Repair Services'
+      },
+      
+      deviceBrands: {
+        sectionLabel: 'Popular Brands',
+        title: 'Trusted Device Brands',
+        subtitle: 'We service all major device brands with certified technicians and genuine replacement parts',
+        certified: 'Certified',
+        viewRepairs: 'View Repairs',
+        supportedBrands: 'We support over 50+ device brands and thousands of models',
+        viewAllBrands: 'View All Brands',
+        browseAccessories: 'Browse Accessories'
+      },
+      
+      deviceModels: {
+        sectionLabel: 'Device Models',
+        title: 'Popular Device Models',
+        subtitle: 'Expert repair services for the most popular device models with original parts and warranty',
+        services: 'Services',
+        service: 'Service',
+        years: 'years',
+        year: 'year',
+        viewRepairs: 'View Repairs',
+        notFoundModel: "Don't see your device model? We support thousands of models across all major brands",
+        findYourDevice: 'Find Your Device',
+        getCustomQuote: 'Get Custom Quote'
+      },
+      
       stats: {
         devicesRepaired: 'Devices Repaired',
         devicesRepairedDesc: 'Successfully completed repairs',
@@ -748,6 +788,39 @@ const translations = {
       tax: 'Tax',
       total: 'Total',
       itemsInCart: '{{count}} items in your cart',
+      // Authentication required
+      pleaseLogInToViewCart: 'Please log in to view your cart',
+      needToBeLoggedIn: 'You need to be logged in to access your shopping cart.',
+      logIn: 'Log In',
+      // Cart items section
+      cartItems: 'Cart Items',
+      each: 'each',
+      // Order summary
+      orderSummary: 'Order Summary',
+      items: 'items',
+      freeShipping: 'Free',
+      freeShippingOver50: 'Free shipping on orders over $50',
+      addMoreForFreeShipping: 'Add {{amount}} more for free shipping',
+      processing: 'Processing...',
+      secureCheckoutSSL: 'Secure checkout with SSL encryption',
+      // Additional info section
+      needHelp: 'Need Help?',
+      customerServiceHelp: 'Our customer service team is here to help with any questions about your order.',
+      freeReturns30Days: 'Free returns within 30 days',
+      oneYearWarranty: '1-year warranty on all products',
+      sameDayShippingAvailable: 'Same-day shipping available',
+      // Accessibility and interaction
+      removeFromCart: 'Remove from cart',
+      decreaseQuantity: 'Decrease quantity',
+      increaseQuantity: 'Increase quantity',
+      // Shopping actions
+      browseAccessories: 'Browse Accessories',
+      // Toast messages
+      pleaseLogInToCheckout: 'Please log in to checkout',
+      yourCartIsEmpty: 'Your cart is empty',
+      goToCart: 'Go to Cart & Checkout',
+      // Ratings
+      reviews: 'reviews',
     },
     
     // Wishlist
@@ -1255,6 +1328,46 @@ const translations = {
       bookRepair: 'Boek Reparatie',
       trustedByThousands: 'Vertrouwd door Duizenden Wereldwijd',
       trustedDescription: 'Echte cijfers die onze toewijding aan kwaliteitsservice en klanttevredenheid tonen',
+      
+      // Device sections
+      deviceCategories: {
+        sectionLabel: 'Apparaatcategorieën',
+        title: 'Kies Uw Apparaattype',
+        subtitle: 'Professionele reparatiediensten voor alle grote apparaatcategorieën met expert technici en originele onderdelen',
+        viewRepairs: 'Bekijk Reparaties',
+        brands: 'Merken',
+        brand: 'Merk',
+        models: 'Modellen',
+        model: 'Model',
+        notFound: 'Kunt uw apparaat niet vinden? We ondersteunen veel meer merken en modellen.',
+        viewAllServices: 'Bekijk Alle Reparatiediensten'
+      },
+      
+      deviceBrands: {
+        sectionLabel: 'Populaire Merken',
+        title: 'Vertrouwde Apparaatmerken',
+        subtitle: 'We onderhouden alle grote apparaatmerken met gecertificeerde technici en originele vervangingsonderdelen',
+        certified: 'Gecertificeerd',
+        viewRepairs: 'Bekijk Reparaties',
+        supportedBrands: 'We ondersteunen meer dan 50+ apparaatmerken en duizenden modellen',
+        viewAllBrands: 'Bekijk Alle Merken',
+        browseAccessories: 'Blader door Accessoires'
+      },
+      
+      deviceModels: {
+        sectionLabel: 'Apparaatmodellen',
+        title: 'Populaire Apparaatmodellen',
+        subtitle: 'Expert reparatiediensten voor de meest populaire apparaatmodellen met originele onderdelen en garantie',
+        services: 'Diensten',
+        service: 'Dienst',
+        years: 'jaar',
+        year: 'jaar',
+        viewRepairs: 'Bekijk Reparaties',
+        notFoundModel: 'Ziet u uw apparaatmodel niet? We ondersteunen duizenden modellen van alle grote merken',
+        findYourDevice: 'Vind Uw Apparaat',
+        getCustomQuote: 'Krijg Aangepaste Offerte'
+      },
+      
       stats: {
         devicesRepaired: 'Apparaten Gerepareerd',
         devicesRepairedDesc: 'Succesvol voltooide reparaties',
@@ -1663,6 +1776,39 @@ const translations = {
       tax: 'Belasting',
       total: 'Totaal',
       itemsInCart: '{{count}} items in uw winkelwagen',
+      // Authentication required
+      pleaseLogInToViewCart: 'Log in om uw winkelwagen te bekijken',
+      needToBeLoggedIn: 'U moet ingelogd zijn om toegang te krijgen tot uw winkelwagen.',
+      logIn: 'Inloggen',
+      // Cart items section
+      cartItems: 'Winkelwagen Items',
+      each: 'per stuk',
+      // Order summary
+      orderSummary: 'Bestelsamenvatting',
+      items: 'items',
+      freeShipping: 'Gratis',
+      freeShippingOver50: 'Gratis verzending bij bestellingen boven €50',
+      addMoreForFreeShipping: 'Voeg nog {{amount}} toe voor gratis verzending',
+      processing: 'Verwerken...',
+      secureCheckoutSSL: 'Veilige afrekening met SSL-encryptie',
+      // Additional info section
+      needHelp: 'Hulp Nodig?',
+      customerServiceHelp: 'Ons klantenserviceteam staat klaar om te helpen met vragen over uw bestelling.',
+      freeReturns30Days: 'Gratis retouren binnen 30 dagen',
+      oneYearWarranty: '1-jaar garantie op alle producten',
+      sameDayShippingAvailable: 'Zelfde dag verzending beschikbaar',
+      // Accessibility and interaction
+      removeFromCart: 'Verwijder uit winkelwagen',
+      decreaseQuantity: 'Aantal verlagen',
+      increaseQuantity: 'Aantal verhogen',
+      // Shopping actions
+      browseAccessories: 'Blader door Accessoires',
+      // Toast messages
+      pleaseLogInToCheckout: 'Log in om af te rekenen',
+      yourCartIsEmpty: 'Uw winkelwagen is leeg',
+      goToCart: 'Ga naar Winkelwagen & Afrekenen',
+      // Ratings
+      reviews: 'beoordelingen',
     },
     
     // Wishlist
