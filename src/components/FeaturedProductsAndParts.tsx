@@ -62,6 +62,7 @@ interface RepairPart {
   max_price: number;
   price_range: string;
   popularity_score: number;
+  booking_count?: number;
   // Store original data for BookingModal
   _originalPart?: any;
   _originalModel?: any;
@@ -99,102 +100,189 @@ const FeaturedProductsAndParts: React.FC = () => {
     },
   });
 
-  // Fetch popular repair parts from real database - get actual parts with pricing
+  // Fetch most requested repair parts based on actual bookings data
   const { data: popularParts, isLoading: partsLoading, error: partsError } = useQuery({
-    queryKey: ['popular-device-parts-homepage'],
+    queryKey: ['most-requested-repair-parts'],
     queryFn: async (): Promise<RepairPart[]> => {
-      // First approach: Get parts with their full hierarchy in a single query
-      const { data: partsWithFullData, error } = await supabase
-        .from('device_parts')
-        .select(`
-          id,
-          name,
-          description,
-          category,
-          estimated_duration,
-          image_url,
-          device_models!inner (
-            id,
-            name,
-            image_url,
-            device_brands!inner (
-              id,
-              name,
-              logo_url,
-              device_categories!inner (
+      try {
+        // First, get the most booked parts by counting bookings
+        const { data: bookingStats, error: statsError } = await supabase
+          .rpc('get_most_requested_parts', {})
+          .limit(8);
+
+        if (statsError) {
+          console.log('RPC not available, using alternative approach:', statsError);
+          
+          // Alternative approach: Get parts with bookings count manually
+          const { data: mostBookedParts, error: bookingsError } = await supabase
+            .from('bookings')
+            .select(`
+              part_id,
+              device_parts!inner (
                 id,
-                name
+                name,
+                description,
+                category,
+                estimated_duration,
+                image_url,
+                device_models!inner (
+                  id,
+                  name,
+                  image_url,
+                  device_brands!inner (
+                    id,
+                    name,
+                    logo_url,
+                    device_categories!inner (
+                      id,
+                      name
+                    )
+                  )
+                ),
+                part_pricing (
+                  id,
+                  price,
+                  quality_type,
+                  labor_cost,
+                  total_cost,
+                  availability_status
+                )
               )
-            )
-          ),
-          part_pricing (
-            id,
-            price,
-            quality_type,
-            labor_cost,
-            total_cost,
-            availability_status
-          )
-        `)
-        .eq('is_active', true)
-        .eq('device_models.is_active', true)
-        .eq('device_models.device_brands.is_active', true)
-        .eq('device_models.device_brands.device_categories.is_active', true)
-        .limit(8);
+            `)
+            .not('part_id', 'is', null)
+            .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
-      }
+          if (bookingsError) {
+            console.log('Bookings query failed, falling back to all parts:', bookingsError);
+            
+            // Final fallback: Get all active parts
+            const { data: allParts, error: allPartsError } = await supabase
+              .from('device_parts')
+              .select(`
+                id,
+                name,
+                description,
+                category,
+                estimated_duration,
+                image_url,
+                device_models!inner (
+                  id,
+                  name,
+                  image_url,
+                  device_brands!inner (
+                    id,
+                    name,
+                    logo_url,
+                    device_categories!inner (
+                      id,
+                      name
+                    )
+                  )
+                ),
+                part_pricing (
+                  id,
+                  price,
+                  quality_type,
+                  labor_cost,
+                  total_cost,
+                  availability_status
+                )
+              `)
+              .eq('is_active', true)
+              .eq('device_models.is_active', true)
+              .eq('device_models.device_brands.is_active', true)
+              .eq('device_models.device_brands.device_categories.is_active', true)
+              .limit(8);
 
-      console.log('Raw parts data:', partsWithFullData);
+            if (allPartsError) {
+              console.error('All queries failed:', allPartsError);
+              return [];
+            }
 
-      if (!partsWithFullData || partsWithFullData.length === 0) {
-        console.log('No parts found in database');
+            console.log('Using all parts as fallback:', allParts?.length);
+            return transformPartsData(allParts || []);
+          }
+
+          // Count occurrences and get unique parts with their booking count
+          const partCounts: { [key: string]: any } = {};
+          mostBookedParts?.forEach((booking: any) => {
+            const partId = booking.part_id;
+            if (partId && booking.device_parts) {
+              if (!partCounts[partId]) {
+                partCounts[partId] = {
+                  part: booking.device_parts,
+                  count: 0
+                };
+              }
+              partCounts[partId].count++;
+            }
+          });
+
+          // Sort by booking count and get top 8
+          const sortedParts = Object.values(partCounts)
+            .sort((a: any, b: any) => b.count - a.count)
+            .slice(0, 8);
+
+          console.log('Most booked parts:', sortedParts);
+          return transformPartsData(sortedParts.map((item: any) => ({
+            ...item.part,
+            booking_count: item.count
+          })));
+        }
+
+        console.log('Using RPC result:', bookingStats);
+        return transformPartsData(bookingStats || []);
+      } catch (error) {
+        console.error('Error fetching popular parts:', error);
         return [];
       }
-
-      // Transform the data to our interface
-      const transformedParts: RepairPart[] = partsWithFullData.map((part: any, index) => {
-        const pricing = part.part_pricing || [];
-        const prices = pricing
-          .map((p: any) => p.total_cost || (p.price + (p.labor_cost || 0)))
-          .filter((p: any) => p > 0);
-        
-        const minPrice = prices.length > 0 ? Math.min(...prices) : 50;
-        const maxPrice = prices.length > 0 ? Math.max(...prices) : 200;
-        const avgPrice = prices.length > 0 ? Math.round(prices.reduce((a: number, b: number) => a + b, 0) / prices.length) : 100;
-
-        const modelData = part.device_models || {};
-        const brandData = modelData.device_brands || {};
-        const categoryData = brandData.device_categories || {};
-
-        return {
-          id: part.id,
-          name: part.name,
-          description: part.description,
-          category: part.category,
-          model_name: modelData.name || 'Unknown Model',
-          brand_name: brandData.name || 'Unknown Brand',
-          device_type: categoryData.name || 'Device',
-          estimated_duration: part.estimated_duration || '60 min',
-          image_url: part.image_url || modelData.image_url || brandData.logo_url,
-          min_price: minPrice,
-          max_price: maxPrice,
-          price_range: minPrice === maxPrice ? `€${minPrice}` : `€${minPrice} - €${maxPrice}`,
-          popularity_score: Math.max(60, 95 - (index * 4)),
-          // Store original data for BookingModal
-          _originalPart: part,
-          _originalModel: modelData
-        };
-      });
-
-      console.log('Transformed parts:', transformedParts);
-      return transformedParts;
     },
-    retry: 2,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
+
+  // Helper function to transform parts data
+  const transformPartsData = (partsData: any[]): RepairPart[] => {
+    return partsData.map((part: any, index) => {
+      const pricing = part.part_pricing || [];
+      const prices = pricing
+        .map((p: any) => p.total_cost || (p.price + (p.labor_cost || 0)))
+        .filter((p: any) => p > 0);
+      
+      const minPrice = prices.length > 0 ? Math.min(...prices) : 50;
+      const maxPrice = prices.length > 0 ? Math.max(...prices) : 200;
+
+      const modelData = part.device_models || {};
+      const brandData = modelData.device_brands || {};
+      const categoryData = brandData.device_categories || {};
+
+      // Calculate popularity score based on booking count if available
+      const bookingCount = part.booking_count || 0;
+      const popularityScore = bookingCount > 0 
+        ? Math.min(95, 60 + (bookingCount * 5)) 
+        : Math.max(60, 95 - (index * 4));
+
+      return {
+        id: part.id,
+        name: part.name,
+        description: part.description,
+        category: part.category,
+        model_name: modelData.name || 'Unknown Model',
+        brand_name: brandData.name || 'Unknown Brand',
+        device_type: categoryData.name || 'Device',
+        estimated_duration: part.estimated_duration || '60 min',
+        image_url: part.image_url || modelData.image_url || brandData.logo_url,
+        min_price: minPrice,
+        max_price: maxPrice,
+        price_range: minPrice === maxPrice ? `€${minPrice}` : `€${minPrice} - €${maxPrice}`,
+        popularity_score: popularityScore,
+        booking_count: bookingCount,
+        // Store original data for BookingModal
+        _originalPart: part,
+        _originalModel: modelData
+      };
+    });
+  };
 
   return (
     <section className="py-24 bg-background relative overflow-hidden">
@@ -423,7 +511,11 @@ const FeaturedProductsAndParts: React.FC = () => {
                         <span className="text-muted-foreground">Demand:</span>
                         <div className="flex items-center gap-1">
                           <TrendingUp className="h-3 w-3 text-success" />
-                          <span className="font-medium text-success">{part.popularity_score}%</span>
+                          <span className="font-medium text-success">
+                            {part.booking_count && part.booking_count > 0 
+                              ? `${part.booking_count} bookings` 
+                              : `${part.popularity_score}%`}
+                          </span>
                         </div>
                       </div>
                     </div>
